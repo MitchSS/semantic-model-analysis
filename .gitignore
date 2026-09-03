@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+output/
+
+# Local build/export artifacts
+*.zip
