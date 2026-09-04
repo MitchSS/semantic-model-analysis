@@ -8,7 +8,7 @@ Each project lives in its own subfolder and is self-contained. Add new analyses 
 
 | Project | Description |
 | --- | --- |
-| [`similarity/`](similarity/) | Catalogs semantic models, scores structural/text **similarity** and directional **containment**, and highlights duplicates, near-duplicates, and subset relationships. See its [README](similarity/README.md). |
+| [`similarity/`](similarity/) | Uses a three-notebook flow to catalog semantic models, score structural/text **similarity** and directional **containment**, and review candidates in a four-view interactive app. See its [README](similarity/README.md). |
 
 ## Repository layout
 
@@ -19,7 +19,7 @@ Each project lives in its own subfolder and is self-contained. Add new analyses 
 └── similarity/        # semantic model similarity & containment analysis
     ├── README.md
     ├── README.marketing.md
-    └── notebooks/
+    └── notebooks/     # catalog, scoring, and interactive results notebooks
 ```
 
 ## Adding a new project

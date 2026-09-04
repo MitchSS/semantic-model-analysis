@@ -25,7 +25,7 @@ The workflow is intentionally simple:
 4. Score directional containment to detect when one model contains everything in another, plus more.
 5. Flag likely duplicates, near-duplicates, and subset relationships.
 6. Group duplicate relationships into clusters.
-7. Visualize the results in notebook heatmap and ranking tables.
+7. Review the results in a dedicated, interactive Fabric notebook app.
 
 ## Key benefits
 
@@ -46,7 +46,7 @@ The workflow is intentionally simple:
 
 ## How it works
 
-The project has two notebook stages:
+The project has three notebook stages:
 
 ### 1. Catalog the model metadata
 
@@ -74,16 +74,25 @@ The similarity notebook reads the catalog, builds a signature per model, and com
 - connected duplicate clusters
 - interactive visual similarity outputs
 
+### 3. Review consolidation candidates
+
+The results notebook uses a custom, self-contained `displayHTML(...)` renderer with four focused views:
+
+- **Review** combines estate statistics with one ranked candidate queue.
+- **Groups** explains and explores connected sets of likely duplicates.
+- **Compare** provides a decision summary followed by progressive structural and DAX evidence.
+- **Similarity map** shows the scored estate and opens any scored pair in Compare.
+
+When candidate blocking is enabled, the map still lists all catalog models, but pairs excluded before scoring appear as **Not scored** rather than as misleading zeroes.
+
 ## Outputs you can review
 
-The notebook produces a clear set of results for review:
+The workflow produces a clear set of results for review:
 
-- ranked similar model pairs
-- ranked containment candidates (subset / superset relationships)
-- duplicate clusters
-- per-model signature summaries
-- all-model similarity matrix
-- interactive similarity heatmap
+- one ranked queue of unique consolidation-candidate pairs
+- connected duplicate groups with selectable comparisons
+- summary-first structural and DAX comparison
+- an all-model similarity map that distinguishes scored, zero-score, and unscored pairs
 
 ## Who this is for
 
@@ -107,8 +116,8 @@ This project is useful for:
 1. Run the catalog notebook to populate metadata tables.
 2. Review the model inventory and confirm the result set is complete.
 3. Run the similarity notebook to score model overlap.
-4. Review the flagged pairs and duplicate clusters.
-5. Use the results to guide consolidation, cleanup, or governance follow-up.
+4. Run the results notebook against the same Lakehouse.
+5. Use **Review**, **Groups**, **Compare**, and **Similarity map** to guide consolidation, cleanup, or governance follow-up.
 
 ## A practical value statement
 

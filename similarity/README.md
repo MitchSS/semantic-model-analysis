@@ -7,15 +7,13 @@ This project catalogs Microsoft Fabric semantic models, measures their structura
 ```text
 .
 ├── README.md
-├── notebook.json
-├── deploy-payload.json
-├── .vscode/
 └── notebooks/
     ├── semantic_model_tom_catalog.ipynb
-    └── semantic_model_similarity.ipynb
+    ├── semantic_model_similarity.ipynb
+    └── semantic_model_similarity_results.ipynb
 ```
 
-The repository is intentionally notebook-first. The catalog notebook extracts metadata from semantic models and writes it to a Lakehouse, and the similarity notebook reads that metadata, scores model pairs, and persists the results back to the same Lakehouse.
+The repository is intentionally notebook-first. The catalog notebook extracts metadata from semantic models and writes it to a Lakehouse, the similarity notebook scores and persists model pairs, and the results notebook reads those persisted outputs into a separate interactive review app.
 
 ## Workflow
 
@@ -23,6 +21,7 @@ Run the notebooks in this order:
 
 1. `semantic_model_tom_catalog.ipynb`
 2. `semantic_model_similarity.ipynb`
+3. `semantic_model_similarity_results.ipynb`
 
 ### 1. Catalog semantic model metadata
 
@@ -59,7 +58,6 @@ The similarity notebook reads the catalog tables and builds a normalized signatu
 - computes a directional **containment score** ("does one model contain everything in the other?") from exact table, column, measure-definition, relationship, and data-source coverage
 - classifies pairs as `duplicate`, `similar`, or `distinct`, and labels each containment relationship as `equivalent`, `model_a_contains_model_b`, `model_b_contains_model_a`, or `partial_overlap`
 - groups duplicate-tier pairs into connected clusters
-- displays a similarity heatmap, a top model-pair ranking, and a containment-candidate ranking
 - writes the results back to the Lakehouse
 
 The output tables are:
@@ -67,6 +65,17 @@ The output tables are:
 - `semantic_model_signatures`
 - `semantic_model_similarity_pairs` (carries both `composite_score` and `containment_score`, the directional `model_a_in_model_b` / `model_b_in_model_a` coverages, and `containment_relationship`)
 - `semantic_model_duplicate_clusters`
+
+### 3. Review results in the interactive app
+
+The results notebook keeps presentation separate from scoring. Its custom, dependency-free `displayHTML(...)` renderer loads the persisted Delta tables and provides four stable views:
+
+- **Review** — summary statistics and one ranked, deduplicated queue of likely duplicates, subset/superset relationships, and high-overlap pairs
+- **Groups** — connected components of likely-duplicate pairs, with strongest-pair defaults and selectable member comparisons
+- **Compare** — summary-first structural differences with progressive detail and subordinate DAX evidence
+- **Similarity map** — an all-model matrix whose scored cells open Compare
+
+The app can reclassify already-scored pairs with draft thresholds, but it does not recalculate similarity or recover pairs omitted by blocking.
 
 ## Requirements
 
@@ -86,7 +95,7 @@ The notebook code performs read-only metadata extraction, but the notebook ident
 
 ## Configuration settings
 
-Each notebook has a **Configuration** cell near the top. Both notebooks read from and write to the **lakehouse attached to the notebook**, so attach the target Lakehouse before running — there is no database name to set.
+The catalog and scoring notebooks have a **Configuration** cell near the top. All three notebooks use the **lakehouse attached to the notebook**, so attach the same target Lakehouse before running — there is no database name to set.
 
 The catalog notebook exposes the scan scope and write mode:
 
@@ -137,16 +146,17 @@ CONTAINMENT_WEIGHTS = {
 3. Run the notebook to populate the catalog tables.
 4. Open the similarity notebook (attached to the same Lakehouse) and review its Configuration cell.
 5. Run the notebook.
-6. Review the ranked pair table, containment candidates, duplicate clusters, and heatmap.
+6. Open the results notebook, attach the same Lakehouse, and run it.
+7. Work through **Review**, **Groups**, **Compare**, and **Similarity map**.
 
 ## Notes
 
 - This project is focused on semantic-model analysis and duplicate detection, not on Fabric workspace provisioning or general data engineering setup.
 - The similarity logic is deterministic and local to the notebook environment; it does not rely on external embedding services or an external ML endpoint.
-- The similarity notebook's ranked report has a ranked pair table, a containment-candidate table, the duplicate clusters, and a clustered heatmap of the flagged models, so duplicate and subset candidates are easy to review in Fabric.
+- The results experience is a self-contained Fabric `displayHTML(...)` app with no external web dependencies.
 - The composite similarity score is symmetric, while the containment score is directional: a pair can have only moderate similarity yet high containment when a small model is fully absorbed by a much larger one.
 
-The heatmap is rendered with Plotly through `displayHTML(...)`. It shows the upper triangle of composite scores for models that appear in at least one flagged pair; hovering a cell shows both model labels and the composite similarity score.
+The Similarity map lists all catalog models. A numeric cell is a scored composite result and can be opened in Compare. **Not scored** means the pair is absent from the persisted pair table—commonly because blocking excluded it before scoring—and must not be interpreted as a score of zero. A scored zero remains a distinct, valid result.
 
 ### A.10 Interpretation and limitations
 
