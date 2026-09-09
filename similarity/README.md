@@ -7,6 +7,7 @@ This project catalogs Microsoft Fabric semantic models, measures their structura
 ```text
 .
 ├── README.md
+├── README.marketing.md
 └── notebooks/
     ├── 001_semantic_model_tom_catalog.ipynb
     ├── 002_semantic_model_similarity.ipynb
@@ -135,7 +136,7 @@ WRITE_MODE = "overwrite"
 
 Catalog and scoring outputs have explicit schemas, so empty results are written instead of leaving stale rows behind in overwrite mode. Reads use registered table names (`spark.table`) to match `saveAsTable`, without assuming a physical `Tables/<name>` directory. Keep the attached lakehouse and default schema consistent across all three notebooks. Report snapshots always overwrite, even if legacy catalog/scoring outputs use `append`; historical append behavior is not a supported current-results workflow.
 
-The similarity notebook exposes the scoring and report knobs:
+The similarity notebook exposes the following scoring settings:
 
 ```python
 WRITE_MODE = "overwrite"
@@ -143,8 +144,6 @@ ENABLE_BLOCKING = True
 DUPLICATE_THRESHOLD = 0.95
 SIMILAR_THRESHOLD = 0.70
 CONTAINMENT_THRESHOLD = 0.95            # Directional coverage at/above this flags a containment candidate.
-TOP_N = 20                             # Rows shown in the ranked pair table.
-HEATMAP_MIN_SCORE = SIMILAR_THRESHOLD  # Hide heatmap cells below this composite score.
 
 SIMILARITY_WEIGHTS = {
     "tables": 0.15,

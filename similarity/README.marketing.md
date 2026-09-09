@@ -73,7 +73,8 @@ The similarity notebook reads the catalog, builds a signature per model, and com
 - a directional containment score ("does one model contain everything in the other?")
 - duplicate / similar / distinct classification, plus a containment relationship (equivalent, contains, or partial overlap)
 - connected duplicate clusters
-- interactive visual similarity outputs
+
+It writes the signatures, scores, duplicate clusters, and run settings to Lakehouse Delta tables for the results notebook.
 
 ### 3. Review consolidation candidates
 
