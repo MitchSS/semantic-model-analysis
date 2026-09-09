@@ -19,7 +19,7 @@ This project gives you a fast way to surface those patterns using the metadata a
 
 The workflow is intentionally simple:
 
-1. Catalog semantic model metadata from Fabric using Semantic Link Labs and TOM.
+1. Catalog semantic model metadata from Fabric using Semantic Link Labs and TOM, plus direct report-to-model bindings through the Power BI API.
 2. Normalize each model into a signature built from tables, columns, measures, relationships, and data sources.
 3. Score pairwise similarity using a weighted mix of structural overlap and DAX/name text similarity.
 4. Score directional containment to detect when one model contains everything in another, plus more.
@@ -59,6 +59,7 @@ The catalog notebook connects to Fabric semantic models through read-only TOM ac
 - measures and DAX expressions
 - relationships
 - workspace/model errors
+- direct report bindings and per-workspace report scan status
 
 This data is written to Lakehouse Delta tables so it can be analyzed and reused.
 
@@ -82,6 +83,10 @@ The results notebook uses a custom, self-contained `displayHTML(...)` renderer w
 - **Groups** explains and explores connected sets of likely duplicates.
 - **Compare** provides a decision summary followed by progressive structural and DAX evidence.
 - **Similarity map** shows the scored estate and opens any scored pair in Compare.
+
+The standalone **Reports** tab is temporarily omitted; report counts in Review and Groups and dependent-report details in Compare remain available.
+
+Report counts add consolidation impact context; they do not change similarity scores. Missing or incomplete scans are distinguished from verified zero-report results. Counts describe the current snapshot within the identity's visible, selected report scope, not tenant-wide usage or proof that a model can be retired.
 
 When candidate blocking is enabled, the map still lists all catalog models, but pairs excluded before scoring appear as **Not scored** rather than as misleading zeroes.
 

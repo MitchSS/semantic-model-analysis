@@ -8,7 +8,7 @@ Each project lives in its own subfolder and is self-contained. Add new analyses 
 
 | Project | Description |
 | --- | --- |
-| [`similarity/`](similarity/) | Uses a three-notebook flow to catalog semantic models, score structural/text **similarity** and directional **containment**, and review candidates in a four-view interactive app. See its [README](similarity/README.md). |
+| [`similarity/`](similarity/) | Uses a three-notebook flow to catalog semantic models and direct report dependencies, score structural/text **similarity** and directional **containment**, and review candidates with report-impact evidence in a four-view app. See its [README](similarity/README.md). |
 
 ## Repository layout
 
