@@ -4,6 +4,12 @@ Find duplicate and near-duplicate Microsoft Fabric semantic models before they b
 
 This project helps BI and data teams compare semantic models through separate schema, security, and combined similarity scores. It highlights structural overlap while exposing differences in RLS and object-level security, so security variants are not presented as interchangeable simply because their business definitions match.
 
+Screenshots use synthetic demo data rendered by the results notebook in its desktop dark theme.
+
+![Desktop Review view showing a synthetic model inventory and a possible duplicate with separate schema, security, and combined scores](docs/images/review-desktop.png)
+
+*A high combined score still carries a visible warning when security definitions differ.*
+
 ## Why it matters
 
 As semantic models grow across teams, workspaces, and business domains, duplicate models often appear in different forms:
@@ -98,6 +104,10 @@ Report counts add consolidation impact context; they do not change similarity sc
 
 When candidate blocking is enabled, the map still lists all catalog models, but pairs excluded before scoring appear as **Not scored** rather than as misleading zeroes.
 
+![Desktop Compare detail showing matching schema entries alongside column OLS, RLS, and table OLS differences in a synthetic model pair](docs/images/compare-desktop.png)
+
+*Compare keeps schema coverage and security-rule evidence separate. This scrolled detail shows why matching business definitions do not make models interchangeable.*
+
 ## Outputs you can review
 
 The workflow produces a clear set of results for review:
@@ -134,7 +144,7 @@ This project is useful for:
 
 ## A practical value statement
 
-This project turns a difficult metadata problem into a clear review process: instead of manually comparing models table by table, you get a structured view of which models are likely duplicates or near-duplicates, and which models fully contain others.
+This project turns a difficult metadata problem into a clear review process: instead of manually comparing models table by table, you get a structured view of likely duplicates, near-duplicates, and model pairs with high directional schema coverage at your chosen threshold.
 
 That makes it easier to reduce sprawl, improve model hygiene, and keep your Fabric estate more maintainable.
 

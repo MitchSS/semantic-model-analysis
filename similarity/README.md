@@ -2,12 +2,20 @@
 
 This project catalogs Microsoft Fabric semantic models and their security definitions, calculates separate schema, security, and combined similarity scores, and highlights possible duplicates and schema subset relationships in a notebook workflow.
 
+Screenshots use synthetic demo data rendered by the results notebook in its desktop dark theme.
+
+![Desktop Review view showing six synthetic models and a possible duplicate with 100% schema, 0% security, and 95% combined similarity](docs/images/review-desktop.png)
+
+*Review keeps security differences visible even when a pair meets the possible-duplicate cutoff.*
+
 ## What this repo contains
 
 ```text
 .
 ├── README.md
 ├── README.marketing.md
+├── docs/
+│   └── images/       # desktop screenshots used in the READMEs
 └── notebooks/
     ├── 001_semantic_model_tom_catalog.ipynb
     ├── 002_semantic_model_similarity.ipynb
@@ -139,6 +147,24 @@ Review and Groups include per-model report counts. Compare includes a separate *
 
 The results notebook keeps all preparation and renderer definitions together in one hidden-input cell (Cell 2), followed by the visible `render_results()` call (Cell 3). The UI output remains visible, and the three-notebook running order is unchanged.
 
+#### Groups
+
+![Desktop Groups view showing Sales and Sales Restricted in a possible-duplicate group with a security-difference warning](docs/images/groups-desktop.png)
+
+*Groups show member models, scoped report counts, and security differences across the group.*
+
+#### Compare
+
+![Desktop Compare detail showing three similarity scores, both schema coverage directions, and expanded column OLS, RLS, and table OLS differences](docs/images/compare-desktop.png)
+
+*The same synthetic pair has matching cataloged schema entries but different security definitions. This detail view is scrolled to the score summary and expanded security evidence.*
+
+#### Similarity map
+
+![Desktop Similarity map showing combined percentages, blank not-scored cells, and question marks for unavailable combined scores](docs/images/similarity-map-desktop.png)
+
+*The map separates scored pairs from blocked pairs and unavailable security-inclusive scores. Select a scored cell to open Compare.*
+
 ## Requirements
 
 This workflow expects:
@@ -146,11 +172,13 @@ This workflow expects:
 - a Microsoft Fabric notebook runtime
 - permissions to read the target semantic models and workspaces
 - an attached Lakehouse
-- the following Python packages in the notebook environment:
-  - `semantic-link-labs`
-  - `pandas`
-  - `scikit-learn`
-    - `scipy` (also a scikit-learn dependency; used for one-to-one role assignment)
+
+Required Python packages in the notebook environment:
+
+- `semantic-link-labs`
+- `pandas`
+- `scikit-learn`
+- `scipy` (also a scikit-learn dependency; used for one-to-one role assignment)
 
 The notebook code performs read-only metadata extraction, but the notebook identity must still be allowed to read the semantic model and its full security metadata. Run the TOM catalog interactively in Fabric; scoring and results operate on the persisted Lakehouse tables.
 
@@ -220,6 +248,8 @@ CONTAINMENT_WEIGHTS = {
 6. Open the results notebook, attach the same Lakehouse, and run it.
 7. Work through **Review**, **Groups**, **Compare**, and **Similarity map**. Check report scan scope, timestamp, and failures before interpreting impact counts.
 
+After upgrading the notebooks or changing model security, rerun **001 -> 002 -> 003** against the same Lakehouse. Older or inconsistent outputs may still show schema scores but cannot provide security-inclusive combined scores.
+
 ## Notes
 
 - This project is focused on semantic-model analysis and duplicate detection, not on Fabric workspace provisioning or general data engineering setup.
@@ -229,7 +259,7 @@ CONTAINMENT_WEIGHTS = {
 
 The Similarity map lists all catalog models. A numeric cell is the combined score, displayed as a rounded whole percentage, and can be opened in Compare for all three scores. **Not scored** means the pair is absent from the persisted pair table, commonly because blocking excluded it before scoring, and must not be interpreted as zero. A scored zero remains a distinct, valid result. **Unavailable (?)** includes missing or invalid combined scores and incomplete security evidence.
 
-### A.10 Interpretation and limitations
+### Interpretation and limitations
 
 Similarity and containment are metadata-based. Security comparison covers role definitions, not role assignments, group membership, effective-user authorization, workspace permissions, OneLake/SQL/source-system security, or enforcement tests. The workflow does not compare report layouts, visual configurations, row-level data, refresh history, or business meaning outside captured metadata. Schema containment must not be interpreted as permission containment or replacement safety.
 
