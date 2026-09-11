@@ -14,6 +14,8 @@ Screenshots use synthetic demo data rendered by the results notebook in its desk
 .
 ├── README.md
 ├── README.marketing.md
+├── CHANGELOG.md
+├── RELEASING.md
 ├── docs/
 │   └── images/       # desktop screenshots used in the READMEs
 └── notebooks/
@@ -23,6 +25,25 @@ Screenshots use synthetic demo data rendered by the results notebook in its desk
 ```
 
 The repository is intentionally notebook-first. The catalog notebook extracts metadata from semantic models and writes it to a Lakehouse, the similarity notebook scores and persists model pairs, and the results notebook reads those persisted outputs into a separate interactive review app.
+
+## Downloads and versions
+
+Similarity has its own versions and `similarity/vMAJOR.MINOR.PATCH` tags within
+the parent repository. The initial planned release is `0.1.0`, marked as a GitHub
+prerelease. See [CHANGELOG.md](CHANGELOG.md) for its contents; publication status
+is shown on the [Releases page](https://github.com/MitchSS/semantic-model-analysis/releases).
+
+For a published version, download its named `semantic-model-similarity-vVERSION.zip`
+asset and SHA-256 checksum. The ZIP contains only this project's notebooks and
+documentation. GitHub's automatic **Source code** downloads contain the whole
+repository, including any sibling projects.
+
+Extract the ZIP, import all three notebooks from its `similarity/notebooks/`
+folder into Fabric, and attach the same Lakehouse to each. Use notebooks from the
+same release and follow the requirements and running order below. Public release
+versions are independent of the persisted score/security schema versions.
+Maintainers can follow [RELEASING.md](RELEASING.md) to prepare and review a draft;
+merging code does not publish a release.
 
 ## Workflow
 

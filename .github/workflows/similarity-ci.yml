@@ -1,0 +1,52 @@
+name: Similarity CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'similarity/**'
+      - '.github/requirements-release.txt'
+      - '.github/scripts/similarity_release.py'
+      - '.github/scripts/similarity_draft.py'
+      - '.github/scripts/test_similarity*.py'
+      - '.github/workflows/similarity-ci.yml'
+      - '.github/workflows/similarity-release.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'similarity/**'
+      - '.github/requirements-release.txt'
+      - '.github/scripts/similarity_release.py'
+      - '.github/scripts/similarity_draft.py'
+      - '.github/scripts/test_similarity*.py'
+      - '.github/workflows/similarity-ci.yml'
+      - '.github/workflows/similarity-release.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: similarity-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate similarity distribution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out the exact CI commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install release validation tools
+        run: python -m pip install --disable-pip-version-check -r .github/requirements-release.txt
+      - name: Test packaging and release safeguards without GitHub writes
+        run: python -B -m unittest discover -s .github/scripts -p 'test_similarity*.py' -v
+      - name: Validate the committed notebooks, documentation and archive
+        run: python -B .github/scripts/similarity_release.py check --commit "$GITHUB_SHA"
