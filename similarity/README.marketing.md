@@ -2,7 +2,7 @@
 
 Find duplicate and near-duplicate Microsoft Fabric semantic models before they become a governance problem.
 
-This project helps BI and data teams quickly compare semantic models by scanning their metadata and highlighting where models overlap structurally and textually. It is built for Fabric notebook users who want a practical, analyst-friendly way to spot model redundancy, drift, and consolidation opportunities.
+This project helps BI and data teams compare semantic models through separate schema, security, and combined similarity scores. It highlights structural overlap while exposing differences in RLS and object-level security, so security variants are not presented as interchangeable simply because their business definitions match.
 
 ## Why it matters
 
@@ -20,10 +20,10 @@ This project gives you a fast way to surface those patterns using the metadata a
 The workflow is intentionally simple:
 
 1. Catalog semantic model metadata from Fabric using Semantic Link Labs and TOM, plus direct report-to-model bindings through the Power BI API.
-2. Normalize each model into a signature built from tables, columns, measures, relationships, and data sources.
-3. Score pairwise similarity using a weighted mix of structural overlap and DAX/name text similarity.
-4. Score directional containment to detect when one model contains everything in another, plus more.
-5. Flag likely duplicates, near-duplicates, and subset relationships.
+2. Build schema signatures and collect role permissions, RLS filters, table OLS, and column OLS definitions.
+3. Calculate schema similarity, security similarity, and a combined score using 95% schema and 5% security by default.
+4. Score directional schema containment, separately from security.
+5. Flag possible duplicates and subset relationships, with visible security-difference warnings.
 6. Group duplicate relationships into clusters.
 7. Review the results in a dedicated, interactive Fabric notebook app.
 
@@ -58,6 +58,8 @@ The catalog notebook connects to Fabric semantic models through read-only TOM ac
 - columns
 - measures and DAX expressions
 - relationships
+- RLS, table OLS, column OLS (CLS), and relationship security definitions
+- security scan completeness, distinguishing no roles from unreadable metadata
 - workspace/model errors
 - direct report bindings and per-workspace report scan status
 
@@ -69,21 +71,26 @@ The similarity notebook reads the catalog, builds a signature per model, and com
 
 - structural overlap across metadata objects
 - name and DAX similarity using TF-IDF
-- a blended, symmetric composite similarity score ("how alike are these models overall?")
-- a directional containment score ("does one model contain everything in the other?")
-- duplicate / similar / distinct classification, plus a containment relationship (equivalent, contains, or partial overlap)
+- separate symmetric schema and security similarity scores
+- a combined score using 95% schema and 5% security when security applies
+- a directional schema containment score that excludes security
+- combined-score duplicate / similar / distinct classification, with unassessed status when security is unknown
 - connected duplicate clusters
 
 It writes the signatures, scores, duplicate clusters, and run settings to Lakehouse Delta tables for the results notebook.
+
+Role names do not affect security similarity: roles are matched one-to-one by their rules while preserving role boundaries. When both complete scans find no roles, security is not applicable and combined equals schema. If security is unreadable, schema remains visible but security and combined are unavailable.
+
+Security differences are warnings, not a veto. At the default 95% duplicate cutoff, 100% schema plus 0% security still yields a 95% combined score and a possible-duplicate label. These remain review candidates, not models approved for replacement.
 
 ### 3. Review consolidation candidates
 
 The results notebook uses a custom, self-contained `displayHTML(...)` renderer with four focused views:
 
-- **Review** combines estate statistics with one ranked candidate queue.
-- **Groups** explains and explores connected sets of likely duplicates.
-- **Compare** provides a decision summary followed by progressive structural and DAX evidence.
-- **Similarity map** shows the scored estate and opens any scored pair in Compare.
+- **Review** combines estate statistics with a ranked queue, three-score summaries, and security warnings.
+- **Groups** explores connected duplicate candidates and flags security differences across their members.
+- **Compare** provides schema, security, and combined scores with aligned role-rule differences and structural/DAX evidence.
+- **Similarity map** shows combined scores with separate schema/security values in tooltips.
 
 The standalone **Reports** tab is temporarily omitted; report counts in Review and Groups and dependent-report details in Compare remain available.
 
@@ -97,7 +104,7 @@ The workflow produces a clear set of results for review:
 
 - one ranked queue of unique consolidation-candidate pairs
 - connected duplicate groups with selectable comparisons
-- summary-first structural and DAX comparison
+- summary-first schema, security-rule, and DAX comparison
 - an all-model similarity map that distinguishes scored, zero-score, and unscored pairs
 
 ## Who this is for
@@ -119,8 +126,8 @@ This project is useful for:
 
 ## Recommended workflow
 
-1. Run the catalog notebook to populate metadata tables.
-2. Review the model inventory and confirm the result set is complete.
+1. Run the catalog notebook interactively to populate metadata and security tables.
+2. Review the model inventory and security scan completeness.
 3. Run the similarity notebook to score model overlap.
 4. Run the results notebook against the same Lakehouse.
 5. Use **Review**, **Groups**, **Compare**, and **Similarity map** to guide consolidation, cleanup, or governance follow-up.
@@ -133,4 +140,4 @@ That makes it easier to reduce sprawl, improve model hygiene, and keep your Fabr
 
 ## Important note
 
-This is a metadata-driven similarity solution. It helps identify likely overlap based on model structure and DAX/text patterns, but it does not replace a full business review or a complete semantic design assessment.
+This is a metadata-driven similarity solution. Matching security definitions do not establish matching role assignments or effective user access. The workflow does not test enforcement or compare source-system security, and it does not replace a business review or semantic design assessment. Existing catalogs need the updated catalog and scoring notebooks rerun before security and combined scores are available.
