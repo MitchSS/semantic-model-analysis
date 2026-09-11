@@ -5,3 +5,6 @@ output/
 
 # Local build/export artifacts
 *.zip
+
+/similarity/tests/
+/similarity/validation/
