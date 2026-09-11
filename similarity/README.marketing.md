@@ -131,7 +131,7 @@ This project is useful for:
 
 - Microsoft Fabric notebook runtime
 - access to the semantic models you want to compare
-- an attached Lakehouse
+- a Lakehouse in your Fabric workspace: create one or use an existing one, then attach the same Lakehouse as the **default Lakehouse for all three notebooks** before running them.
 - the required Python packages installed in the notebook runtime
 
 ## Recommended workflow

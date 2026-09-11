@@ -192,7 +192,7 @@ This workflow expects:
 
 - a Microsoft Fabric notebook runtime
 - permissions to read the target semantic models and workspaces
-- an attached Lakehouse
+- a Lakehouse in your Fabric workspace: create one or use an existing one, then attach the same Lakehouse as the **default Lakehouse for all three notebooks** before running them.
 
 Required Python packages in the notebook environment:
 
