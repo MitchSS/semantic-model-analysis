@@ -22,7 +22,7 @@ PACKAGE_PATHS = (
     "similarity/README.md",
     "similarity/README.marketing.md",
     "similarity/CHANGELOG.md",
-    "similarity/RELEASING.md",
+    "similarity/docs/reference.md",
     "similarity/docs/images/compare-desktop.png",
     "similarity/docs/images/groups-desktop.png",
     "similarity/docs/images/review-desktop.png",

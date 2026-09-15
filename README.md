@@ -28,7 +28,6 @@ Each project lives in its own subfolder and is self-contained. Add new analyses 
 Projects are versioned and released independently. Similarity uses tags such as
 `similarity/v0.1.0` and a manual **Prepare Similarity Release** GitHub Action.
 Merging to `main` runs checks but does not create or publish a release. See the
-[similarity release guide](similarity/RELEASING.md) and
 [project changelog](similarity/CHANGELOG.md).
 
 All projects share GitHub's repository Releases page. Download the attached
