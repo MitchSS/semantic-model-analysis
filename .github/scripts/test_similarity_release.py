@@ -34,6 +34,8 @@ def sample_sources():
     for name in PACKAGE_PATHS:
         if name.endswith(".md"):
             files[name] = b"# Fixture\n\n![Review](docs/images/review-desktop.png)\n"
+    files["similarity/README.md"] += b"\n[Reference](docs/reference.md)\n"
+    files["similarity/docs/reference.md"] = b"# Reference\n\n[Guide](../README.md)\n\n![Review](images/review-desktop.png)\n"
     files["similarity/CHANGELOG.md"] = b"# Changelog\n\n## [0.1.0]\n\n### Added\n\n- Initial preview.\n"
     for name in NOTEBOOK_PATHS:
         files[name] = json.dumps(sample_notebook()).encode("utf-8")
