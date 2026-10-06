@@ -167,7 +167,7 @@ These screenshots use synthetic demo data rendered by the results notebook in it
 
 *The same synthetic pair has matching schema entries but different security definitions. Rules and formulas expand when needed; the summary stays compact.*
 
-![Desktop Similarity map showing combined percentages, dots for unscored pairs, and question marks for unavailable combined scores](images/similarity-map-desktop.png)
+![Desktop Similarity map showing Overall percentages, dots for unscored pairs, and question marks for unavailable Overall scores](images/similarity-map-desktop.png)
 
 *The map separates scored, unscored, and unavailable pairs within the visible model slice. Select a cell to open Compare.*
 
