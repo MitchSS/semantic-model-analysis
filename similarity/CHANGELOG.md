@@ -4,7 +4,7 @@ Release notes for Semantic Model Similarity only. A section records the intended
 release contents; publication status is shown on GitHub Releases, not inferred
 from its presence here.
 
-## [Unreleased]
+## [0.2.0]
 
 ### Changed
 
