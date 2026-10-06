@@ -14,9 +14,8 @@ from urllib.parse import unquote, urlsplit
 
 
 NOTEBOOK_PATHS = (
-    "similarity/notebooks/001_semantic_model_tom_catalog.ipynb",
-    "similarity/notebooks/002_semantic_model_similarity.ipynb",
-    "similarity/notebooks/003_semantic_model_similarity_results.ipynb",
+    "similarity/notebooks/001_semantic_model_similarity.ipynb",
+    "similarity/notebooks/002_semantic_model_similarity_results.ipynb",
 )
 PACKAGE_PATHS = (
     "similarity/README.md",

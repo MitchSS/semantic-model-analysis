@@ -43,6 +43,13 @@ def sample_sources():
 
 
 class ReleaseIdentityTests(unittest.TestCase):
+    def test_distribution_contains_only_collect_score_and_results_notebooks(self):
+        self.assertEqual(NOTEBOOK_PATHS, (
+            "similarity/notebooks/001_semantic_model_similarity.ipynb",
+            "similarity/notebooks/002_semantic_model_similarity_results.ipynb",
+        ))
+        self.assertEqual(tuple(name for name in PACKAGE_PATHS if name.endswith(".ipynb")), NOTEBOOK_PATHS)
+
     def test_project_identity_comes_from_one_version(self):
         self.assertEqual(validate_version("0.1.0"), "0.1.0")
         self.assertEqual(release_tag("0.1.0"), "similarity/v0.1.0")
