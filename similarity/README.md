@@ -2,7 +2,7 @@
 
 Find possible duplicates and overlapping Microsoft Fabric semantic models. Two notebooks collect and score metadata, then present candidates for review with security differences and linked-report context.
 
-![Desktop Review view showing six synthetic models and a possible duplicate with 100% schema, 0% security, and 95% combined similarity](docs/images/review-desktop.png)
+![Desktop Review view showing six synthetic models and an expanded possible duplicate with 100% schema, 0% security, 95% Overall similarity, and six schema indicators](docs/images/review-desktop.png)
 
 *Review ranks candidate pairs in aligned score columns, with security differences kept visible. Synthetic demo data is shown with cross-workspace scope switched off.*
 

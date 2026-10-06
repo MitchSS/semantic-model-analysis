@@ -4,7 +4,7 @@ Find likely duplicates and overlapping Microsoft Fabric semantic models, and see
 
 Built for BI architects, model owners, and governance teams, this project turns a collection of models into a focused set of review candidates. Compare model definitions, keep security differences visible, and see which reports are directly linked to each model.
 
-![Desktop Review view showing a synthetic model inventory and a possible duplicate with separate schema, security, and combined scores](docs/images/review-desktop.png)
+![Desktop Review view showing a synthetic model inventory and an expanded possible duplicate with separate schema, security, and Overall scores](docs/images/review-desktop.png)
 
 *Scan ranked model pairs, compare aligned scores, and keep security differences in view. Synthetic demo data is shown with cross-workspace scope switched off.*
 
