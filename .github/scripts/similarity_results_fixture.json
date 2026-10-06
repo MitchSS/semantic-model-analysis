@@ -1,0 +1,1374 @@
+{
+  "generatedAt": "2026-09-11 12:00 UTC",
+  "summary": {
+    "models": 6
+  },
+  "thresholds": {
+    "duplicate": 0.95,
+    "similar": 0.7,
+    "containment": 0.95
+  },
+  "allPairs": [
+    {
+      "idA": "demo-sales",
+      "idB": "demo-sales-east",
+      "modelA": "Sales",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Restricted",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 1.0,
+      "security": 0.0,
+      "combined": 0.95,
+      "securityStatus": "different",
+      "scoreMode": "combined",
+      "securityEvidence": {
+        "combined_effective_weights": {
+          "schema": 0.95,
+          "security": 0.05
+        },
+        "components": {
+          "rls_propagation": 0.0,
+          "role_definitions": 0.0
+        },
+        "effective_weights": {
+          "rls_propagation": 0.2,
+          "role_definitions": 0.8
+        },
+        "role_matches": [],
+        "unmatched_roles_a": [],
+        "unmatched_roles_b": [
+          0
+        ]
+      },
+      "scoreStatus": "current",
+      "containment": 1.0,
+      "relationship": "equivalent",
+      "containedId": "",
+      "containingId": "",
+      "containedCoverage": 1.0,
+      "aInB": 1.0,
+      "bInA": 1.0,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 1.0,
+        "columns": 1.0,
+        "measures": 1.0,
+        "relationships": 1.0,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales",
+      "idB": "demo-sales-forecast",
+      "modelA": "Sales",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Forecast",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.8888888888888888,
+      "security": null,
+      "combined": 0.8888888888888888,
+      "securityStatus": "not_applicable",
+      "scoreMode": "schema_only_no_security",
+      "securityEvidence": {
+        "combined_effective_weights": {
+          "schema": 1.0,
+          "security": 0.0
+        },
+        "components": {},
+        "effective_weights": {},
+        "role_matches": [],
+        "unmatched_roles_a": [],
+        "unmatched_roles_b": []
+      },
+      "scoreStatus": "current",
+      "containment": 0.9231,
+      "relationship": "partial_overlap",
+      "containedId": "demo-sales",
+      "containingId": "demo-sales-forecast",
+      "containedCoverage": 0.9231,
+      "aInB": 0.9231,
+      "bInA": 0.9231,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 1.0,
+        "columns": 0.4444,
+        "measures": 1.0,
+        "relationships": 1.0,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales-east",
+      "idB": "demo-sales-forecast",
+      "modelA": "Sales Restricted",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Forecast",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.8888888888888888,
+      "security": 0.0,
+      "combined": 0.8444444444444443,
+      "securityStatus": "different",
+      "scoreMode": "combined",
+      "securityEvidence": {
+        "combined_effective_weights": {
+          "schema": 0.95,
+          "security": 0.05
+        },
+        "components": {
+          "rls_propagation": 0.0,
+          "role_definitions": 0.0
+        },
+        "effective_weights": {
+          "rls_propagation": 0.2,
+          "role_definitions": 0.8
+        },
+        "role_matches": [],
+        "unmatched_roles_a": [
+          0
+        ],
+        "unmatched_roles_b": []
+      },
+      "scoreStatus": "current",
+      "containment": 0.9231,
+      "relationship": "partial_overlap",
+      "containedId": "demo-sales-east",
+      "containingId": "demo-sales-forecast",
+      "containedCoverage": 0.9231,
+      "aInB": 0.9231,
+      "bInA": 0.9231,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 1.0,
+        "columns": 0.4444,
+        "measures": 1.0,
+        "relationships": 1.0,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales",
+      "idB": "demo-sales-core",
+      "modelA": "Sales",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Core",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.7480769230769231,
+      "security": null,
+      "combined": 0.7480769230769231,
+      "securityStatus": "not_applicable",
+      "scoreMode": "schema_only_no_security",
+      "securityEvidence": {
+        "combined_effective_weights": {
+          "schema": 1.0,
+          "security": 0.0
+        },
+        "components": {},
+        "effective_weights": {},
+        "role_matches": [],
+        "unmatched_roles_a": [],
+        "unmatched_roles_b": []
+      },
+      "scoreStatus": "current",
+      "containment": 1.0,
+      "relationship": "model_a_contains_model_b",
+      "containedId": "demo-sales-core",
+      "containingId": "demo-sales",
+      "containedCoverage": 1.0,
+      "aInB": 0.7481,
+      "bInA": 1.0,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 0.5,
+        "columns": 0.6154,
+        "measures": 1.0,
+        "relationships": 0.3333,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales-east",
+      "idB": "demo-sales-core",
+      "modelA": "Sales Restricted",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Core",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.7480769230769231,
+      "security": 0.0,
+      "combined": 0.7106730769230769,
+      "securityStatus": "different",
+      "scoreMode": "combined",
+      "securityEvidence": {
+        "combined_effective_weights": {
+          "schema": 0.95,
+          "security": 0.05
+        },
+        "components": {
+          "rls_propagation": 0.0,
+          "role_definitions": 0.0
+        },
+        "effective_weights": {
+          "rls_propagation": 0.2,
+          "role_definitions": 0.8
+        },
+        "role_matches": [],
+        "unmatched_roles_a": [
+          0
+        ],
+        "unmatched_roles_b": []
+      },
+      "scoreStatus": "current",
+      "containment": 1.0,
+      "relationship": "model_a_contains_model_b",
+      "containedId": "demo-sales-core",
+      "containingId": "demo-sales-east",
+      "containedCoverage": 1.0,
+      "aInB": 0.7481,
+      "bInA": 1.0,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 0.5,
+        "columns": 0.6154,
+        "measures": 1.0,
+        "relationships": 0.3333,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales-core",
+      "idB": "demo-sales-forecast",
+      "modelA": "Sales Core",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Forecast",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.6875,
+      "security": null,
+      "combined": 0.6875,
+      "securityStatus": "not_applicable",
+      "scoreMode": "schema_only_no_security",
+      "securityEvidence": {
+        "combined_effective_weights": {
+          "schema": 1.0,
+          "security": 0.0
+        },
+        "components": {},
+        "effective_weights": {},
+        "role_matches": [],
+        "unmatched_roles_a": [],
+        "unmatched_roles_b": []
+      },
+      "scoreStatus": "current",
+      "containment": 0.925,
+      "relationship": "partial_overlap",
+      "containedId": "demo-sales-core",
+      "containingId": "demo-sales-forecast",
+      "containedCoverage": 0.925,
+      "aInB": 0.925,
+      "bInA": 0.7019,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 0.5,
+        "columns": 0.3125,
+        "measures": 1.0,
+        "relationships": 0.3333,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales",
+      "idB": "demo-sales-draft",
+      "modelA": "Sales",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Draft",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 1.0,
+      "security": null,
+      "combined": null,
+      "securityStatus": "unknown",
+      "scoreMode": "unavailable_security",
+      "securityEvidence": {},
+      "scoreStatus": "security_unavailable",
+      "containment": 1.0,
+      "relationship": "equivalent",
+      "containedId": "",
+      "containingId": "",
+      "containedCoverage": 1.0,
+      "aInB": 1.0,
+      "bInA": 1.0,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 1.0,
+        "columns": 1.0,
+        "measures": 1.0,
+        "relationships": 1.0,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales-east",
+      "idB": "demo-sales-draft",
+      "modelA": "Sales Restricted",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Draft",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 1.0,
+      "security": null,
+      "combined": null,
+      "securityStatus": "unknown",
+      "scoreMode": "unavailable_security",
+      "securityEvidence": {},
+      "scoreStatus": "security_unavailable",
+      "containment": 1.0,
+      "relationship": "equivalent",
+      "containedId": "",
+      "containingId": "",
+      "containedCoverage": 1.0,
+      "aInB": 1.0,
+      "bInA": 1.0,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 1.0,
+        "columns": 1.0,
+        "measures": 1.0,
+        "relationships": 1.0,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales-forecast",
+      "idB": "demo-sales-draft",
+      "modelA": "Sales Forecast",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Draft",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.8888888888888888,
+      "security": null,
+      "combined": null,
+      "securityStatus": "unknown",
+      "scoreMode": "unavailable_security",
+      "securityEvidence": {},
+      "scoreStatus": "security_unavailable",
+      "containment": 0.9231,
+      "relationship": "partial_overlap",
+      "containedId": "demo-sales-forecast",
+      "containingId": "demo-sales-draft",
+      "containedCoverage": 0.9231,
+      "aInB": 0.9231,
+      "bInA": 0.9231,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 1.0,
+        "columns": 0.4444,
+        "measures": 1.0,
+        "relationships": 1.0,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    },
+    {
+      "idA": "demo-sales-core",
+      "idB": "demo-sales-draft",
+      "modelA": "Sales Core",
+      "workspaceA": "Demo Retail",
+      "modelB": "Sales Draft",
+      "workspaceB": "Demo Retail",
+      "scored": true,
+      "schema": 0.7480769230769231,
+      "security": null,
+      "combined": null,
+      "securityStatus": "unknown",
+      "scoreMode": "unavailable_security",
+      "securityEvidence": {},
+      "scoreStatus": "security_unavailable",
+      "containment": 1.0,
+      "relationship": "model_b_contains_model_a",
+      "containedId": "demo-sales-core",
+      "containingId": "demo-sales-draft",
+      "containedCoverage": 1.0,
+      "aInB": 1.0,
+      "bInA": 0.7481,
+      "crossWorkspace": false,
+      "sameName": false,
+      "jaccard": {
+        "tables": 0.5,
+        "columns": 0.6154,
+        "measures": 1.0,
+        "relationships": 0.3333,
+        "datasources": 1.0
+      },
+      "daxCosine": 1.0
+    }
+  ],
+  "models": {
+    "demo-sales": {
+      "name": "Sales",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail",
+      "tables": [
+        {
+          "key": "sales",
+          "name": "Sales"
+        },
+        {
+          "key": "product",
+          "name": "Product"
+        },
+        {
+          "key": "store",
+          "name": "Store"
+        },
+        {
+          "key": "returns",
+          "name": "Returns"
+        }
+      ],
+      "columns": [
+        {
+          "key": "sales.productkey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "ProductKey"
+        },
+        {
+          "key": "sales.storekey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "StoreKey"
+        },
+        {
+          "key": "sales.quantity",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "Quantity"
+        },
+        {
+          "key": "sales.salesamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "SalesAmount"
+        },
+        {
+          "key": "sales.costamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "CostAmount"
+        },
+        {
+          "key": "product.productkey",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductKey"
+        },
+        {
+          "key": "product.category",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "Category"
+        },
+        {
+          "key": "product.productname",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductName"
+        },
+        {
+          "key": "store.storekey",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreKey"
+        },
+        {
+          "key": "store.region",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "Region"
+        },
+        {
+          "key": "store.storename",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreName"
+        },
+        {
+          "key": "returns.productkey",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ProductKey"
+        },
+        {
+          "key": "returns.returnamount",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ReturnAmount"
+        }
+      ],
+      "measures": [
+        {
+          "key": "sales amount",
+          "name": "Sales Amount",
+          "daxId": 0,
+          "daxHash": "fc64d9fc8055"
+        }
+      ],
+      "relationships": [
+        {
+          "key": "sales.productkey->product.productkey",
+          "from": "Sales[ProductKey]",
+          "to": "Product[ProductKey]"
+        },
+        {
+          "key": "sales.storekey->store.storekey",
+          "from": "Sales[StoreKey]",
+          "to": "Store[StoreKey]"
+        },
+        {
+          "key": "returns.productkey->product.productkey",
+          "from": "Returns[ProductKey]",
+          "to": "Product[ProductKey]"
+        }
+      ],
+      "datasources": [
+        {
+          "key": "synthetic retail lakehouse",
+          "name": "Synthetic retail lakehouse"
+        }
+      ],
+      "security": {
+        "status": "complete",
+        "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+        "roles": [],
+        "propagation": [],
+        "roleCount": 0
+      }
+    },
+    "demo-sales-east": {
+      "name": "Sales Restricted",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail",
+      "tables": [
+        {
+          "key": "sales",
+          "name": "Sales"
+        },
+        {
+          "key": "product",
+          "name": "Product"
+        },
+        {
+          "key": "store",
+          "name": "Store"
+        },
+        {
+          "key": "returns",
+          "name": "Returns"
+        }
+      ],
+      "columns": [
+        {
+          "key": "sales.productkey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "ProductKey"
+        },
+        {
+          "key": "sales.storekey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "StoreKey"
+        },
+        {
+          "key": "sales.quantity",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "Quantity"
+        },
+        {
+          "key": "sales.salesamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "SalesAmount"
+        },
+        {
+          "key": "sales.costamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "CostAmount"
+        },
+        {
+          "key": "product.productkey",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductKey"
+        },
+        {
+          "key": "product.category",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "Category"
+        },
+        {
+          "key": "product.productname",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductName"
+        },
+        {
+          "key": "store.storekey",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreKey"
+        },
+        {
+          "key": "store.region",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "Region"
+        },
+        {
+          "key": "store.storename",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreName"
+        },
+        {
+          "key": "returns.productkey",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ProductKey"
+        },
+        {
+          "key": "returns.returnamount",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ReturnAmount"
+        }
+      ],
+      "measures": [
+        {
+          "key": "sales amount",
+          "name": "Sales Amount",
+          "daxId": 0,
+          "daxHash": "fc64d9fc8055"
+        }
+      ],
+      "relationships": [
+        {
+          "key": "sales.productkey->product.productkey",
+          "from": "Sales[ProductKey]",
+          "to": "Product[ProductKey]"
+        },
+        {
+          "key": "sales.storekey->store.storekey",
+          "from": "Sales[StoreKey]",
+          "to": "Store[StoreKey]"
+        },
+        {
+          "key": "returns.productkey->product.productkey",
+          "from": "Returns[ProductKey]",
+          "to": "Product[ProductKey]"
+        }
+      ],
+      "datasources": [
+        {
+          "key": "synthetic retail lakehouse",
+          "name": "Synthetic retail lakehouse"
+        }
+      ],
+      "security": {
+        "status": "complete",
+        "fingerprint": "0d9884e0309b7509f388c61e43a6cf16c77ca8f81056154a0489560cde7a5601",
+        "roles": [
+          {
+            "column_ols": [
+              [
+                "Sales",
+                "CostAmount",
+                "None"
+              ]
+            ],
+            "fingerprint": "0dafff0309bbb7338f5a04a4b315960c565b85a4965a74a90b3d13d875f5036c",
+            "model_permission": "Read",
+            "name": "East readers",
+            "rls": [
+              [
+                "Store",
+                "Store[Region] = \"East\""
+              ]
+            ],
+            "table_ols": [
+              [
+                "Returns",
+                "None"
+              ]
+            ]
+          }
+        ],
+        "propagation": [
+          [
+            "Returns",
+            "ProductKey",
+            "Product",
+            "ProductKey",
+            true,
+            "OneDirection",
+            "OneDirection",
+            "Many",
+            "One"
+          ],
+          [
+            "Sales",
+            "ProductKey",
+            "Product",
+            "ProductKey",
+            true,
+            "OneDirection",
+            "OneDirection",
+            "Many",
+            "One"
+          ],
+          [
+            "Sales",
+            "StoreKey",
+            "Store",
+            "StoreKey",
+            true,
+            "OneDirection",
+            "OneDirection",
+            "Many",
+            "One"
+          ]
+        ],
+        "roleCount": 1
+      }
+    },
+    "demo-sales-core": {
+      "name": "Sales Core",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail",
+      "tables": [
+        {
+          "key": "sales",
+          "name": "Sales"
+        },
+        {
+          "key": "product",
+          "name": "Product"
+        }
+      ],
+      "columns": [
+        {
+          "key": "sales.productkey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "ProductKey"
+        },
+        {
+          "key": "sales.storekey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "StoreKey"
+        },
+        {
+          "key": "sales.quantity",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "Quantity"
+        },
+        {
+          "key": "sales.salesamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "SalesAmount"
+        },
+        {
+          "key": "sales.costamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "CostAmount"
+        },
+        {
+          "key": "product.productkey",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductKey"
+        },
+        {
+          "key": "product.category",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "Category"
+        },
+        {
+          "key": "product.productname",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductName"
+        }
+      ],
+      "measures": [
+        {
+          "key": "sales amount",
+          "name": "Sales Amount",
+          "daxId": 0,
+          "daxHash": "fc64d9fc8055"
+        }
+      ],
+      "relationships": [
+        {
+          "key": "sales.productkey->product.productkey",
+          "from": "Sales[ProductKey]",
+          "to": "Product[ProductKey]"
+        }
+      ],
+      "datasources": [
+        {
+          "key": "synthetic retail lakehouse",
+          "name": "Synthetic retail lakehouse"
+        }
+      ],
+      "security": {
+        "status": "complete",
+        "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+        "roles": [],
+        "propagation": [],
+        "roleCount": 0
+      }
+    },
+    "demo-sales-forecast": {
+      "name": "Sales Forecast",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail",
+      "tables": [
+        {
+          "key": "sales",
+          "name": "Sales"
+        },
+        {
+          "key": "product",
+          "name": "Product"
+        },
+        {
+          "key": "store",
+          "name": "Store"
+        },
+        {
+          "key": "returns",
+          "name": "Returns"
+        }
+      ],
+      "columns": [
+        {
+          "key": "sales.productkey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "ProductKey"
+        },
+        {
+          "key": "sales.storekey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "StoreKey"
+        },
+        {
+          "key": "sales.quantity",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "Quantity"
+        },
+        {
+          "key": "sales.salesamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "SalesAmount"
+        },
+        {
+          "key": "sales.forecastcost",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "ForecastCost"
+        },
+        {
+          "key": "product.productkey",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductKey"
+        },
+        {
+          "key": "product.productgroup",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductGroup"
+        },
+        {
+          "key": "product.productlabel",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductLabel"
+        },
+        {
+          "key": "store.storekey",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreKey"
+        },
+        {
+          "key": "store.region",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "Region"
+        },
+        {
+          "key": "store.storecode",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreCode"
+        },
+        {
+          "key": "returns.productkey",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ProductKey"
+        },
+        {
+          "key": "returns.expectedreturns",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ExpectedReturns"
+        }
+      ],
+      "measures": [
+        {
+          "key": "sales amount",
+          "name": "Sales Amount",
+          "daxId": 0,
+          "daxHash": "fc64d9fc8055"
+        }
+      ],
+      "relationships": [
+        {
+          "key": "sales.productkey->product.productkey",
+          "from": "Sales[ProductKey]",
+          "to": "Product[ProductKey]"
+        },
+        {
+          "key": "sales.storekey->store.storekey",
+          "from": "Sales[StoreKey]",
+          "to": "Store[StoreKey]"
+        },
+        {
+          "key": "returns.productkey->product.productkey",
+          "from": "Returns[ProductKey]",
+          "to": "Product[ProductKey]"
+        }
+      ],
+      "datasources": [
+        {
+          "key": "synthetic retail lakehouse",
+          "name": "Synthetic retail lakehouse"
+        }
+      ],
+      "security": {
+        "status": "complete",
+        "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+        "roles": [],
+        "propagation": [],
+        "roleCount": 0
+      }
+    },
+    "demo-sales-draft": {
+      "name": "Sales Draft",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail",
+      "tables": [
+        {
+          "key": "sales",
+          "name": "Sales"
+        },
+        {
+          "key": "product",
+          "name": "Product"
+        },
+        {
+          "key": "store",
+          "name": "Store"
+        },
+        {
+          "key": "returns",
+          "name": "Returns"
+        }
+      ],
+      "columns": [
+        {
+          "key": "sales.productkey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "ProductKey"
+        },
+        {
+          "key": "sales.storekey",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "StoreKey"
+        },
+        {
+          "key": "sales.quantity",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "Quantity"
+        },
+        {
+          "key": "sales.salesamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "SalesAmount"
+        },
+        {
+          "key": "sales.costamount",
+          "table": "Sales",
+          "tableKey": "sales",
+          "name": "CostAmount"
+        },
+        {
+          "key": "product.productkey",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductKey"
+        },
+        {
+          "key": "product.category",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "Category"
+        },
+        {
+          "key": "product.productname",
+          "table": "Product",
+          "tableKey": "product",
+          "name": "ProductName"
+        },
+        {
+          "key": "store.storekey",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreKey"
+        },
+        {
+          "key": "store.region",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "Region"
+        },
+        {
+          "key": "store.storename",
+          "table": "Store",
+          "tableKey": "store",
+          "name": "StoreName"
+        },
+        {
+          "key": "returns.productkey",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ProductKey"
+        },
+        {
+          "key": "returns.returnamount",
+          "table": "Returns",
+          "tableKey": "returns",
+          "name": "ReturnAmount"
+        }
+      ],
+      "measures": [
+        {
+          "key": "sales amount",
+          "name": "Sales Amount",
+          "daxId": 0,
+          "daxHash": "fc64d9fc8055"
+        }
+      ],
+      "relationships": [
+        {
+          "key": "sales.productkey->product.productkey",
+          "from": "Sales[ProductKey]",
+          "to": "Product[ProductKey]"
+        },
+        {
+          "key": "sales.storekey->store.storekey",
+          "from": "Sales[StoreKey]",
+          "to": "Store[StoreKey]"
+        },
+        {
+          "key": "returns.productkey->product.productkey",
+          "from": "Returns[ProductKey]",
+          "to": "Product[ProductKey]"
+        }
+      ],
+      "datasources": [
+        {
+          "key": "synthetic retail lakehouse",
+          "name": "Synthetic retail lakehouse"
+        }
+      ],
+      "security": {
+        "status": "incomplete",
+        "fingerprint": null,
+        "roles": [],
+        "propagation": [],
+        "roleCount": null
+      }
+    },
+    "demo-inventory": {
+      "name": "Inventory",
+      "workspace": "Demo Operations",
+      "workspaceId": "demo-operations",
+      "tables": [
+        {
+          "key": "inventory",
+          "name": "Inventory"
+        },
+        {
+          "key": "item",
+          "name": "Item"
+        }
+      ],
+      "columns": [
+        {
+          "key": "inventory.itemkey",
+          "table": "Inventory",
+          "tableKey": "inventory",
+          "name": "ItemKey"
+        },
+        {
+          "key": "inventory.onhand",
+          "table": "Inventory",
+          "tableKey": "inventory",
+          "name": "OnHand"
+        },
+        {
+          "key": "item.itemkey",
+          "table": "Item",
+          "tableKey": "item",
+          "name": "ItemKey"
+        },
+        {
+          "key": "item.itemname",
+          "table": "Item",
+          "tableKey": "item",
+          "name": "ItemName"
+        }
+      ],
+      "measures": [
+        {
+          "key": "stock units",
+          "name": "Stock Units",
+          "daxId": 1,
+          "daxHash": "3efe5120138e"
+        }
+      ],
+      "relationships": [
+        {
+          "key": "inventory.itemkey->item.itemkey",
+          "from": "Inventory[ItemKey]",
+          "to": "Item[ItemKey]"
+        }
+      ],
+      "datasources": [
+        {
+          "key": "synthetic inventory lakehouse",
+          "name": "Synthetic inventory lakehouse"
+        }
+      ],
+      "security": {
+        "status": "complete",
+        "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+        "roles": [],
+        "propagation": [],
+        "roleCount": 0
+      }
+    }
+  },
+  "modelList": [
+    {
+      "id": "demo-inventory",
+      "name": "Inventory",
+      "workspace": "Demo Operations",
+      "workspaceId": "demo-operations"
+    },
+    {
+      "id": "demo-sales",
+      "name": "Sales",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail"
+    },
+    {
+      "id": "demo-sales-core",
+      "name": "Sales Core",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail"
+    },
+    {
+      "id": "demo-sales-draft",
+      "name": "Sales Draft",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail"
+    },
+    {
+      "id": "demo-sales-forecast",
+      "name": "Sales Forecast",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail"
+    },
+    {
+      "id": "demo-sales-east",
+      "name": "Sales Restricted",
+      "workspace": "Demo Retail",
+      "workspaceId": "demo-retail"
+    }
+  ],
+  "daxPool": [
+    "SUM(Sales[SalesAmount])",
+    "SUM(Inventory[OnHand])"
+  ],
+  "defaultCompare": {
+    "a": "demo-sales",
+    "b": "demo-sales-east"
+  },
+  "reportDependencies": {
+    "status": "complete",
+    "scannedAt": "2026-09-11 12:00 UTC",
+    "scope": "Synthetic demo workspaces",
+    "workspaceCount": 2,
+    "incompleteWorkspaces": 0,
+    "reportCount": 0,
+    "linkedReportCount": 8,
+    "byModel": {
+      "demo-sales": [
+        {
+          "id": "demo-sales-report-3",
+          "name": "Margin Analysis",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-report-3",
+          "modelId": "demo-sales",
+          "crossWorkspace": false
+        },
+        {
+          "id": "demo-sales-report-1",
+          "name": "Sales Summary",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-report-1",
+          "modelId": "demo-sales",
+          "crossWorkspace": false
+        },
+        {
+          "id": "demo-sales-report-2",
+          "name": "Store Performance",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-report-2",
+          "modelId": "demo-sales",
+          "crossWorkspace": false
+        }
+      ],
+      "demo-sales-east": [
+        {
+          "id": "demo-sales-east-report-2",
+          "name": "East Orders",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-east-report-2",
+          "modelId": "demo-sales-east",
+          "crossWorkspace": false
+        },
+        {
+          "id": "demo-sales-east-report-1",
+          "name": "East Weekly",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-east-report-1",
+          "modelId": "demo-sales-east",
+          "crossWorkspace": false
+        },
+        {
+          "id": "demo-sales-east-report-3",
+          "name": "Regional Summary",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-east-report-3",
+          "modelId": "demo-sales-east",
+          "crossWorkspace": false
+        }
+      ],
+      "demo-sales-core": [],
+      "demo-sales-forecast": [
+        {
+          "id": "demo-sales-forecast-report-1",
+          "name": "Forecast Outlook",
+          "workspaceId": "demo-retail",
+          "workspace": "Demo Retail",
+          "url": "https://app.powerbi.com/groups/demo-retail/reports/demo-sales-forecast-report-1",
+          "modelId": "demo-sales-forecast",
+          "crossWorkspace": false
+        }
+      ],
+      "demo-sales-draft": [],
+      "demo-inventory": [
+        {
+          "id": "demo-inventory-report-1",
+          "name": "Stock Overview",
+          "workspaceId": "demo-operations",
+          "workspace": "Demo Operations",
+          "url": "https://app.powerbi.com/groups/demo-operations/reports/demo-inventory-report-1",
+          "modelId": "demo-inventory",
+          "crossWorkspace": false
+        }
+      ]
+    },
+    "otherReports": [],
+    "scans": [
+      {
+        "workspace": "Demo Retail",
+        "status": "complete",
+        "reportCount": 7,
+        "errorType": ""
+      },
+      {
+        "workspace": "Demo Operations",
+        "status": "complete",
+        "reportCount": 1,
+        "errorType": ""
+      }
+    ]
+  },
+  "combinedWeights": {
+    "schema": 0.95,
+    "security": 0.05
+  },
+  "securityNotice": "Security could not be fully assessed for some models. Their schema scores remain available; security and combined scores are unavailable.",
+  "scoreVersion": 2
+}

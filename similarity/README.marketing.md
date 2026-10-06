@@ -6,7 +6,7 @@ Built for BI architects, model owners, and governance teams, this project turns 
 
 ![Desktop Review view showing a synthetic model inventory and a possible duplicate with separate schema, security, and combined scores](docs/images/review-desktop.png)
 
-*Review candidates with security differences kept in view. Screenshot uses synthetic demo data.*
+*Scan ranked model pairs, compare aligned scores, and keep security differences in view. Synthetic demo data is shown with cross-workspace scope switched off.*
 
 ## What it helps you do
 
@@ -14,15 +14,15 @@ Built for BI architects, model owners, and governance teams, this project turns 
 - **Understand overlap.** Identify smaller models whose definitions are largely represented in larger models.
 - **See important differences.** Compare structure, calculations, and security rules side by side.
 - **Add report context.** See directly linked reports when reviewing the potential impact of a change.
-- **Focus the review.** Explore ranked candidates, related groups, detailed comparisons, and a similarity map.
+- **Focus the review.** Review all candidate pairs or enable cross-workspace filtering. Explore groups, detailed comparisons, and a similarity map with the same scope.
 
 ## From inventory to review
 
-1. **Catalog** the models and report links visible to your Fabric identity.
+1. **Catalog** models and report links in the selected workspace scopes, optionally using temporary access managed by a Fabric administrator.
 2. **Compare** model definitions to identify similarities, differences, and schema coverage.
 3. **Review** the evidence with model owners before deciding what to consolidate or retain.
 
-The workflow runs in Microsoft Fabric using three notebooks and a shared Lakehouse. It reads source-model metadata without changing your models or reports.
+The workflow runs in Microsoft Fabric using two notebooks and a shared Lakehouse: collect and score, then review. It reads source-model metadata without changing your models or reports. An opt-in mode temporarily adds a dedicated security group as a workspace Member during collection and removes that assignment afterward; this changes workspace access, not model definitions.
 
 ## Before consolidation
 
