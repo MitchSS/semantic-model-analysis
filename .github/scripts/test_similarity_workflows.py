@@ -32,6 +32,8 @@ class WorkflowContractTests(unittest.TestCase):
             for included in (
                 "similarity/notebooks/example.ipynb", "similarity/CHANGELOG.md",
                 ".github/scripts/similarity_draft.py", ".github/scripts/test_similarity_workflows.py",
+                ".github/scripts/similarity_results_preview.py", ".github/scripts/similarity_results_fixture.json",
+                ".github/scripts/similarity_results_test.mjs", ".github/scripts/similarity_results_smoke.mjs",
                 ".github/requirements-release.txt", ".github/workflows/similarity-release.yml",
             ):
                 with self.subTest(included=included):
