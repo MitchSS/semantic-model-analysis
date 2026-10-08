@@ -2,6 +2,12 @@ id: semantic-model-similarity
 name: semantic-model-similarity
 version: 1.0.0
 services:
+  functions:
+    enabled: true
+    path: packages/functions
+    buildCommand: npm run build
+    auth:
+      type: application
   auth:
     enabled: true
     fabric:
@@ -24,3 +30,13 @@ services:
     assetAccess: protected
     embedded:
       only: false
+connectors:
+  - name: similaritylakehouse
+    type: fabric-sqlanalytics
+    config:
+      workspaceId: a5a00e8c-d269-4422-9cfc-a6626a4f2ff3
+      itemId: 845fae5b-bb66-41c3-9918-1e2ff3df0de3
+    auth:
+      type: application
+    operations:
+      - name: read

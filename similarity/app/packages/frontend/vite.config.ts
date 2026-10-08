@@ -53,7 +53,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    rayfinLocalDev({ autoLogin: true, sourceActivity: true }),
+    rayfinLocalDev({ autoLogin: true }),
     localNetworkAccessPlugin,
   ],
   resolve: {

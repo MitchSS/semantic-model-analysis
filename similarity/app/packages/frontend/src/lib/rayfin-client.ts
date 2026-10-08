@@ -5,10 +5,25 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-import { RayfinClient, resolveRayfinConfig } from '@microsoft/rayfin-client';
+import {
+  ConnectorsRayfinClient,
+  resolveRayfinConfig,
+} from '@microsoft/rayfin-client';
+import type { AppFunctionsSchema } from '@rayfin-app/functions/types';
 import type { UniversalAppSchema } from '@rayfin-app/shared';
+import {
+  connectorConfigs,
+  connectorRuntimes,
+  type AppConnectorsSchema,
+} from './connectors';
 
-let _client: Promise<RayfinClient<UniversalAppSchema>> | undefined;
+export type AppClient = ConnectorsRayfinClient<
+  UniversalAppSchema,
+  AppFunctionsSchema,
+  AppConnectorsSchema
+>;
+
+let _client: Promise<AppClient> | undefined;
 
 export class MissingRayfinConfigError extends Error {
   constructor(readonly missing: readonly string[]) {
@@ -17,23 +32,8 @@ export class MissingRayfinConfigError extends Error {
   }
 }
 
-/**
- * Resolves and shares the app's configured Rayfin client.
- *
- * Typed by `UniversalAppSchema`, so `client.data.<Entity>` is checked against
- * the entities declared by `@rayfin-app/data`. Without the generic the
- * data API is `any`, and a typo in an entity or field name only surfaces at
- * runtime — which the app's `tsc --noCheck` build would never catch.
- *
- * Async because deployment-specific values are resolved at runtime rather than
- * compiled in: a Deployment Pipeline promotes one built artifact from Dev to
- * Prod, so a bundle carrying build-time `VITE_*` values would point the
- * promoted app at the previous stage's backend. The `VITE_*` values are still
- * passed as defaults, which is what local dev runs on.
- */
-export async function getRayfinClient(): Promise<
-  RayfinClient<UniversalAppSchema>
-> {
+/** Returns the app's typed data, auth, functions, and connector client. */
+export async function getRayfinClient(): Promise<AppClient> {
   if (!_client) {
     _client = createClient().catch((error) => {
       _client = undefined;
@@ -44,7 +44,7 @@ export async function getRayfinClient(): Promise<
   return _client;
 }
 
-async function createClient(): Promise<RayfinClient<UniversalAppSchema>> {
+async function createClient(): Promise<AppClient> {
   const resolved = await resolveRayfinConfig({
     apiUrl: import.meta.env.VITE_RAYFIN_API_URL,
     publishableKey: import.meta.env.VITE_RAYFIN_PUBLISHABLE_KEY,
@@ -60,10 +60,18 @@ async function createClient(): Promise<RayfinClient<UniversalAppSchema>> {
     ]);
   }
 
-  return new RayfinClient<UniversalAppSchema>({
-    baseUrl: resolved.baseUrl,
-    publishableKey: resolved.publishableKey,
-    authStorage: true,
-    runtimeConfig: resolved.runtimeConfig,
-  });
+  return new ConnectorsRayfinClient<
+    UniversalAppSchema,
+    AppFunctionsSchema,
+    AppConnectorsSchema
+  >(
+    {
+      baseUrl: resolved.baseUrl,
+      publishableKey: resolved.publishableKey,
+      authStorage: true,
+      runtimeConfig: resolved.runtimeConfig,
+      connectors: connectorConfigs,
+    },
+    connectorRuntimes
+  );
 }
