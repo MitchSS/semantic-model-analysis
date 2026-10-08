@@ -1,0 +1,413 @@
+{
+ "generatedAt": "2026-10-08 13:26 UTC",
+ "summary": {
+  "models": 4
+ },
+ "thresholds": {
+  "duplicate": 0.95,
+  "similar": 0.7,
+  "containment": 0.95
+ },
+ "allPairs": [
+  {
+   "idA": "m-a",
+   "idB": "m-b",
+   "modelA": "Sales",
+   "workspaceA": "WS",
+   "modelB": "Sales Copy",
+   "workspaceB": "WS",
+   "scored": true,
+   "schema": 0.9,
+   "security": null,
+   "combined": 0.9,
+   "securityStatus": "not_applicable",
+   "scoreMode": "schema_only_no_security",
+   "securityEvidence": {
+    "combined_effective_weights": {
+     "schema": 1.0,
+     "security": 0.0
+    },
+    "components": {},
+    "effective_weights": {},
+    "role_matches": [],
+    "unmatched_roles_a": [],
+    "unmatched_roles_b": []
+   },
+   "scoreStatus": "current",
+   "containment": 0.9167,
+   "relationship": "partial_overlap",
+   "containedId": "m-a",
+   "containingId": "m-b",
+   "containedCoverage": 0.9167,
+   "aInB": 0.9167,
+   "bInA": 0.9167,
+   "crossWorkspace": false,
+   "sameName": false,
+   "jaccard": {
+    "tables": 1.0,
+    "columns": 1.0,
+    "measures": 1.0,
+    "relationships": 0.0,
+    "datasources": 1.0
+   },
+   "daxCosine": 1.0,
+   "powerQuery": 1.0,
+   "powerQueryStatus": "compared",
+   "sharedQueries": 1
+  },
+  {
+   "idA": "m-a",
+   "idB": "m-c",
+   "modelA": "Sales",
+   "workspaceA": "WS",
+   "modelB": "Sales DL",
+   "workspaceB": "WS",
+   "scored": true,
+   "schema": 0.65,
+   "security": null,
+   "combined": 0.65,
+   "securityStatus": "not_applicable",
+   "scoreMode": "schema_only_no_security",
+   "securityEvidence": {
+    "combined_effective_weights": {
+     "schema": 1.0,
+     "security": 0.0
+    },
+    "components": {},
+    "effective_weights": {},
+    "role_matches": [],
+    "unmatched_roles_a": [],
+    "unmatched_roles_b": []
+   },
+   "scoreStatus": "current",
+   "containment": 1.0,
+   "relationship": "model_a_contains_model_b",
+   "containedId": "m-c",
+   "containingId": "m-a",
+   "containedCoverage": 1.0,
+   "aInB": 0.7222,
+   "bInA": 1.0,
+   "crossWorkspace": false,
+   "sameName": false,
+   "jaccard": {
+    "tables": 1.0,
+    "columns": 1.0,
+    "measures": 1.0,
+    "relationships": 0.0,
+    "datasources": 0.0
+   },
+   "daxCosine": 1.0,
+   "powerQuery": 0.0,
+   "powerQueryStatus": "one_sided",
+   "sharedQueries": 0
+  },
+  {
+   "idA": "m-b",
+   "idB": "m-c",
+   "modelA": "Sales Copy",
+   "workspaceA": "WS",
+   "modelB": "Sales DL",
+   "workspaceB": "WS",
+   "scored": true,
+   "schema": 0.65,
+   "security": null,
+   "combined": 0.65,
+   "securityStatus": "not_applicable",
+   "scoreMode": "schema_only_no_security",
+   "securityEvidence": {
+    "combined_effective_weights": {
+     "schema": 1.0,
+     "security": 0.0
+    },
+    "components": {},
+    "effective_weights": {},
+    "role_matches": [],
+    "unmatched_roles_a": [],
+    "unmatched_roles_b": []
+   },
+   "scoreStatus": "current",
+   "containment": 1.0,
+   "relationship": "model_a_contains_model_b",
+   "containedId": "m-c",
+   "containingId": "m-b",
+   "containedCoverage": 1.0,
+   "aInB": 0.7222,
+   "bInA": 1.0,
+   "crossWorkspace": false,
+   "sameName": false,
+   "jaccard": {
+    "tables": 1.0,
+    "columns": 1.0,
+    "measures": 1.0,
+    "relationships": 0.0,
+    "datasources": 0.0
+   },
+   "daxCosine": 1.0,
+   "powerQuery": 0.0,
+   "powerQueryStatus": "one_sided",
+   "sharedQueries": 0
+  }
+ ],
+ "models": {
+  "m-a": {
+   "name": "Sales",
+   "workspace": "WS",
+   "workspaceId": "WS",
+   "tables": [
+    {
+     "key": "sales",
+     "name": "Sales"
+    }
+   ],
+   "columns": [
+    {
+     "key": "sales.amount",
+     "table": "Sales",
+     "tableKey": "sales",
+     "name": "Amount"
+    }
+   ],
+   "measures": [
+    {
+     "key": "total",
+     "name": "Total",
+     "daxId": 0,
+     "daxHash": "52f06f92bb0f"
+    }
+   ],
+   "relationships": [],
+   "datasources": [
+    {
+     "key": "let source = sql.database(server, \"salesdb\"), sales = source{[schema=\"dbo\",item=\"sales\"]}[data] in sales",
+     "name": "let\n  Source = Sql.Database(Server, \"SalesDb\"),\n  Sales = Source{[Schema=\"dbo\",Item=\"Sales\"]}[Data]\nin Sales"
+    }
+   ],
+   "queries": [
+    {
+     "key": "expression:server",
+     "name": "Expression: Server",
+     "mId": 0,
+     "mHash": "3601877d15cb"
+    },
+    {
+     "key": "table:sales",
+     "name": "Sales",
+     "mId": 1,
+     "mHash": "7686d63d9203"
+    }
+   ],
+   "security": {
+    "status": "complete",
+    "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+    "roles": [],
+    "propagation": [],
+    "roleCount": 0
+   }
+  },
+  "m-b": {
+   "name": "Sales Copy",
+   "workspace": "WS",
+   "workspaceId": "WS",
+   "tables": [
+    {
+     "key": "sales",
+     "name": "Sales"
+    }
+   ],
+   "columns": [
+    {
+     "key": "sales.amount",
+     "table": "Sales",
+     "tableKey": "sales",
+     "name": "Amount"
+    }
+   ],
+   "measures": [
+    {
+     "key": "total",
+     "name": "Total",
+     "daxId": 0,
+     "daxHash": "52f06f92bb0f"
+    }
+   ],
+   "relationships": [],
+   "datasources": [
+    {
+     "key": "let // copy source = sql.database(server, \"salesdb\"), sales = source{[schema=\"dbo\",item=\"sales\"]}[data] in sales",
+     "name": "let // copy\n  Source = Sql.Database(Server, \"SalesDb\"),\n  Sales = Source{[Schema=\"dbo\",Item=\"Sales\"]}[Data]\nin Sales"
+    }
+   ],
+   "queries": [
+    {
+     "key": "expression:server",
+     "name": "Expression: Server",
+     "mId": 2,
+     "mHash": "45bf373f533d"
+    },
+    {
+     "key": "table:sales",
+     "name": "Sales",
+     "mId": 3,
+     "mHash": "7686d63d9203"
+    }
+   ],
+   "security": {
+    "status": "complete",
+    "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+    "roles": [],
+    "propagation": [],
+    "roleCount": 0
+   }
+  },
+  "m-c": {
+   "name": "Sales DL",
+   "workspace": "WS",
+   "workspaceId": "WS",
+   "tables": [
+    {
+     "key": "sales",
+     "name": "Sales"
+    }
+   ],
+   "columns": [
+    {
+     "key": "sales.amount",
+     "table": "Sales",
+     "tableKey": "sales",
+     "name": "Amount"
+    }
+   ],
+   "measures": [
+    {
+     "key": "total",
+     "name": "Total",
+     "daxId": 0,
+     "daxHash": "52f06f92bb0f"
+    }
+   ],
+   "relationships": [],
+   "datasources": [],
+   "queries": [],
+   "security": {
+    "status": "complete",
+    "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+    "roles": [],
+    "propagation": [],
+    "roleCount": 0
+   }
+  },
+  "m-d": {
+   "name": "HR",
+   "workspace": "WS",
+   "workspaceId": "WS",
+   "tables": [
+    {
+     "key": "staff",
+     "name": "Staff"
+    }
+   ],
+   "columns": [],
+   "measures": [],
+   "relationships": [],
+   "datasources": [],
+   "queries": [],
+   "security": {
+    "status": "complete",
+    "fingerprint": "4e25f9548136405c76703607367301ffc9f246f320763a43609115ebd42365ad",
+    "roles": [],
+    "propagation": [],
+    "roleCount": 0
+   }
+  }
+ },
+ "modelList": [
+  {
+   "id": "m-d",
+   "name": "HR",
+   "workspace": "WS",
+   "workspaceId": "WS"
+  },
+  {
+   "id": "m-a",
+   "name": "Sales",
+   "workspace": "WS",
+   "workspaceId": "WS"
+  },
+  {
+   "id": "m-b",
+   "name": "Sales Copy",
+   "workspace": "WS",
+   "workspaceId": "WS"
+  },
+  {
+   "id": "m-c",
+   "name": "Sales DL",
+   "workspace": "WS",
+   "workspaceId": "WS"
+  }
+ ],
+ "daxPool": [
+  "SUM(Sales[Amount])"
+ ],
+ "defaultCompare": {
+  "a": "m-a",
+  "b": "m-b"
+ },
+ "reportDependencies": {
+  "status": "complete",
+  "scannedAt": "2026-10-08 09:00 UTC",
+  "scope": "visible_workspaces",
+  "workspaceCount": 1,
+  "incompleteWorkspaces": 0,
+  "reportCount": 2,
+  "linkedReportCount": 1,
+  "byModel": {
+   "m-a": [
+    {
+     "id": "r-1",
+     "name": "Sales Overview",
+     "workspaceId": "WS",
+     "workspace": "WS",
+     "url": "https://app.powerbi.com/groups/WS/reports/r-1",
+     "modelId": "m-a",
+     "crossWorkspace": false
+    }
+   ],
+   "m-b": [],
+   "m-c": [],
+   "m-d": []
+  },
+  "otherReports": [
+   {
+    "id": "r-2",
+    "name": "Paginated Sales",
+    "workspaceId": "WS",
+    "workspace": "WS",
+    "url": "https://app.powerbi.com/groups/WS/reports/r-2",
+    "modelId": "m-b",
+    "crossWorkspace": false,
+    "reason": "Unsupported report type"
+   }
+  ],
+  "scans": [
+   {
+    "workspace": "WS",
+    "status": "complete",
+    "reportCount": 2,
+    "errorType": ""
+   }
+  ]
+ },
+ "combinedWeights": {
+  "schema": 0.95,
+  "security": 0.05
+ },
+ "securityNotice": "",
+ "mPool": [
+  "\"srv01\" meta [IsParameterQuery=true]",
+  "let\n  Source = Sql.Database(Server, \"SalesDb\"),\n  Sales = Source{[Schema=\"dbo\",Item=\"Sales\"]}[Data]\nin Sales",
+  "\"SRV01\" meta [IsParameterQuery=true]",
+  "let // copy\n  Source = Sql.Database(Server, \"SalesDb\"),\n  Sales = Source{[Schema=\"dbo\",Item=\"Sales\"]}[Data]\nin Sales"
+ ],
+ "scoreVersion": 3
+}

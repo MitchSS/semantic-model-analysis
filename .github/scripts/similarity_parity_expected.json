@@ -1,0 +1,2689 @@
+{
+ "scopes": {
+  "all": {
+   "candidates": [
+    [
+     "demo-sales|demo-sales-east",
+     "duplicate",
+     0.95
+    ],
+    [
+     "demo-sales|demo-sales-core",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-core|demo-sales-east",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales|demo-sales-draft",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-draft|demo-sales-east",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-core|demo-sales-draft",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales|demo-sales-forecast",
+     "overlap",
+     0.8889
+    ],
+    [
+     "demo-sales-east|demo-sales-forecast",
+     "overlap",
+     0.8444
+    ]
+   ],
+   "counts": {
+    "duplicate": 1,
+    "containment": 5,
+    "overlap": 2
+   },
+   "groups": [
+    {
+     "members": [
+      "demo-sales",
+      "demo-sales-east"
+     ],
+     "strongest": "demo-sales|demo-sales-east",
+     "securityDifferent": true,
+     "securityUnknown": false
+    }
+   ]
+  },
+  "cross": {
+   "candidates": [],
+   "counts": {
+    "duplicate": 0,
+    "containment": 0,
+    "overlap": 0
+   },
+   "groups": []
+  },
+  "adjusted": {
+   "candidates": [
+    [
+     "demo-sales|demo-sales-east",
+     "duplicate",
+     0.95
+    ],
+    [
+     "demo-sales|demo-sales-forecast",
+     "duplicate",
+     0.8889
+    ],
+    [
+     "demo-sales|demo-sales-core",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-core|demo-sales-east",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales|demo-sales-draft",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-draft|demo-sales-east",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-core|demo-sales-draft",
+     "containment",
+     1
+    ],
+    [
+     "demo-sales-core|demo-sales-forecast",
+     "containment",
+     0.925
+    ],
+    [
+     "demo-sales-east|demo-sales-forecast",
+     "containment",
+     0.9231
+    ],
+    [
+     "demo-sales-draft|demo-sales-forecast",
+     "containment",
+     0.9231
+    ]
+   ],
+   "counts": {
+    "duplicate": 2,
+    "containment": 8,
+    "overlap": 0
+   },
+   "groups": [
+    {
+     "members": [
+      "demo-sales",
+      "demo-sales-forecast",
+      "demo-sales-east"
+     ],
+     "strongest": "demo-sales|demo-sales-east",
+     "securityDifferent": true,
+     "securityUnknown": false
+    }
+   ]
+  }
+ },
+ "workspaceOptions": [
+  [
+   "demo-operations",
+   "Demo Operations"
+  ],
+  [
+   "demo-retail",
+   "Demo Retail"
+  ]
+ ],
+ "review": {
+  "default": [
+   "demo-sales|demo-sales-east",
+   "demo-sales-core|demo-sales-draft",
+   "demo-sales-core|demo-sales-east",
+   "demo-sales-draft|demo-sales-east",
+   "demo-sales|demo-sales-core",
+   "demo-sales|demo-sales-draft",
+   "demo-sales|demo-sales-forecast",
+   "demo-sales-east|demo-sales-forecast"
+  ],
+  "sortSchemaAsc": [
+   "demo-sales-core|demo-sales-draft",
+   "demo-sales-core|demo-sales-east",
+   "demo-sales|demo-sales-core",
+   "demo-sales-east|demo-sales-forecast",
+   "demo-sales|demo-sales-forecast",
+   "demo-sales-draft|demo-sales-east",
+   "demo-sales|demo-sales-draft",
+   "demo-sales|demo-sales-east"
+  ],
+  "sortCombinedDesc": [
+   "demo-sales|demo-sales-east",
+   "demo-sales|demo-sales-forecast",
+   "demo-sales-east|demo-sales-forecast",
+   "demo-sales|demo-sales-core",
+   "demo-sales-core|demo-sales-east",
+   "demo-sales-core|demo-sales-draft",
+   "demo-sales-draft|demo-sales-east",
+   "demo-sales|demo-sales-draft"
+  ],
+  "filterDuplicate": [
+   "demo-sales|demo-sales-east"
+  ],
+  "filterContainment": [
+   "demo-sales-core|demo-sales-draft",
+   "demo-sales-core|demo-sales-east",
+   "demo-sales-draft|demo-sales-east",
+   "demo-sales|demo-sales-core",
+   "demo-sales|demo-sales-draft"
+  ],
+  "workspace": [],
+  "securityDifferent": [
+   "demo-sales|demo-sales-east",
+   "demo-sales-core|demo-sales-east",
+   "demo-sales-east|demo-sales-forecast"
+  ],
+  "powerQueryDiffers": [
+   "demo-sales-core|demo-sales-east",
+   "demo-sales-draft|demo-sales-east",
+   "demo-sales|demo-sales-core",
+   "demo-sales|demo-sales-draft",
+   "demo-sales|demo-sales-forecast",
+   "demo-sales-east|demo-sales-forecast"
+  ],
+  "powerQueryMatches": [
+   "demo-sales|demo-sales-east"
+  ],
+  "powerQueryNotApplicable": [
+   "demo-sales-core|demo-sales-draft"
+  ],
+  "searchSales": [
+   "demo-sales|demo-sales-east",
+   "demo-sales-core|demo-sales-draft",
+   "demo-sales-core|demo-sales-east",
+   "demo-sales-draft|demo-sales-east",
+   "demo-sales|demo-sales-core",
+   "demo-sales|demo-sales-draft",
+   "demo-sales|demo-sales-forecast",
+   "demo-sales-east|demo-sales-forecast"
+  ],
+  "counts": {
+   "duplicate": 1,
+   "containment": 5,
+   "overlap": 2
+  },
+  "emptyText": "No candidates match these filters."
+ },
+ "pairs": [
+  {
+   "key": "demo-sales-core|demo-sales-draft",
+   "tier": "unassessed",
+   "kind": "containment",
+   "relationshipText": "Almost all of Sales Core is represented in Sales Draft.",
+   "relationshipSummary": "Schema coverage",
+   "containmentSummary": "One direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Not assessed",
+   "securityLabel": "Security not assessed",
+   "blendText": "A complete security comparison is required for the overall score.",
+   "labels": [
+    "Sales Core",
+    "Sales Draft"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "50.0%"
+    ],
+    [
+     "Column-name overlap",
+     "61.5%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "33.3%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "Not applicable"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales-core|demo-sales-east",
+   "tier": "similar",
+   "kind": "containment",
+   "relationshipText": "Almost all of Sales Core is represented in Sales Restricted.",
+   "relationshipSummary": "Schema coverage",
+   "containmentSummary": "One direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Security differs",
+   "securityLabel": "Security definitions differ",
+   "blendText": "95.0% schema + 5.0% security.",
+   "labels": [
+    "Sales Restricted",
+    "Sales Core"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "50.0%"
+    ],
+    [
+     "Column-name overlap",
+     "61.5%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "33.3%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "0.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales-core|demo-sales-forecast",
+   "tier": "distinct",
+   "kind": null,
+   "relationshipText": "This pair does not meet the current review thresholds.",
+   "relationshipSummary": "Below review cutoffs or unavailable",
+   "containmentSummary": "Neither direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "queries",
+   "securityTag": "No model roles",
+   "securityLabel": "Not applicable",
+   "blendText": "No model-level security definitions in either model: overall equals schema.",
+   "labels": [
+    "Sales Core",
+    "Sales Forecast"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "50.0%"
+    ],
+    [
+     "Column-name overlap",
+     "31.3%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "33.3%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "0.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales-draft|demo-sales-east",
+   "tier": "unassessed",
+   "kind": "containment",
+   "relationshipText": "Both models meet the schema coverage threshold.",
+   "relationshipSummary": "Schema coverage",
+   "containmentSummary": "Both models meet the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Not assessed",
+   "securityLabel": "Security not assessed",
+   "blendText": "A complete security comparison is required for the overall score.",
+   "labels": [
+    "Sales Restricted",
+    "Sales Draft"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "100.0%"
+    ],
+    [
+     "Column-name overlap",
+     "100.0%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "100.0%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "0.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales-draft|demo-sales-forecast",
+   "tier": "unassessed",
+   "kind": null,
+   "relationshipText": "Overall similarity is unavailable; schema evidence remains separate.",
+   "relationshipSummary": "Below review cutoffs or unavailable",
+   "containmentSummary": "Neither direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Not assessed",
+   "securityLabel": "Security not assessed",
+   "blendText": "A complete security comparison is required for the overall score.",
+   "labels": [
+    "Sales Forecast",
+    "Sales Draft"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "100.0%"
+    ],
+    [
+     "Column-name overlap",
+     "44.4%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "100.0%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "0.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales-east|demo-sales-forecast",
+   "tier": "similar",
+   "kind": "overlap",
+   "relationshipText": "These models meet the overall-similarity threshold, below the possible-duplicate threshold.",
+   "relationshipSummary": "Shared structure",
+   "containmentSummary": "Neither direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Security differs",
+   "securityLabel": "Security definitions differ",
+   "blendText": "95.0% schema + 5.0% security.",
+   "labels": [
+    "Sales Restricted",
+    "Sales Forecast"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "100.0%"
+    ],
+    [
+     "Column-name overlap",
+     "44.4%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "100.0%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "82.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales|demo-sales-core",
+   "tier": "similar",
+   "kind": "containment",
+   "relationshipText": "Almost all of Sales Core is represented in Sales.",
+   "relationshipSummary": "Schema coverage",
+   "containmentSummary": "One direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "queries",
+   "securityTag": "No model roles",
+   "securityLabel": "Not applicable",
+   "blendText": "No model-level security definitions in either model: overall equals schema.",
+   "labels": [
+    "Sales",
+    "Sales Core"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "50.0%"
+    ],
+    [
+     "Column-name overlap",
+     "61.5%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "33.3%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "0.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales|demo-sales-draft",
+   "tier": "unassessed",
+   "kind": "containment",
+   "relationshipText": "Both models meet the schema coverage threshold.",
+   "relationshipSummary": "Schema coverage",
+   "containmentSummary": "Both models meet the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Not assessed",
+   "securityLabel": "Security not assessed",
+   "blendText": "A complete security comparison is required for the overall score.",
+   "labels": [
+    "Sales",
+    "Sales Draft"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "100.0%"
+    ],
+    [
+     "Column-name overlap",
+     "100.0%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "100.0%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "0.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales|demo-sales-east",
+   "tier": "duplicate",
+   "kind": "duplicate",
+   "relationshipText": "These models have very high overall similarity.",
+   "relationshipSummary": "Possible duplicates",
+   "containmentSummary": "Both models meet the schema coverage threshold (95.0%).",
+   "relevantSection": "security",
+   "securityTag": "Security differs",
+   "securityLabel": "Security definitions differ",
+   "blendText": "95.0% schema + 5.0% security.",
+   "labels": [
+    "Sales",
+    "Sales Restricted"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "100.0%"
+    ],
+    [
+     "Column-name overlap",
+     "100.0%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "100.0%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "100.0%"
+    ]
+   ]
+  },
+  {
+   "key": "demo-sales|demo-sales-forecast",
+   "tier": "similar",
+   "kind": "overlap",
+   "relationshipText": "These models meet the overall-similarity threshold, below the possible-duplicate threshold.",
+   "relationshipSummary": "Shared structure",
+   "containmentSummary": "Neither direction meets the schema coverage threshold (95.0%).",
+   "relevantSection": "queries",
+   "securityTag": "No model roles",
+   "securityLabel": "Not applicable",
+   "blendText": "No model-level security definitions in either model: overall equals schema.",
+   "labels": [
+    "Sales",
+    "Sales Forecast"
+   ],
+   "signals": [
+    [
+     "Table-name overlap",
+     "100.0%"
+    ],
+    [
+     "Column-name overlap",
+     "44.4%"
+    ],
+    [
+     "Measure-name overlap",
+     "100.0%"
+    ],
+    [
+     "DAX text similarity",
+     "100.0%"
+    ],
+    [
+     "Relationship-link overlap",
+     "100.0%"
+    ],
+    [
+     "Source-definition overlap",
+     "100.0%"
+    ],
+    [
+     "Power Query similarity",
+     "82.0%"
+    ]
+   ]
+  }
+ ],
+ "compare": [
+  {
+   "key": "demo-sales>demo-sales-east",
+   "shared": 24,
+   "differences": 0,
+   "sections": {
+    "tables": {
+     "shared": 4,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "shared",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "shared",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 13,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product[Category]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Product[ProductName]"
+      ],
+      [
+       "shared",
+       "Returns[ProductKey]"
+      ],
+      [
+       "shared",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "shared",
+       "Sales[CostAmount]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[Region]"
+      ],
+      [
+       "shared",
+       "Store[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 3,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 2,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Expression: Server"
+      ],
+      [
+       "shared",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales>demo-sales-forecast",
+   "shared": 18,
+   "differences": 11,
+   "sections": {
+    "tables": {
+     "shared": 4,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "shared",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "shared",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 8,
+     "diff": 10,
+     "rows": [
+      [
+       "onlyA",
+       "Product[Category]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductGroup]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductLabel]"
+      ],
+      [
+       "onlyA",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyB",
+       "Returns[ExpectedReturns]"
+      ],
+      [
+       "shared",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "onlyA",
+       "Sales[CostAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[ForecastCost]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[Region]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreCode]"
+      ],
+      [
+       "shared",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 3,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 1,
+     "diff": 1,
+     "rows": [
+      [
+       "shared",
+       "Expression: Server"
+      ],
+      [
+       "changed",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales-east>demo-sales-forecast",
+   "shared": 18,
+   "differences": 11,
+   "sections": {
+    "tables": {
+     "shared": 4,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "shared",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "shared",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 8,
+     "diff": 10,
+     "rows": [
+      [
+       "onlyA",
+       "Product[Category]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductGroup]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductLabel]"
+      ],
+      [
+       "onlyA",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyB",
+       "Returns[ExpectedReturns]"
+      ],
+      [
+       "shared",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "onlyA",
+       "Sales[CostAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[ForecastCost]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[Region]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreCode]"
+      ],
+      [
+       "shared",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 3,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 1,
+     "diff": 1,
+     "rows": [
+      [
+       "shared",
+       "Expression: Server"
+      ],
+      [
+       "changed",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales>demo-sales-core",
+   "shared": 13,
+   "differences": 11,
+   "sections": {
+    "tables": {
+     "shared": 2,
+     "diff": 2,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "onlyA",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "onlyA",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 8,
+     "diff": 5,
+     "rows": [
+      [
+       "shared",
+       "Product[Category]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyA",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "shared",
+       "Sales[CostAmount]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "onlyA",
+       "Store[Region]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 1,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Expression: Server"
+      ],
+      [
+       "onlyA",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales-east>demo-sales-core",
+   "shared": 13,
+   "differences": 11,
+   "sections": {
+    "tables": {
+     "shared": 2,
+     "diff": 2,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "onlyA",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "onlyA",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 8,
+     "diff": 5,
+     "rows": [
+      [
+       "shared",
+       "Product[Category]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyA",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "shared",
+       "Sales[CostAmount]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "onlyA",
+       "Store[Region]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 1,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Expression: Server"
+      ],
+      [
+       "onlyA",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales-core>demo-sales-forecast",
+   "shared": 10,
+   "differences": 17,
+   "sections": {
+    "tables": {
+     "shared": 2,
+     "diff": 2,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "onlyB",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "onlyB",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 5,
+     "diff": 11,
+     "rows": [
+      [
+       "onlyA",
+       "Product[Category]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductGroup]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductLabel]"
+      ],
+      [
+       "onlyA",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyB",
+       "Returns[ExpectedReturns]"
+      ],
+      [
+       "onlyB",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Sales[CostAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[ForecastCost]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "onlyB",
+       "Store[Region]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreCode]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreKey]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 1,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyB",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyB",
+       "Expression: Server"
+      ],
+      [
+       "onlyB",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales>demo-sales-draft",
+   "shared": 22,
+   "differences": 2,
+   "sections": {
+    "tables": {
+     "shared": 4,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "shared",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "shared",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 13,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product[Category]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Product[ProductName]"
+      ],
+      [
+       "shared",
+       "Returns[ProductKey]"
+      ],
+      [
+       "shared",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "shared",
+       "Sales[CostAmount]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[Region]"
+      ],
+      [
+       "shared",
+       "Store[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 3,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Expression: Server"
+      ],
+      [
+       "onlyA",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales-east>demo-sales-draft",
+   "shared": 22,
+   "differences": 2,
+   "sections": {
+    "tables": {
+     "shared": 4,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "shared",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "shared",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 13,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product[Category]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Product[ProductName]"
+      ],
+      [
+       "shared",
+       "Returns[ProductKey]"
+      ],
+      [
+       "shared",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "shared",
+       "Sales[CostAmount]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[Region]"
+      ],
+      [
+       "shared",
+       "Store[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 3,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Expression: Server"
+      ],
+      [
+       "onlyA",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales-forecast>demo-sales-draft",
+   "shared": 17,
+   "differences": 12,
+   "sections": {
+    "tables": {
+     "shared": 4,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "shared",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "shared",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 8,
+     "diff": 10,
+     "rows": [
+      [
+       "onlyB",
+       "Product[Category]"
+      ],
+      [
+       "onlyA",
+       "Product[ProductGroup]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "onlyA",
+       "Product[ProductLabel]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyA",
+       "Returns[ExpectedReturns]"
+      ],
+      [
+       "shared",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[CostAmount]"
+      ],
+      [
+       "onlyA",
+       "Sales[ForecastCost]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "shared",
+       "Store[Region]"
+      ],
+      [
+       "onlyA",
+       "Store[StoreCode]"
+      ],
+      [
+       "shared",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 3,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Expression: Server"
+      ],
+      [
+       "onlyA",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "key": "demo-sales-core>demo-sales-draft",
+   "shared": 13,
+   "differences": 9,
+   "sections": {
+    "tables": {
+     "shared": 2,
+     "diff": 2,
+     "rows": [
+      [
+       "shared",
+       "Product"
+      ],
+      [
+       "onlyB",
+       "Returns"
+      ],
+      [
+       "shared",
+       "Sales"
+      ],
+      [
+       "onlyB",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 8,
+     "diff": 5,
+     "rows": [
+      [
+       "shared",
+       "Product[Category]"
+      ],
+      [
+       "shared",
+       "Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyB",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "shared",
+       "Sales[CostAmount]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[Quantity]"
+      ],
+      [
+       "shared",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "shared",
+       "Sales[StoreKey]"
+      ],
+      [
+       "onlyB",
+       "Store[Region]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Sales Amount"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 1,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyB",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "shared",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 1,
+     "diff": 0,
+     "rows": [
+      [
+       "shared",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 0,
+     "rows": []
+    }
+   }
+  },
+  {
+   "key": "demo-inventory>demo-sales",
+   "shared": 0,
+   "differences": 33,
+   "sections": {
+    "tables": {
+     "shared": 0,
+     "diff": 6,
+     "rows": [
+      [
+       "onlyA",
+       "Inventory"
+      ],
+      [
+       "onlyA",
+       "Item"
+      ],
+      [
+       "onlyB",
+       "Product"
+      ],
+      [
+       "onlyB",
+       "Returns"
+      ],
+      [
+       "onlyB",
+       "Sales"
+      ],
+      [
+       "onlyB",
+       "Store"
+      ]
+     ]
+    },
+    "columns": {
+     "shared": 0,
+     "diff": 17,
+     "rows": [
+      [
+       "onlyA",
+       "Inventory[ItemKey]"
+      ],
+      [
+       "onlyA",
+       "Inventory[OnHand]"
+      ],
+      [
+       "onlyA",
+       "Item[ItemKey]"
+      ],
+      [
+       "onlyA",
+       "Item[ItemName]"
+      ],
+      [
+       "onlyB",
+       "Product[Category]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Product[ProductName]"
+      ],
+      [
+       "onlyB",
+       "Returns[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Returns[ReturnAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[CostAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Sales[Quantity]"
+      ],
+      [
+       "onlyB",
+       "Sales[SalesAmount]"
+      ],
+      [
+       "onlyB",
+       "Sales[StoreKey]"
+      ],
+      [
+       "onlyB",
+       "Store[Region]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreKey]"
+      ],
+      [
+       "onlyB",
+       "Store[StoreName]"
+      ]
+     ]
+    },
+    "measures": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyB",
+       "Sales Amount"
+      ],
+      [
+       "onlyA",
+       "Stock Units"
+      ]
+     ]
+    },
+    "relationships": {
+     "shared": 0,
+     "diff": 4,
+     "rows": [
+      [
+       "onlyA",
+       "Inventory[ItemKey] → Item[ItemKey]"
+      ],
+      [
+       "onlyB",
+       "Returns[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Sales[ProductKey] → Product[ProductKey]"
+      ],
+      [
+       "onlyB",
+       "Sales[StoreKey] → Store[StoreKey]"
+      ]
+     ]
+    },
+    "datasources": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyA",
+       "Synthetic inventory lakehouse"
+      ],
+      [
+       "onlyB",
+       "Synthetic retail lakehouse"
+      ]
+     ]
+    },
+    "queries": {
+     "shared": 0,
+     "diff": 2,
+     "rows": [
+      [
+       "onlyB",
+       "Expression: Server"
+      ],
+      [
+       "onlyB",
+       "Sales"
+      ]
+     ]
+    }
+   }
+  }
+ ],
+ "map": {
+  "all": {
+   "models": [
+    "demo-inventory",
+    "demo-sales",
+    "demo-sales-core",
+    "demo-sales-draft",
+    "demo-sales-forecast",
+    "demo-sales-east"
+   ],
+   "pages": 2,
+   "cells": [
+    [
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "unscored",
+      "·"
+     ]
+    ],
+    [
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "high",
+      "75%"
+     ],
+     [
+      "unavailable",
+      "?"
+     ]
+    ],
+    [
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "high",
+      "75%"
+     ],
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "unavailable",
+      "?"
+     ]
+    ],
+    [
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "diagonal",
+      "—"
+     ]
+    ]
+   ]
+  },
+  "page2": {
+   "models": [
+    "demo-inventory",
+    "demo-sales",
+    "demo-sales-core",
+    "demo-sales-draft",
+    "demo-sales-forecast",
+    "demo-sales-east"
+   ],
+   "pages": 2,
+   "cells": [
+    [
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "high",
+      "84%"
+     ]
+    ],
+    [
+     [
+      "high",
+      "84%"
+     ],
+     [
+      "diagonal",
+      "—"
+     ]
+    ]
+   ]
+  },
+  "cross": {
+   "models": [
+    "demo-inventory",
+    "demo-sales",
+    "demo-sales-core",
+    "demo-sales-draft",
+    "demo-sales-forecast",
+    "demo-sales-east"
+   ],
+   "pages": 2,
+   "cells": [
+    [
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "unscored",
+      "·"
+     ]
+    ],
+    [
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "outside",
+      "×"
+     ],
+     [
+      "outside",
+      "×"
+     ]
+    ],
+    [
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "outside",
+      "×"
+     ],
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "outside",
+      "×"
+     ]
+    ],
+    [
+     [
+      "unscored",
+      "·"
+     ],
+     [
+      "outside",
+      "×"
+     ],
+     [
+      "outside",
+      "×"
+     ],
+     [
+      "diagonal",
+      "—"
+     ]
+    ]
+   ]
+  },
+  "search": {
+   "models": [
+    "demo-sales",
+    "demo-sales-core",
+    "demo-sales-draft",
+    "demo-sales-forecast",
+    "demo-sales-east"
+   ],
+   "pages": 2,
+   "cells": [
+    [
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "high",
+      "75%"
+     ],
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "high",
+      "89%"
+     ]
+    ],
+    [
+     [
+      "high",
+      "75%"
+     ],
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "low",
+      "69%"
+     ]
+    ],
+    [
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "diagonal",
+      "—"
+     ],
+     [
+      "unavailable",
+      "?"
+     ]
+    ],
+    [
+     [
+      "high",
+      "89%"
+     ],
+     [
+      "low",
+      "69%"
+     ],
+     [
+      "unavailable",
+      "?"
+     ],
+     [
+      "diagonal",
+      "—"
+     ]
+    ]
+   ]
+  }
+ },
+ "groups": {
+  "labels": [
+   "Group 1"
+  ],
+  "selection": {
+   "chosen": {
+    "a": "demo-sales",
+    "b": "demo-sales-east"
+   },
+   "options": [
+    "demo-sales-east"
+   ]
+  },
+  "searchNone": "No groups match this search."
+ },
+ "statusStrip": {
+  "security": "1 model not assessed",
+  "securityWarning": true,
+  "reports": "Complete",
+  "reportsWarning": false,
+  "unknownWorkspace": 0
+ },
+ "models": [
+  {
+   "id": "demo-inventory",
+   "selectionLabel": "Inventory / Demo Operations",
+   "reportCountText": "1 linked report in scanned scope",
+   "compareReportCount": "1 linked reports",
+   "shortReportCount": "1 reports",
+   "securityText": "No model-level security roles"
+  },
+  {
+   "id": "demo-sales",
+   "selectionLabel": "Sales / Demo Retail",
+   "reportCountText": "3 linked reports in scanned scope",
+   "compareReportCount": "3 linked reports",
+   "shortReportCount": "3 reports",
+   "securityText": "No model-level security roles"
+  },
+  {
+   "id": "demo-sales-core",
+   "selectionLabel": "Sales Core / Demo Retail",
+   "reportCountText": "0 linked reports in scanned scope",
+   "compareReportCount": "0 linked reports",
+   "shortReportCount": "0 reports",
+   "securityText": "No model-level security roles"
+  },
+  {
+   "id": "demo-sales-draft",
+   "selectionLabel": "Sales Draft / Demo Retail",
+   "reportCountText": "0 linked reports in scanned scope",
+   "compareReportCount": "0 linked reports",
+   "shortReportCount": "0 reports",
+   "securityText": "Security not assessed"
+  },
+  {
+   "id": "demo-sales-forecast",
+   "selectionLabel": "Sales Forecast / Demo Retail",
+   "reportCountText": "1 linked report in scanned scope",
+   "compareReportCount": "1 linked reports",
+   "shortReportCount": "1 reports",
+   "securityText": "No model-level security roles"
+  },
+  {
+   "id": "demo-sales-east",
+   "selectionLabel": "Sales Restricted / Demo Retail",
+   "reportCountText": "3 linked reports in scanned scope",
+   "compareReportCount": "3 linked reports",
+   "shortReportCount": "3 reports",
+   "securityText": "1 security role"
+  }
+ ],
+ "reports": {
+  "scope": "Synthetic demo workspaces",
+  "status": "Complete"
+ }
+}

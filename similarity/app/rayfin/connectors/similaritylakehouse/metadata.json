@@ -2,7 +2,7 @@
   "source": "similaritylakehouse",
   "connector": "fabric-sqlanalytics",
   "connectionString": "3oasm73uilbujg5eem6hwrsrfm-rqhkbjlj2irejhh4uzrgutzp6m.datawarehouse.fabric.microsoft.com",
-  "discoveredAt": "2026-10-08T10:08:36.756Z",
+  "discoveredAt": "2026-10-08T13:13:09.486Z",
   "schemas": [
     {
       "schemaName": "dbo",
@@ -288,6 +288,71 @@
               "columnName": "is_hidden",
               "dataType": "bit",
               "isNullable": true
+            }
+          ]
+        },
+        {
+          "tableName": "semantic_model_queries",
+          "columns": [
+            {
+              "columnName": "workspace_id",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "workspace_name",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "model_id",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "model_name",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "table_name",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "partition_name",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "query_kind",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "source_type",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "expression",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "expression_hash",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
             }
           ]
         },
@@ -751,6 +816,13 @@
               "isNullable": true,
               "precision": 19,
               "scale": 0
+            },
+            {
+              "columnName": "query_count",
+              "dataType": "bigint",
+              "isNullable": true,
+              "precision": 19,
+              "scale": 0
             }
           ]
         },
@@ -943,6 +1015,25 @@
             },
             {
               "columnName": "score_version",
+              "dataType": "bigint",
+              "isNullable": true,
+              "precision": 19,
+              "scale": 0
+            },
+            {
+              "columnName": "power_query_similarity",
+              "dataType": "float",
+              "isNullable": true,
+              "precision": 53
+            },
+            {
+              "columnName": "power_query_status",
+              "dataType": "varchar",
+              "isNullable": true,
+              "maxLength": 8000
+            },
+            {
+              "columnName": "shared_query_count",
               "dataType": "bigint",
               "isNullable": true,
               "precision": 19,

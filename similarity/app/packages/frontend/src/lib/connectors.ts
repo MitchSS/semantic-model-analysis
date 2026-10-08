@@ -14,12 +14,19 @@ import type {
 // Type-only: decorated entity classes must never be bundled into browser code.
 import type {
   SemanticModelCatalogErrors,
+  SemanticModelColumns,
+  SemanticModelDatasources,
   SemanticModelDuplicateClusters,
+  SemanticModelMeasures,
+  SemanticModelQueries,
+  SemanticModelRelationships,
   SemanticModelReportDependencies,
+  SemanticModelReportScan,
+  SemanticModels,
   SemanticModelSignatures,
   SemanticModelSimilarityPairs,
   SemanticModelSimilarityRun,
-  SemanticModels,
+  SemanticModelTables,
   SimilaritylakehouseSchema,
 } from '../../../../rayfin/connectors/similaritylakehouse/schema';
 // #endregion rayfin:app-owned
@@ -28,7 +35,7 @@ type FieldsOf<E> = E extends abstract new (...args: never[]) => infer I ? Extrac
 
 /**
  * Column list for an entity, checked at compile time to name every field of the
- * entity class exactly once, so it cannot drift from `rayfin/connectors/`.
+ * entity class exactly once, so it cannot drift from 'rayfin/connectors/'.
  */
 const columnsOf =
   <E>() =>
@@ -44,32 +51,44 @@ const similaritylakehouseConfig = {
     SemanticModelCatalogErrors: columnsOf<typeof SemanticModelCatalogErrors>()([
       'workspaceId', 'workspaceName', 'modelId', 'modelName', 'errorType', 'errorMessage',
     ]),
+    SemanticModelColumns: columnsOf<typeof SemanticModelColumns>()([
+      'modelId', 'tableName', 'columnName',
+    ]),
+    SemanticModelDatasources: columnsOf<typeof SemanticModelDatasources>()([
+      'modelId', 'datasourceName', 'datasourceType', 'connectionString', 'connectionDetails',
+    ]),
     SemanticModelDuplicateClusters: columnsOf<typeof SemanticModelDuplicateClusters>()([
       'clusterId', 'clusterSize', 'modelId', 'model', 'workspaceName', 'modelName', 'analysisRunId', 'scoreVersion',
     ]),
+    SemanticModelMeasures: columnsOf<typeof SemanticModelMeasures>()([
+      'modelId', 'measureName', 'expression',
+    ]),
+    SemanticModelQueries: columnsOf<typeof SemanticModelQueries>()([
+      'modelId', 'tableName', 'partitionName', 'queryKind', 'sourceType', 'expression', 'expressionHash',
+    ]),
+    SemanticModelRelationships: columnsOf<typeof SemanticModelRelationships>()([
+      'modelId', 'fromTable', 'fromColumn', 'toTable', 'toColumn',
+    ]),
     SemanticModelReportDependencies: columnsOf<typeof SemanticModelReportDependencies>()([
-      'scanId', 'scannedAt', 'reportWorkspaceId', 'reportWorkspaceName', 'reportId', 'reportName', 'reportType',
-      'reportUrl', 'modelId', 'modelWorkspaceId', 'modelWorkspaceName', 'modelName', 'bindingStatus', 'isCrossWorkspace',
+      'scanId', 'scannedAt', 'reportWorkspaceId', 'reportWorkspaceName', 'reportId', 'reportName', 'reportType', 'reportUrl', 'modelId', 'modelWorkspaceId', 'modelWorkspaceName', 'modelName', 'bindingStatus', 'isCrossWorkspace',
     ]),
-    SemanticModelSignatures: columnsOf<typeof SemanticModelSignatures>()([
-      'modelId', 'workspaceId', 'workspaceName', 'modelName', 'tableCount', 'columnCount', 'measureCount',
-      'relationshipCount', 'datasourceCount', 'analysisRunId', 'securityScanStatus', 'roleCount', 'rlsFilterCount',
-      'tableOlsCount', 'columnOlsCount',
-    ]),
-    SemanticModelSimilarityPairs: columnsOf<typeof SemanticModelSimilarityPairs>()([
-      'modelIdA', 'modelA', 'workspaceA', 'modelIdB', 'modelB', 'workspaceB', 'sameModelName', 'crossWorkspace',
-      'jaccardTables', 'jaccardColumns', 'jaccardMeasureNames', 'jaccardRelationships', 'jaccardDatasources',
-      'daxEmbeddingCosine', 'compositeScore', 'containmentScore', 'containmentRelationship', 'modelAInModelB',
-      'modelBInModelA', 'tier', 'schemaScore', 'securityScore', 'combinedScore', 'scoreMode',
-      'securityComparisonStatus', 'analysisRunId',
-    ]),
-    SemanticModelSimilarityRun: columnsOf<typeof SemanticModelSimilarityRun>()([
-      'generatedAt', 'analysisRunId', 'catalogScanId', 'scoreVersion', 'duplicateThreshold', 'similarThreshold',
-      'containmentThreshold', 'enableBlocking', 'modelCount', 'pairCount', 'duplicateCount', 'similarCount',
-      'unassessedCount', 'containmentCount', 'clusterCount',
+    SemanticModelReportScan: columnsOf<typeof SemanticModelReportScan>()([
+      'scanId', 'scannedAt', 'reportWorkspaceId', 'reportWorkspaceName', 'scanStatus', 'reportCount', 'boundReportCount', 'unresolvedReportCount', 'unsupportedReportCount', 'errorType', 'scanScope',
     ]),
     SemanticModels: columnsOf<typeof SemanticModels>()([
       'workspaceId', 'workspaceName', 'modelId', 'modelName', 'compatibilityLevel', 'defaultMode', 'catalogScanId',
+    ]),
+    SemanticModelSignatures: columnsOf<typeof SemanticModelSignatures>()([
+      'modelId', 'workspaceId', 'workspaceName', 'modelName', 'tableCount', 'columnCount', 'measureCount', 'relationshipCount', 'datasourceCount', 'analysisRunId', 'catalogScanId', 'scoreVersion', 'securityScanStatus', 'securityFingerprint', 'roleCount', 'rlsFilterCount', 'tableOlsCount', 'columnOlsCount', 'queryCount',
+    ]),
+    SemanticModelSimilarityPairs: columnsOf<typeof SemanticModelSimilarityPairs>()([
+      'modelIdA', 'modelA', 'workspaceA', 'modelIdB', 'modelB', 'workspaceB', 'sameModelName', 'crossWorkspace', 'jaccardTables', 'jaccardColumns', 'jaccardMeasureNames', 'jaccardRelationships', 'jaccardDatasources', 'daxEmbeddingCosine', 'compositeScore', 'containmentScore', 'containmentRelationship', 'modelAInModelB', 'modelBInModelA', 'tier', 'schemaScore', 'securityScore', 'combinedScore', 'scoreMode', 'securityComparisonStatus', 'securityEvidenceJson', 'securityFingerprintA', 'securityFingerprintB', 'catalogScanIdA', 'catalogScanIdB', 'analysisRunId', 'scoreVersion', 'powerQuerySimilarity', 'powerQueryStatus', 'sharedQueryCount',
+    ]),
+    SemanticModelSimilarityRun: columnsOf<typeof SemanticModelSimilarityRun>()([
+      'generatedAt', 'analysisRunId', 'catalogScanId', 'scoreVersion', 'duplicateThreshold', 'similarThreshold', 'containmentThreshold', 'enableBlocking', 'combinedWeightsJson', 'modelCount', 'pairCount', 'duplicateCount', 'similarCount', 'unassessedCount', 'containmentCount', 'clusterCount',
+    ]),
+    SemanticModelTables: columnsOf<typeof SemanticModelTables>()([
+      'modelId', 'tableName',
     ]),
   },
 } as const satisfies ConnectorConfig;

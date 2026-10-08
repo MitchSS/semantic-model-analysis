@@ -14,9 +14,13 @@ export class SemanticModelSignatures extends Source({ schema: 'dbo', table: 'sem
   @int({ optional: true, column: 'relationship_count' }) relationshipCount?: number;
   @int({ optional: true, column: 'datasource_count' }) datasourceCount?: number;
   @text({ optional: true, column: 'analysis_run_id', max: 8000 }) analysisRunId?: string;
+  @text({ optional: true, column: 'catalog_scan_id', max: 8000 }) catalogScanId?: string;
+  @int({ optional: true, column: 'score_version' }) scoreVersion?: number;
   @text({ optional: true, column: 'security_scan_status', max: 8000 }) securityScanStatus?: string;
+  @text({ optional: true, column: 'security_fingerprint', max: 8000 }) securityFingerprint?: string;
   @int({ optional: true, column: 'role_count' }) roleCount?: number;
   @int({ optional: true, column: 'rls_filter_count' }) rlsFilterCount?: number;
   @int({ optional: true, column: 'table_ols_count' }) tableOlsCount?: number;
   @int({ optional: true, column: 'column_ols_count' }) columnOlsCount?: number;
+  @int({ optional: true, column: 'query_count' }) queryCount?: number;
 }

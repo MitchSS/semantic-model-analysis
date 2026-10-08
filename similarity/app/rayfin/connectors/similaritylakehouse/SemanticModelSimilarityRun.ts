@@ -12,6 +12,7 @@ export class SemanticModelSimilarityRun extends Source({ schema: 'dbo', table: '
   @decimal({ optional: true, column: 'similar_threshold' }) similarThreshold?: number;
   @decimal({ optional: true, column: 'containment_threshold' }) containmentThreshold?: number;
   @boolean({ optional: true, column: 'enable_blocking' }) enableBlocking?: boolean;
+  @text({ optional: true, column: 'combined_weights_json', max: 8000 }) combinedWeightsJson?: string;
   @int({ optional: true, column: 'model_count' }) modelCount?: number;
   @int({ optional: true, column: 'pair_count' }) pairCount?: number;
   @int({ optional: true, column: 'duplicate_count' }) duplicateCount?: number;

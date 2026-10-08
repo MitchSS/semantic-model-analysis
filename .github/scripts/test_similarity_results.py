@@ -55,7 +55,7 @@ def run_renderer_checks(template):
 class ResultsTests(unittest.TestCase):
     def test_report_and_security_validation_are_unchanged(self):
         expected = {
-            "build_report_dependency_payload": "8f5d3dd68cd235699e31d11eb29fa08d33e7493e435d66d2998bb18c444a025b",
+            "build_report_dependency_payload": "e27c5d547da4881c8c3bd19b0f752b39b37ccd75f0350e1d41f24fa6dadfc584",
             # Score version 3: refreshed deliberately with the Power Query signal.
             "build_security_results": "3a93466343814ce960a7d69d063b360a425fe43888f34436e39b2f1476495fed",
         }

@@ -1,4 +1,4 @@
-import { entity, boolean, decimal, text, role } from '@microsoft/rayfin-core';
+import { entity, boolean, decimal, int, text, role } from '@microsoft/rayfin-core';
 import { Source } from '@microsoft/rayfin-connectors';
 
 @role('authenticated', ['read'])
@@ -29,5 +29,14 @@ export class SemanticModelSimilarityPairs extends Source({ schema: 'dbo', table:
   @decimal({ optional: true, column: 'combined_score' }) combinedScore?: number;
   @text({ optional: true, column: 'score_mode', max: 8000 }) scoreMode?: string;
   @text({ optional: true, column: 'security_comparison_status', max: 8000 }) securityComparisonStatus?: string;
+  @text({ optional: true, column: 'security_evidence_json', max: 8000 }) securityEvidenceJson?: string;
+  @text({ optional: true, column: 'security_fingerprint_a', max: 8000 }) securityFingerprintA?: string;
+  @text({ optional: true, column: 'security_fingerprint_b', max: 8000 }) securityFingerprintB?: string;
+  @text({ optional: true, column: 'catalog_scan_id_a', max: 8000 }) catalogScanIdA?: string;
+  @text({ optional: true, column: 'catalog_scan_id_b', max: 8000 }) catalogScanIdB?: string;
   @text({ optional: true, column: 'analysis_run_id', max: 8000 }) analysisRunId?: string;
+  @int({ optional: true, column: 'score_version' }) scoreVersion?: number;
+  @decimal({ optional: true, column: 'power_query_similarity' }) powerQuerySimilarity?: number;
+  @text({ optional: true, column: 'power_query_status', max: 8000 }) powerQueryStatus?: string;
+  @int({ optional: true, column: 'shared_query_count' }) sharedQueryCount?: number;
 }
