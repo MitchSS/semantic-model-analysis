@@ -175,7 +175,7 @@ These screenshots use synthetic demo data rendered by the results notebook in it
 
 Notebook 001 has **Configuration** and **Scoring Parameters** cells before collection. Both notebooks use the **default Lakehouse attached to the notebook**, so attach the same target Lakehouse before running. There is no database name to set.
 
-Notebook 001 exposes the scan scope and optional temporary access:
+Notebook 001 exposes the scan scope, blocking, tier thresholds and optional temporary access in its **Configuration** cell:
 
 ```python
 WORKSPACE_NAME = None   # Optional exact workspace-name filter.
@@ -186,20 +186,22 @@ ENABLE_TEMPORARY_WORKSPACE_ACCESS = False
 ACCESS_SECURITY_GROUP_ID = None
 ACCESS_READY_TIMEOUT_SECONDS = 300
 ACCESS_POLL_INTERVAL_SECONDS = 15
+
+ENABLE_BLOCKING = True
+DUPLICATE_THRESHOLD = 0.95
+SIMILAR_THRESHOLD = 0.70
+CONTAINMENT_THRESHOLD = 0.95            # Directional coverage at/above this flags a containment candidate.
 ```
+
+This cell is tagged as the Fabric notebook **parameters** cell, so a pipeline, schedule or [Run On Demand Item Job](https://learn.microsoft.com/en-us/rest/api/fabric/core/job-scheduler/run-on-demand-item-job) request (`jobType=RunNotebook`) can override any of these scalar values through `executionData.parameters`. Keep it to literal assignments: Fabric injects overrides immediately after it. Because notebook parameters cannot pass `None`, a blank or whitespace-only filter name means unfiltered. The **Scoring Parameters** cell validates every value after injection: filters must be strings or `None`, flags must be booleans, and thresholds must be numbers greater than 0 and at most 1, with `SIMILAR_THRESHOLD` no higher than `DUPLICATE_THRESHOLD`. Weight dictionaries cannot be passed as notebook parameters.
 
 `REPORT_WORKSPACE_NAME = None` includes all active regular admin-discovered workspaces when temporary access is enabled. Filters remain independent, and `MODEL_NAME` does not narrow permission scope. Personal, admin-monitoring, deleted and unknown workspace types/states are excluded from temporary grants.
 
 Catalog and scoring writes replace their existing Delta tables and use explicit schemas, so typed empty writes clear stale rows. Each successful **001 -> 002** execution uses one current catalog and analysis result set. If no readable models are collected, the catalog is persisted and scoring stops; older score tables are not new results. Reads use registered table names (`spark.table`) to match `saveAsTable`, without assuming a physical `Tables/<name>` directory. Keep the Lakehouse/default schema consistent across both notebooks. Historical result retention and run selection are not supported; access recovery journals are separate operational records.
 
-The same notebook exposes the following scoring settings:
+The **Scoring Parameters** cell holds the signal weights:
 
 ```python
-ENABLE_BLOCKING = True
-DUPLICATE_THRESHOLD = 0.95
-SIMILAR_THRESHOLD = 0.70
-CONTAINMENT_THRESHOLD = 0.95            # Directional coverage at/above this flags a containment candidate.
-
 SIMILARITY_WEIGHTS = {
     "tables": 0.15,
     "columns": 0.20,

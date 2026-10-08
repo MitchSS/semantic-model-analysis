@@ -589,5 +589,79 @@ class NotebookContractTests(unittest.TestCase):
         self.assertLess(settings, min(writes))
 
 
+def code_cell_sources(path=NOTEBOOK):
+    cells = json.loads(path.read_text(encoding="utf-8"))["cells"]
+    return [(cell, "".join(cell["source"])) for cell in cells if cell["cell_type"] == "code"]
+
+
+class NotebookParameterTests(unittest.TestCase):
+    APP_PARAMETERS = {
+        "WORKSPACE_NAME", "MODEL_NAME", "REPORT_WORKSPACE_NAME", "ENABLE_BLOCKING",
+        "DUPLICATE_THRESHOLD", "SIMILAR_THRESHOLD", "CONTAINMENT_THRESHOLD",
+    }
+
+    def setUp(self):
+        sources = code_cell_sources()
+        self.parameter_cells = [(cell, source) for cell, source in sources
+                                if "parameters" in cell["metadata"].get("tags", [])]
+        self.scoring_source = next(source for _, source in sources if "SCORE_VERSION =" in source)
+
+    def run_with(self, **overrides):
+        namespace = {}
+        exec(self.parameter_cells[0][1], namespace)
+        namespace.update(overrides)
+        exec(self.scoring_source, namespace)
+        return namespace
+
+    def test_single_parameters_cell_holds_only_literal_assignments(self):
+        self.assertEqual(len(self.parameter_cells), 1)
+        body = ast.parse(self.parameter_cells[0][1]).body
+        self.assertTrue(all(isinstance(node, ast.Assign) for node in body))
+        for node in body:
+            ast.literal_eval(node.value)
+        names = {node.targets[0].id for node in body}
+        self.assertLessEqual(self.APP_PARAMETERS, names)
+
+    def test_parameters_cell_precedes_scoring_settings(self):
+        sources = [source for _, source in code_cell_sources()]
+        self.assertLess(sources.index(self.parameter_cells[0][1]), sources.index(self.scoring_source))
+
+    def test_defaults_are_unchanged(self):
+        namespace = self.run_with()
+        self.assertIsNone(namespace["WORKSPACE_NAME"])
+        self.assertIs(namespace["ENABLE_BLOCKING"], True)
+        self.assertEqual((namespace["DUPLICATE_THRESHOLD"], namespace["SIMILAR_THRESHOLD"],
+                          namespace["CONTAINMENT_THRESHOLD"], namespace["HEATMAP_MIN_SCORE"]),
+                         (0.95, 0.70, 0.95, 0.70))
+
+    def test_injected_values_survive_scoring_settings(self):
+        namespace = self.run_with(WORKSPACE_NAME="Sales", ENABLE_BLOCKING=False, DUPLICATE_THRESHOLD=0.9,
+                                  SIMILAR_THRESHOLD=0.6, CONTAINMENT_THRESHOLD=1)
+        self.assertEqual(namespace["WORKSPACE_NAME"], "Sales")
+        self.assertIs(namespace["ENABLE_BLOCKING"], False)
+        self.assertEqual((namespace["DUPLICATE_THRESHOLD"], namespace["SIMILAR_THRESHOLD"],
+                          namespace["CONTAINMENT_THRESHOLD"], namespace["HEATMAP_MIN_SCORE"]), (0.9, 0.6, 1, 0.6))
+
+    def test_blank_filters_mean_unfiltered(self):
+        namespace = self.run_with(WORKSPACE_NAME="", MODEL_NAME="  ", REPORT_WORKSPACE_NAME="\t")
+        self.assertEqual((namespace["WORKSPACE_NAME"], namespace["MODEL_NAME"], namespace["REPORT_WORKSPACE_NAME"]),
+                         (None, None, None))
+
+    def test_invalid_parameters_are_rejected(self):
+        cases = {
+            "non-string filter": {"MODEL_NAME": 5},
+            "non-boolean blocking": {"ENABLE_BLOCKING": "false"},
+            "non-boolean access": {"ENABLE_TEMPORARY_WORKSPACE_ACCESS": 1},
+            "boolean threshold": {"DUPLICATE_THRESHOLD": True},
+            "string threshold": {"CONTAINMENT_THRESHOLD": "0.9"},
+            "zero threshold": {"SIMILAR_THRESHOLD": 0},
+            "threshold above one": {"DUPLICATE_THRESHOLD": 1.5},
+            "similar above duplicate": {"SIMILAR_THRESHOLD": 0.96},
+        }
+        for label, overrides in cases.items():
+            with self.subTest(case=label), self.assertRaises(ValueError):
+                self.run_with(**overrides)
+
+
 if __name__ == "__main__":
     unittest.main()

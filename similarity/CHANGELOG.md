@@ -4,6 +4,17 @@ Release notes for Semantic Model Similarity only. A section records the intended
 release contents; publication status is shown on GitHub Releases, not inferred
 from its presence here.
 
+## [Unreleased]
+
+### Changed
+
+- Tag notebook 001's **Configuration** cell as the Fabric parameters cell and
+  move `ENABLE_BLOCKING`, `DUPLICATE_THRESHOLD`, `SIMILAR_THRESHOLD` and
+  `CONTAINMENT_THRESHOLD` into it, so pipeline and job API runs can override
+  them. Defaults and scoring are unchanged.
+- Treat blank filter names as unfiltered and validate injected filters, flags
+  and thresholds before collection.
+
 ## [0.2.0]
 
 ### Changed
