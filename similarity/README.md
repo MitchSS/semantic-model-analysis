@@ -59,3 +59,4 @@ Matches do not verify data values, calculation correctness, role assignments, or
 - [Technical reference](docs/reference.md): output tables, algorithms, configuration, view details, more screenshots, and limitations.
 - [Product overview](README.marketing.md): what the project does and who it helps.
 - [Changelog](CHANGELOG.md).
+- Optional Fabric App: the repository's `similarity/app` folder contains a Rayfin app that runs notebook 001 with parameters and visualizes the lakehouse results. It is not part of the notebook release package; see its README for setup and permissions.

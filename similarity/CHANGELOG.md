@@ -15,6 +15,12 @@ from its presence here.
 - Treat blank filter names as unfiltered and validate injected filters, flags
   and thresholds before collection.
 
+### Added
+
+- Optional Rayfin Fabric App in `similarity/app` that starts notebook 001 runs
+  with parameters and shows Review, Groups, Compare and Similarity map views
+  over the lakehouse results. The app is not included in the release package.
+
 ## [0.2.0]
 
 ### Changed

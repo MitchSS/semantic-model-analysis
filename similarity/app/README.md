@@ -1,202 +1,94 @@
-# Universal App Template
+# Semantic Model Similarity app
 
-> **⚠️ This repository is under active development.** Features and instructions may change.
+A [Fabric App](https://learn.microsoft.com/fabric/apps/) (built with Rayfin) for the semantic model similarity workflow. From one place you can:
 
-This is the workspace template the Rayfin Copilot plugin uses to build Fabric Apps.
-The base is small on purpose: dynamic authentication, theming, an error boundary, and a welcome page that works inside or outside the Fabric portal after sign-in.
-Capabilities such as Power BI analytics and trusted server-side functions are added on demand with `npm run pack:add -- <pack>`.
+- **Run analysis.** Start notebook 001 with parameters, follow its status, cancel it, and see recent runs.
+- **Review.** Rank possible duplicates, schema coverage, and shared-structure pairs. Overall, schema, security, and coverage scores appear side by side.
+- **Groups.** Browse connected possible-duplicate groups.
+- **Compare.** Compare any two catalog models with all three scores, coverage in both directions, a breakdown of the schema signals, catalog counts, and dependent reports.
+- **Similarity map.** Use a heatmap of Overall scores, shown 40 models at a time. Select a cell to open Compare.
 
-## Workspace layout
+The views use the same score meanings as the results notebook (002). See the [technical reference](../docs/reference.md) for how scores are calculated.
 
-The application is an npm workspace with one control root and three base packages:
+## How it works
 
 ```text
-.
-├── package.json                 # Root commands, workspace members, and applied packs
-├── rayfin/
-│   └── rayfin.yml               # Rayfin services and package paths
-├── packages/
-│   ├── frontend/                # React, Vite, UI, and static output
-│   ├── data/                    # Entity registration and data schema exports
-│   └── shared/                  # Isomorphic contracts shared across runtimes
-└── scripts/                     # Capability-pack tooling and template checks
+React app ──► Rayfin Functions (app identity) ──► Fabric Job Scheduler API ──► notebook 001
+   │                                                                              │ writes
+   └──► fabric-sqlanalytics connector (read-only) ◄── Lakehouse SQL endpoint ◄─────┘
 ```
 
-The packages have stable internal names: `@rayfin-app/frontend`, `@rayfin-app/data`, and `@rayfin-app/shared`.
-Scaffolding personalizes only the root package name; it does not rename member packages, local dependency keys, or import specifiers.
-The root coordinates the workspace but is not another application package.
+| Piece | Location |
+| --- | --- |
+| Run functions: `startSimilarityRun`, `getSimilarityRun`, `listSimilarityRuns`, `cancelSimilarityRun` | `packages/functions/src/` |
+| Run parameter contract: defaults, validation, and notebook mapping | `packages/shared/src/similarity-run.ts` |
+| Lakehouse entities (read-only, keyless) | `rayfin/connectors/similaritylakehouse/` |
+| Data loading and view models | `packages/frontend/src/lib/` |
+| Views | `packages/frontend/src/components/` |
 
-The base does not include `packages/functions`.
-That package is created only when the functions capability is applied.
+### Run parameters
 
-## Root and package commands
+The app passes these values to notebook 001's Fabric **parameters** cell:
 
-Run the normal workflow from the workspace root:
+| App field | Notebook parameter | Default |
+| --- | --- | --- |
+| Workspace | `WORKSPACE_NAME` | blank = all |
+| Model | `MODEL_NAME` | blank = all |
+| Report workspace | `REPORT_WORKSPACE_NAME` | blank = all visible |
+| Candidate blocking | `ENABLE_BLOCKING` | on |
+| Duplicate threshold | `DUPLICATE_THRESHOLD` | 0.95 |
+| Similar threshold | `SIMILAR_THRESHOLD` | 0.70 |
+| Coverage threshold | `CONTAINMENT_THRESHOLD` | 0.95 |
 
-| Command                      | What it does                                                          |
-| ---------------------------- | --------------------------------------------------------------------- |
-| `npm run dev`                | Starts Rayfin local services and the frontend development server.     |
-| `npm run dev:frontend`       | Starts only the frontend development server.                          |
-| `npm run build`              | Builds shared contracts, data definitions, and the frontend in order. |
-| `npm run build:fabric`       | Builds the workspace with the frontend's Fabric packaging behavior.   |
-| `npm run typecheck`          | Type-checks the referenced workspace projects.                        |
-| `npm run lint`               | Lints the frontend package.                                           |
-| `npm test`                   | Runs the frontend test suite.                                         |
-| `npm run preview`            | Previews the built frontend.                                          |
-| `npm run pack:add -- <pack>` | Applies a capability pack and installs its dependencies.              |
-| `npm run rayfin:up`          | Provisions or updates the app's Fabric resources.                     |
-| `npm run test:template`      | Runs template and capability-pack contract tests.                     |
+The server validates every value again: names are 256 characters at most, thresholds must be greater than 0 and no more than 1, and the similar threshold can't be higher than the duplicate threshold. Notebook 001 writes over its own output tables, so the app won't start a run while another run is queued or in progress.
 
-Root commands are the supported day-to-day interface and are also used by plugin validation.
-For focused work, npm workspace commands remain available:
+You can't turn on temporary workspace access or change the score weights from the app. To use them, run notebook 001 directly.
+
+### Identity and permissions
+
+- **Notebook runs use the Fabric app owner's identity.** Rayfin Functions call Fabric as the owner of the Fabric App item. Each run sees only the workspaces and models the owner can read, whoever selects **Start run**. The owner needs permission to run notebook 001 (Contributor or higher on its workspace).
+- **Anyone the app is shared with can start a run.** Share the app only with people who should be able to rescan the catalog.
+- **Lakehouse reads.** The connector uses the authentication mode set in `rayfin/rayfin.yml`, which is `application` by default. Check this setting before you share results more widely.
+- The app never reads the stored security-definition JSON. Review and Compare show only security status and scores.
+
+### Target resources
+
+| Resource | Value |
+| --- | --- |
+| Workspace | `semantic-model-similarity-20260805` (`a5a00e8c-d269-4422-9cfc-a6626a4f2ff3`) |
+| Notebook | `001_semantic_model_similarity` (`5bd4d491-889e-4b07-af84-daddfbc3c95c`) |
+| Lakehouse | `LH_SemanticModels` (`f997d7ec-692b-49b1-bba5-3be168fe89fd`) |
+
+The notebook and workspace IDs are set in `packages/functions/src/similarity-runs.ts`. Run requests from the browser can't change them. The connector target is in `rayfin/rayfin.yml`. The deployed notebook must be the parameterised version of notebook 001 from this repository, attached to `LH_SemanticModels`.
+
+## Develop
+
+Run these commands from this folder (`similarity/app`). You need Node.js 20 or later.
 
 ```sh
-npm run -w @rayfin-app/frontend test
-npm run -w @rayfin-app/data build
-npm run -w @rayfin-app/shared build
+npm install
+npm run typecheck   # shared + functions contract + all packages
+npm run lint
+npm test            # frontend and functions unit tests
+npm run build
+npm run dev         # Rayfin local services + Vite; needs `npx rayfin login`
 ```
 
-Rayfin service commands run from each configured service path, so service build commands are package-local:
+`packages/functions/src/types.ts` is generated by Rayfin. Don't edit it by hand. A running `npm run dev` session regenerates it when a function signature changes, and `npm run validate:functions` checks that it matches the registered functions. Handler signatures wrap shared types in `Inline<…>` so that the generated file includes the full types.
 
-- Data uses `packages/data` and runs `npm run build` there.
-- Static hosting uses `packages/frontend`, runs `npm run build:fabric` there, and packages `packages/frontend/dist`.
-- Functions remains disabled until its pack configures `packages/functions`.
+After the lakehouse schema changes, run `npx rayfin connector remove` and then `npx rayfin connector add` to refresh `metadata.json`. Then update the entity files. Only the columns the app uses are mapped.
 
-## The starting view
-
-`packages/frontend/src/App.tsx` starts on an illustrated blueprint of the pieces a Fabric App can grow into.
-The blueprint and live source activity ship in every scaffold.
-The optional Finley mascot is off by default.
-Default scaffolds contain no companion code, styles, or tests.
-Replace `<EmptyStatePreview />` in `App.tsx` with your own view when you start building.
-The welcome page is app content and requires an authenticated session.
-The app defaults to light regardless of the operating-system theme, while explicit host appearance and user theme choices remain supported.
-
-Hosted assets are protected by default and standalone sign-in is enabled in `rayfin/rayfin.yml`.
-The dynamic auth service lets the SDK establish the current embedded identity before restoring a standalone session or falling back to Rayfin CLI sign-in during local development.
-When automatic authentication is unavailable, the gate offers Microsoft sign-in from a user gesture instead of rejecting an outside-portal browser.
-Configuration or authentication failures never expose the welcome or other app content.
-Features use `await getRayfinClient()` for authorized service operations; keep the root authentication boundary intact.
-
-During `npm run dev:frontend` the blueprint reflects the source you add and edit
-across the workspace: screens and styling in `packages/frontend`, shared logic in
-`packages/shared`, owned records in `packages/data`, and connections in `rayfin/`.
-Authored frontend service modules contribute to **Calculations**; the stock authentication service stays excluded.
-It reports observed edits only, never build progress or a claim that the app is
-finished. A production build ships no dev endpoint, so the page falls back to an
-illustrative walkthrough. The development-only feed is provided by
-`@microsoft/rayfin-local-dev` and never reaches the production bundle.
-
-### Replacing the welcome
-
-Replace the `EmptyStatePreview` import and render in `packages/frontend/src/App.tsx` with your app.
-If removing the welcome files, first remove `sourceActivity: true` from the `rayfinLocalDev` options in `packages/frontend/vite.config.ts`.
-Update `App.spec.tsx` and `Root.spec.tsx` for the new view, removing their `Welcome.activity` mocks and welcome-specific assertions while preserving auth-gate coverage.
-Then remove `EmptyStatePreview.tsx`, `Welcome*`, and `FabricAppMark.tsx`.
-If the optional companion was included, remove `Finley.tsx`, `Finley.css`, and `Finley.spec.tsx` too.
-Run typecheck, build, and tests after cleanup so no dangling imports remain.
-
-## Capability packs
-
-Apply a capability before customizing the app:
+## Deploy
 
 ```sh
-npm run pack:add -- analytics
-npm run pack:add -- functions
+npx rayfin login
+npx rayfin up --workspace semantic-model-similarity-20260805
+npx rayfin up status
 ```
 
-Packs install dependencies with one root npm workspace install.
-They do not create nested lockfiles or a separate nested installation.
+`rayfin up` builds the app, then deploys the static app, the functions, and the connector configuration. After deploying:
 
-The functions pack creates `packages/functions` as `@rayfin-app/functions`, enables the service at that path, and wires its generated schema into the frontend client.
-It composes the functions build into the root build, Fabric build, and type-check commands.
-Reapplying the pack preserves authored files.
+1. Open the app in Fabric and confirm that Review loads data.
+2. Start a narrow run, for example by setting **Workspace**. Watch it finish, then confirm the results timestamp changes.
 
-If an install fails, the runner rolls back pack-owned file changes and reports any concurrent edits it cannot safely restore.
-It preserves the install error and leaves the pack retryable.
-Installed dependencies and installer-written lockfiles are not rolled back.
-Follow the [failure recovery guidance](scripts/pack-manifest.md#failure-recovery) before continuing.
-
-Template tests validate the pack structure and wiring.
-With app dependencies installed, they also check the starter and analytics seed against the generated frontend lint rules.
-They do not validate deployed secrets, app-identity permissions, downstream endpoints, or the maximum duration supported by the hosted functions path.
-
-## Distribution and repository validation
-
-The CLI and VS Code display this workspace as **✨ Use default template**, using the existing `blankapp` template ID.
-Its canonical `universal-app` name remains hidden to avoid a duplicate listing, but it stays selectable explicitly for plugin automation.
-
-Inside the Project Rayfin repository, the parent `samples/universal-app/` directory is a contributor-only Rush validation harness.
-The harness generates an ephemeral `target/`, replaces published Rayfin ranges only in that target with repository-local package links, installs it, and runs the root validation commands.
-The outer harness, local links, generated target, and target install output are not part of a generated app.
-The committed inner template keeps published Rayfin ranges and uses `*` for local workspace members, so it remains distributable without repository-relative dependencies.
-
-## Prerequisites
-
-Install a [supported Node.js release](https://nodejs.org/en/download): Node.js 20, 22, or 24.
-Docker Desktop or Docker Engine is required only when using the Docker development provider.
-Rayfin handles Fabric sign-in when needed.
-Protected sites sign in automatically when hosted, while public sites show a Microsoft sign-in screen.
-Local development auto-signs in for both site types (`autoLogin: true` is set in `vite.config.ts`) using the Rayfin CLI session.
-Run `npx rayfin login` before starting the app if you need to sign in or switch accounts.
-GitHub Copilot CLI is not required to scaffold or run this app.
-
-## Instructions for building a new web app
-
-1. **Open the generated app**: Open a terminal in the project created by the Rayfin CLI, VS Code, or the Rayfin Copilot plugin.
-2. **Install dependencies if needed**: Run `npm install` from the workspace root.
-3. **Build the app**: Use your preferred editor or coding agent.
-   If you use GitHub Copilot CLI, run `copilot`, then describe what you want to build.
-   If the app should read an existing Power BI semantic model, include its name or dataset ID.
-   If it should own its own records, or you want a mock-up, say so instead.
-4. **Deploy it**: Ask Copilot to deploy, or run `npm run rayfin:up`, then open the Fabric URL it returns.
-   Both the direct static-hosting URL and the Fabric portal URL support authenticated use.
-   App content remains protected until sign-in succeeds.
-
-## Seeing your changes
-
-The recommended loop runs both Rayfin services and the frontend:
-
-```sh
-npm run dev
-```
-
-To run only Vite while working on frontend code:
-
-```sh
-npm run dev:frontend
-```
-
-To update the deployed app:
-
-```sh
-npm run rayfin:up
-```
-
-Open the direct hosting URL to use the app standalone, or the [Fabric portal](https://app.fabric.microsoft.com) to see it inside the Fabric shell.
-
-<details>
-<summary><strong>💡 Tips</strong></summary>
-
-- Use **Shift + Tab** in Copilot to switch to **Plan mode**, where Copilot will present a plan and ask for confirmation before writing any code.
-
-</details>
-
-<details>
-<summary><strong>📝 Example prompts</strong></summary>
-
-- `Create a sales performance dashboard using the "Contoso Sales" semantic model. Include revenue KPIs, a monthly trend line chart, top 10 stores by profit, and a regional breakdown bar chart.`
-- `Build an executive summary app for the "HR Analytics" model with headcount by department, attrition rate trends over the past 3 years, and a data grid of open positions sorted by days-to-fill.`
-- `I want a customer insights app using dataset ID 4053a155-34a9-4b74-9bc2-e162f1b27fc7. Show customer lifetime value distribution, churn risk segmentation, and a filterable table of top accounts.`
-- `Create a supply chain monitoring dashboard from the "Logistics Ops" model. I need inventory levels by warehouse, on-time delivery rate KPIs, and a heatmap of shipping delays by region and month.`
-- `Build a financial reporting app using the "GL Financials" semantic model with a P&L summary, expense breakdown by cost center, and quarter-over-quarter variance charts. Add a date range filter across all visuals.`
-- `Build an app where my team can log onboarding tasks and tick them off, where each person only sees their own.`
-- `Build me a mock-up dashboard of support ticket volume — I don't have a data source yet, use sample data.`
-- `Build a workflow that submits approved requests to our third-party fulfillment API without exposing its API key.`
-- `Build an app that asks our published Fabric data agent a question and shows the answer.`
-
-</details>
-
-## Need help?
-
-If you have any questions or run into any problems, please [file a Project Rayfin issue](https://github.com/microsoft/project-rayfin/issues/new/choose).
+The lakehouse SQL endpoint can take a short time to show newly written Delta data. The app reloads straight after a run finishes and again 45 seconds later.
