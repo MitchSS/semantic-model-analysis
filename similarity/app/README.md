@@ -69,18 +69,24 @@ How approval is enforced:
 - **`executeRebind` and `undoRebind`** read the plan from the database, refuse it unless an approver wrote it, check that the report is a Power BI report still bound to the planned model, then call the Power BI Rebind API **as the app owner**. The app owner therefore needs write access to the report and Build permission on the trusted model. Any app user can trigger an approved plan, but nobody can run a plan an approver didn't write.
 - The outcome (`executed`, `failed`, `undone`) is recorded as the user who selected the button. Report dependencies in Review and Compare change only after the next analysis run.
 
-### Target resources
+### Configure for your environment
 
-| Resource | Value |
-| --- | --- |
-| Fabric App item (hosting) | Workspace `Rayfin France` (`c2a25257-248f-46bb-b07a-48392a297ef4`), capacity `fabfrancerayfin` (France Central) |
-| Notebook workspace | `semantic-model-similarity-20260805` (`a5a00e8c-d269-4422-9cfc-a6626a4f2ff3`) |
-| Notebook | `001_semantic_model_similarity` (`5bd4d491-889e-4b07-af84-daddfbc3c95c`) |
-| Lakehouse | `LH_SemanticModels` (`f997d7ec-692b-49b1-bba5-3be168fe89fd`) |
+The app targets one notebook workspace and lakehouse. Set these before the first deploy:
 
-The app is hosted in a different workspace from the notebook and lakehouse. Fabric Apps isn't turned on for the West US 3 capacity that `semantic-model-similarity-20260805` uses: creating an app item there fails with `403 The feature is not available`. As a result, notebook runs and lakehouse reads go across workspaces and regions (France Central to West US 3). Check that this is acceptable under your data residency requirements. The `fabfrancerayfin` capacity must be running for the app to work.
+| Setting | Where | Value |
+| --- | --- | --- |
+| Notebook workspace ID | `SIMILARITY_WORKSPACE_ID` in `packages/functions/src/similarity-runs.ts`, and `connectors[0].config.workspaceId` in `rayfin/rayfin.yml` | The workspace that holds notebook 001 and its lakehouse |
+| Notebook ID | `SIMILARITY_NOTEBOOK_ID` in `packages/functions/src/similarity-runs.ts` | Notebook `001_semantic_model_similarity` (the parameterised version from this repository) |
+| SQL analytics endpoint ID | `SIMILARITY_SQL_ENDPOINT_ID` in `packages/functions/src/similarity-runs.ts`, and `connectors[0].config.itemId` in `rayfin/rayfin.yml` | The SQL analytics endpoint of the lakehouse notebook 001 writes to (`LH_SemanticModels` by default) |
+| Hosting workspace | `npx rayfin up --workspace "<app workspace>"` | A workspace on a capacity with Fabric Apps turned on |
+| Hosted app URL | `services.auth.allowedRedirectUris` in `rayfin/rayfin.yml` | The `hostingUrl` that the first `rayfin up --json` reports; add it and deploy again |
+| Approvers | `npx rayfin secret set APPROVER_EMAILS --stdin` | Comma-separated emails of people who can approve next actions |
 
-The notebook and workspace IDs are set in `packages/functions/src/similarity-runs.ts`. Run requests from the browser can't change them. The connector target is in `rayfin/rayfin.yml`. The deployed notebook must be the parameterised version of notebook 001 from this repository, attached to `LH_SemanticModels`.
+Find workspace and item IDs in the Fabric portal URL of each item, or with the Fabric REST API (`GET https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/items`).
+
+Run requests from the browser can't change the notebook or workspace IDs. The deployed notebook must be attached to the lakehouse the connector reads.
+
+The hosting workspace can be different from the notebook workspace, for example when the notebook's capacity doesn't have Fabric Apps turned on (creating an app item there fails with `403 The feature is not available`). Notebook runs and lakehouse reads then go across workspaces and possibly regions, so check that this meets your data residency requirements. The hosting capacity must be running for the app to work.
 
 ## Develop
 
@@ -107,7 +113,7 @@ After the lakehouse schema changes, run `npx rayfin connector remove` and then `
 
 ```sh
 npx rayfin login
-npx rayfin up --workspace "Rayfin France"
+npx rayfin up --workspace "<app workspace>"
 npx rayfin up status
 ```
 

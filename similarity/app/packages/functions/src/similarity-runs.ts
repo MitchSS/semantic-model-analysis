@@ -11,7 +11,7 @@ import {
   type SimilarityRunStatus,
 } from '@rayfin-app/shared';
 
-/** Workspace `semantic-model-similarity-20260805` (the app itself is hosted in `Rayfin France`). */
+/** Workspace that holds notebook 001 and its lakehouse (the app may be hosted in another workspace). */
 export const SIMILARITY_WORKSPACE_ID = 'a5a00e8c-d269-4422-9cfc-a6626a4f2ff3';
 /** Notebook `001_semantic_model_similarity`. */
 export const SIMILARITY_NOTEBOOK_ID = '5bd4d491-889e-4b07-af84-daddfbc3c95c';
