@@ -2,16 +2,14 @@ import { useState } from 'react';
 
 import { Field, Notice, ScoreCell, Tag } from '@/components/ui';
 import { rebindStateFor, trustedModelFor, type ActionsState } from '@/hooks/use-actions';
-import { GUID, coverageWithin, modelSettingsUrl, rebindScript } from '@/lib/actions';
+import { GUID, coverageWithin, modelContextKey, modelSettingsUrl, rebindScript } from '@/lib/actions';
 import { score, type Results, type ViewState } from '@/lib/results/logic';
 import type { ReportEntry } from '@/lib/results/payload';
 import { buttonClass, inputClass } from '@/lib/styles';
 
-type Group = ReturnType<Results['buildGroups']>[number];
-
 const when = (value: Date | string) => new Date(value).toLocaleString();
 
-function ReportRebindRow({
+export function ReportRebindRow({
   results,
   state,
   actions,
@@ -122,19 +120,17 @@ function ReportRebindRow({
   );
 }
 
-/** Next actions for a duplicate group: choose a trusted model, endorse it, and rebind reports to it. */
-export function GroupActions({ results, state, group, actions }: { results: Results; state: ViewState; group: Group; actions: ActionsState }) {
-  const { approved, proposals } = trustedModelFor(actions.decisions, group.members, actions.approvers);
-  const [choice, setChoice] = useState(approved?.modelId ?? group.strongest.idA);
+/** Trust decision for a consolidation target, plus promote/certify guidance once approved. */
+export function TrustPanel({ results, targetId, actions }: { results: Results; targetId: string; actions: ActionsState }) {
+  const { approved, proposals } = trustedModelFor(actions.decisions, [targetId], actions.approvers);
   const [rationale, setRationale] = useState('');
   const disabled = actions.busy || !actions.email;
-  const trusted = approved ? results.model(approved.modelId) : null;
+  const model = results.model(targetId);
 
-  const decide = (modelId: string) => {
-    const model = results.model(modelId);
+  const decide = () => {
     void actions.decide({
-      groupKey: results.groupKey(group),
-      modelId,
+      groupKey: modelContextKey(targetId),
+      modelId: targetId,
       modelName: model.name,
       workspaceId: model.workspaceId,
       workspaceName: model.workspace,
@@ -144,109 +140,58 @@ export function GroupActions({ results, state, group, actions }: { results: Resu
   };
 
   return (
-    <section aria-labelledby="group-actions-title" className="flex flex-col gap-300 border-t border-border pt-300">
-      <h4 id="group-actions-title" className="font-heading text-400 font-semibold">
-        Next actions
-      </h4>
-      {actions.error ? <Notice tone="error" title={actions.error} /> : null}
-      {actions.loading && !actions.decisions.length ? <div className="text-300 text-muted-foreground">Loading next actions…</div> : null}
-
-      <div className="flex flex-col gap-200">
-        <h5 className="text-300 font-semibold">1. Trusted model</h5>
-        {approved && trusted ? (
-          <p className="text-300">
-            <strong>{approved.modelName}</strong> ({approved.workspaceName}) — approved by {approved.authorEmail}, {when(approved.createdAt)}
-            {approved.rationale ? <span className="text-muted-foreground">. {approved.rationale}</span> : null}
-          </p>
-        ) : (
-          <p className="text-300 text-muted-foreground">No trusted model approved for this group yet.</p>
-        )}
-        {proposals.map((proposal) => (
-          <div key={proposal.id} className="flex flex-wrap items-center gap-200 text-300">
-            <Tag>Proposed</Tag>
-            {proposal.modelName} by {proposal.authorEmail}, {when(proposal.createdAt)}
-            {proposal.rationale ? <span className="text-muted-foreground">— {proposal.rationale}</span> : null}
-            {actions.isApprover ? (
-              <button type="button" className={buttonClass('ghost')} disabled={disabled} onClick={() => decide(proposal.modelId)}>
-                Approve
-              </button>
-            ) : null}
-          </div>
-        ))}
+    <div className="flex flex-col gap-300">
+      {approved ? (
+        <p className="text-300">
+          <Tag>Trusted</Tag> Approved by {approved.authorEmail}, {when(approved.createdAt)}
+          {approved.rationale ? <span className="text-muted-foreground"> — {approved.rationale}</span> : null}
+        </p>
+      ) : (
+        <p className="text-300 text-muted-foreground">Not yet approved as a trusted model.</p>
+      )}
+      {proposals.map((proposal) => (
+        <div key={proposal.id} className="flex flex-wrap items-center gap-200 text-300">
+          <Tag>Proposed</Tag>
+          by {proposal.authorEmail}, {when(proposal.createdAt)}
+          {proposal.rationale ? <span className="text-muted-foreground">— {proposal.rationale}</span> : null}
+        </div>
+      ))}
+      {!approved || !actions.isApprover ? (
         <div className="flex flex-wrap items-end gap-300">
-          <Field label="Model">
-            <select value={choice} onChange={(event) => setChoice(event.target.value)} className={inputClass}>
-              {group.members.map((id) => (
-                <option key={id} value={id}>
-                  {results.selectionLabel(id)}
-                </option>
-              ))}
-            </select>
-          </Field>
           <Field label="Reason (optional)">
             <input value={rationale} maxLength={2000} onChange={(event) => setRationale(event.target.value)} className={inputClass} placeholder="Why this model" />
           </Field>
-          <button type="button" className={buttonClass(actions.isApprover ? 'primary' : 'secondary')} disabled={disabled} onClick={() => decide(choice)}>
+          <button type="button" className={buttonClass(actions.isApprover ? 'primary' : 'secondary')} disabled={disabled || (Boolean(approved) && !actions.isApprover)} onClick={decide}>
             {actions.isApprover ? 'Approve as trusted model' : 'Propose as trusted model'}
           </button>
         </div>
-        {!actions.isApprover && actions.email ? (
-          <p className="text-200 text-muted-foreground">Your proposals are recorded for an approver. Approvers: {[...actions.approvers].join(', ') || 'none configured'}.</p>
-        ) : null}
-      </div>
-
-      {approved && trusted ? (
-        <>
-          <div className="flex flex-col gap-200">
-            <h5 className="text-300 font-semibold">2. Promote or certify</h5>
-            <p className="text-300 text-muted-foreground">
-              Power BI has no public API to endorse a model, so this step is manual. Open the model's settings and, under <strong>Endorsement and discovery</strong>, choose{' '}
-              <strong>Promoted</strong>, or <strong>Certified</strong> if you're an authorized certifier. Make it discoverable so report authors can find it.
-            </p>
-            {GUID.test(approved.workspaceId) && GUID.test(approved.modelId) ? (
-              <a className={buttonClass()} href={modelSettingsUrl(approved.workspaceId, approved.modelId)} target="_blank" rel="noopener noreferrer">
-                Open {approved.modelName} settings
-              </a>
-            ) : null}
-          </div>
-          <div className="flex flex-col gap-200">
-            <h5 className="text-300 font-semibold">3. Rebind reports to {approved.modelName}</h5>
-            {!results.reportsAvailable() ? (
-              <p className="text-300 text-muted-foreground">Report dependencies are unknown. Run the analysis with a report scan first.</p>
-            ) : (
-              <ul className="flex flex-col divide-y divide-border">
-                {group.members
-                  .filter((id) => id !== approved.modelId)
-                  .flatMap((id) => results.reportsFor(id).map((report) => ({ id, report })))
-                  .map(({ id, report }) => (
-                    <ReportRebindRow
-                      key={`${report.workspaceId}|${report.id}`}
-                      results={results}
-                      state={state}
-                      actions={actions}
-                      report={report}
-                      fromId={id}
-                      trusted={{ modelId: approved.modelId, modelName: approved.modelName }}
-                    />
-                  ))}
-              </ul>
-            )}
-            {results.reportsAvailable() && !group.members.some((id) => id !== approved.modelId && results.reportsFor(id).length) ? (
-              <p className="text-300 text-muted-foreground">No linked reports found on the other models in this group.</p>
-            ) : null}
-            <p className="text-200 text-muted-foreground">
-              <strong>Rebind now</strong> runs as the app owner through the Power BI API, only for plans approved by an approver, and only if the report still uses the planned model. Use{' '}
-              <strong>Run it yourself</strong> to run the same change under your own account instead.
-            </p>
-          </div>
-        </>
       ) : null}
-    </section>
+      {!actions.isApprover && actions.email ? (
+        <p className="text-200 text-muted-foreground">Proposals are recorded for an approver. Approvers: {[...actions.approvers].join(', ') || 'none configured'}.</p>
+      ) : null}
+      {approved ? (
+        <div className="flex flex-col gap-200 rounded-md border border-border px-300 py-200">
+          <h4 className="text-300 font-semibold">Promote or certify</h4>
+          <p className="text-300 text-muted-foreground">
+            Power BI has no public API to endorse a model, so this step is manual. Open the model's settings and, under <strong>Endorsement and discovery</strong>, choose{' '}
+            <strong>Promoted</strong>, or <strong>Certified</strong> if you're an authorized certifier. Make it discoverable so report authors can find it.
+          </p>
+          {GUID.test(model.workspaceId) && GUID.test(targetId) ? (
+            <a className={`${buttonClass()} self-start`} href={modelSettingsUrl(model.workspaceId, targetId)} target="_blank" rel="noopener noreferrer">
+              Open {model.name} settings
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
   );
 }
-
 /** Actions tab: who you are in the approval flow, and the audit log of decisions and rebinds. */
-export function ActionsView({ actions }: { actions: ActionsState }) {
+export function ActionsView({ actions, onOpenTarget }: { actions: ActionsState; onOpenTarget: (modelId: string) => void }) {
+  const trusted = new Map<string, (typeof actions.decisions)[number]>();
+  for (const decision of [...actions.decisions].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())) {
+    if (actions.approvers.has(decision.authorEmail.toLowerCase()) && !trusted.has(decision.modelId)) trusted.set(decision.modelId, decision);
+  }
   const rows = [
     ...actions.decisions.map((row) => ({
       id: row.id,
@@ -281,9 +226,28 @@ export function ActionsView({ actions }: { actions: ActionsState }) {
       </div>
       {actions.error ? <Notice tone="error" title={actions.error} /> : null}
       <p className="text-300 text-muted-foreground">
-        Choose trusted models and rebind reports from a group in <strong>Groups</strong>. Signed in as {actions.email ?? 'unknown'} —{' '}
+        Choose trusted models and rebind reports in <strong>Consolidation</strong>. Signed in as {actions.email ?? 'unknown'} —{' '}
         {actions.isApprover ? 'you can approve and run actions.' : 'you can propose actions for an approver.'} Approvers: {[...actions.approvers].join(', ') || 'none configured'}.
       </p>
+      <h3 className="font-heading text-400 font-semibold">Trusted models</h3>
+      {trusted.size ? (
+        <ul className="flex flex-col divide-y divide-border rounded-md border border-border bg-card" aria-label="Trusted models">
+          {[...trusted.values()].map((decision) => (
+            <li key={decision.modelId} className="flex flex-wrap items-center justify-between gap-300 px-300 py-200 text-300">
+              <span>
+                <span className="font-medium">{decision.modelName}</span> <span className="text-muted-foreground">({decision.workspaceName})</span>
+                <span className="text-200 text-muted-foreground"> — approved by {decision.authorEmail}, {new Date(decision.createdAt).toLocaleString()}</span>
+              </span>
+              <button type="button" className={buttonClass('ghost')} onClick={() => onOpenTarget(decision.modelId)}>
+                Open in Consolidation
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-300 text-muted-foreground">{actions.loading ? 'Loading…' : 'No trusted models approved yet.'}</p>
+      )}
+      <h3 className="font-heading text-400 font-semibold">History</h3>
       {rows.length ? (
         <div className="overflow-auto rounded-md border border-border bg-card" role="region" aria-label="Action history" tabIndex={0}>
           <table className="w-full min-w-[720px] border-collapse text-left text-300">

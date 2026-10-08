@@ -32,7 +32,7 @@ When you change a feature in one renderer, make the matching change in the other
 | Review | Sort by Overall, Schema, Security, Finding; 25/50/100 rows per page; Clear filters | ✓ | ✓ |
 | Review | Expand a row into the seven schema signals | ✓ | ✓ |
 | Review | Compare opens at the most relevant section | ✓ | ✓ |
-| Groups | Search; group table; members with security and report counts; Model A/B pickers; Compare | ✓ | ✓ |
+| Groups | Search; group table; members with security and report counts; Model A/B pickers; Compare | ✓ | Replaced by Consolidation (see exceptions) |
 | Compare | Model A/B selection and swap; Back to the previous view | ✓ | ✓ |
 | Compare | Finding, security tag, outside-scope note, Differences only | ✓ | ✓ |
 | Compare | Schema/Security/Overall, coverage A within B and B within A, schema entry counts, security notice | ✓ | ✓ |
@@ -43,10 +43,13 @@ When you change a feature in one renderer, make the matching change in the other
 | Map | Search, workspace filter, 40-model slices, legend, outside-scope cells, cell opens Compare | ✓ | ✓ |
 | App only | Run analysis (start, follow, cancel notebook 001) | — | ✓ |
 | App only | Next actions (trusted model, report rebind, promote/certify guidance) | — | ✓ |
+| App only | Consolidation: any model as target, candidates across all findings with coverage and reports, next actions | — | ✓ |
+| App only | Consolidate buttons on Review rows and in Compare; Actions tab with trusted models and history | — | ✓ |
 
 ## Exceptions
 
 - **Run analysis and next actions are app-only.** They call Fabric and Power BI APIs as the app identity, which a notebook output can't do safely.
+- **Groups is replaced by Consolidation in the app.** Notebook 002 keeps its duplicate-group analysis. The app's Consolidation tab starts from a chosen model instead, covers schema-coverage and shared-structure pairs as well as possible duplicates, and hosts next actions. The app keeps the group port (`buildGroups`) for the Review "Duplicate groups" count and help text, which stay identical to 002.
 - **Security definitions stay in notebook 002.** The app never reads `semantic_model_security` or `security_definition_json`. It trusts the saved security fingerprint and role count, so its Security definitions section shows the comparison status and role counts, and points to notebook 002 for rule-level differences.
 - **Long text is truncated for the app.** The lakehouse SQL endpoint exposes strings as `varchar(8000)`. The app uses notebook 001's `expression_hash` for Power Query equality, so M comparisons stay exact, but M and DAX text over 8,000 characters is cut short in Compare. DAX equality in the app uses a hash of the truncated text, so two long measures that differ only after 8,000 characters show as matching.
 - **Hashing.** The app hashes normalized DAX with its own function (`textHash`) instead of MD5. Equality results are the same; only the internal key differs.

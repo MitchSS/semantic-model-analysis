@@ -25,13 +25,15 @@ from its presence here.
 ### Added
 
 - Optional Rayfin Fabric App in `similarity/app` that starts notebook 001 runs
-  with parameters and shows Review, Groups, Compare and Similarity map views
-  over the lakehouse results. Its results views mirror notebook 002 feature for
-  feature, including the Power Query evidence, and shared parity tests keep the
-  two in step (see `similarity/app/docs/parity.md`). Next actions let approvers
-  choose a trusted model per duplicate group, follow promote/certify guidance,
-  and rebind reports to it with undo; approvals are recorded in the app's
-  database. The app is not included in the release package.
+  with parameters and shows Review, Consolidation, Similarity map and Compare
+  views over the lakehouse results. Review, Compare and the map mirror notebook
+  002 feature for feature, including the Power Query evidence, and shared
+  parity tests keep the two in step (see `similarity/app/docs/parity.md`). In
+  place of 002's Groups, the app's Consolidation tab starts from any model and
+  lists every model it duplicates, covers or overlaps, with next actions:
+  approve it as the trusted model, follow promote/certify guidance, and rebind
+  reports to it with undo. Approvals are recorded in the app's database. The
+  app is not included in the release package.
 
 ## [0.2.0]
 

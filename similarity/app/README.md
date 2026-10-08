@@ -4,10 +4,10 @@ A [Fabric App](https://learn.microsoft.com/fabric/apps/) (built with Rayfin) for
 
 - **Run analysis.** Start notebook 001 with parameters, follow its status, cancel it, and see recent runs.
 - **Review.** Rank possible duplicates, schema coverage, and shared-structure pairs, and filter them by finding, workspace, security, and Power Query state. Expand a row to see its seven schema signals.
-- **Groups.** Browse connected possible-duplicate groups and compare any two members.
+- **Consolidation.** Pick any model as the one to keep and see every model it duplicates, covers or overlaps, with their reports. From there, approve it as the trusted model, get guidance to promote or certify it, and rebind the other models' reports to it. Review rows (**Consolidate**) and Compare (**Consolidate into A/B**) open it with a target chosen.
 - **Compare.** Compare any two catalog models: all three scores, coverage in both directions, differences in tables, columns, measures, Power Query (M), relationships and sources, dependent reports, and a score breakdown.
 - **Similarity map.** Use a matrix of Overall scores, shown 40 models at a time. Select a cell to open Compare.
-- **Next actions.** For a duplicate group, choose a trusted model, get guidance to promote or certify it, and rebind the other models' reports to it. The **Actions** tab shows the full history.
+- **Actions.** The trusted models and the full history of decisions and rebinds.
 
 The results views offer the same analysis, labels and thresholds as the results notebook (002), backed by shared parity tests. See [App and notebook 002 parity](docs/parity.md) for the feature checklist and the deliberate differences, and the [technical reference](../docs/reference.md) for how scores are calculated.
 
@@ -56,11 +56,11 @@ You can't turn on temporary workspace access or change the score weights from th
 
 ### Next actions and approvals
 
-Open a group in **Groups** to see its next actions:
+Next actions live in **Consolidation**. Choose a target model (suggestions list trusted models first, then the models with the most review candidates). The candidate list uses the same thresholds and **Cross-workspace only** scope as Review and covers all three findings: possible duplicates, schema coverage and shared structure.
 
-1. **Trusted model.** Approvers approve a group member as the trusted model; anyone else can propose one.
+1. **Trusted model.** Approvers approve the target as a trusted model; anyone else can propose it. Trust belongs to the model, so it shows wherever the model appears. Decisions made in the earlier Groups view still count.
 2. **Promote or certify.** Power BI has no public API to endorse a model, so the app links to the model's settings and explains the steps.
-3. **Rebind reports.** For each report on another member, the app shows how much of that report's model the trusted model covers. A plan below the coverage threshold needs an explicit override, which is recorded. Approvers approve a plan, then either select **Rebind now** or copy a PowerShell script (**Run it yourself**) that makes the same change under their own account. **Undo rebind** moves an executed report back.
+3. **Rebind reports.** Expand a candidate to see its reports and how much of the candidate the trusted model covers. A plan below the coverage threshold needs an explicit override, which is recorded. Approvers approve a plan, then either select **Rebind now** or copy a PowerShell script (**Run it yourself**) that makes the same change under their own account. **Undo rebind** moves an executed report back. A candidate that is itself trusted is tagged **Also trusted**.
 
 How approval is enforced:
 

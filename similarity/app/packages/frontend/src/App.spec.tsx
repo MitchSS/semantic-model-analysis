@@ -140,14 +140,23 @@ describe('App', () => {
     expect(screen.getAllByText('Not scored').length).toBeGreaterThanOrEqual(3);
   });
 
-  it('shows duplicate groups and compares members', () => {
+  it('opens Consolidation from a Review row with the containing model as target', () => {
     render(<App />);
-    tab('Groups');
-    expect(screen.getByText('1 of 1 groups')).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Group 1 / 2 models' })).toBeVisible();
-    fireEvent.click(within(document.getElementById('group-detail')!).getByRole('button', { name: 'Compare' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Consolidate Sales and Sales Core' }));
+    expect(screen.getByRole('heading', { name: 'Consolidation' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Sales' })).toBeVisible();
+    expect(screen.getByText('Models to consolidate into Sales')).toBeVisible();
+  });
+
+  it('opens Consolidation from Compare and returns there with Back', () => {
+    render(<App />);
+    tab('Compare');
+    fireEvent.click(screen.getByRole('button', { name: 'Consolidate into B' }));
+    expect(screen.getByRole('heading', { name: 'Sales Restricted' })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Compare Sales Restricted and Sales' }));
     expect(screen.getByRole('heading', { name: 'Compare models' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Back to Groups' })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to Consolidation' }));
+    expect(screen.getByRole('heading', { name: 'Sales Restricted' })).toBeVisible();
   });
 
   it('opens a comparison from a similarity map cell', () => {

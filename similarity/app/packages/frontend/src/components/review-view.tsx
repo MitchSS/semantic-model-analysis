@@ -1,4 +1,4 @@
-import { ArrowUpDown, ChevronRight, GitCompareArrows } from 'lucide-react';
+import { ArrowUpDown, ChevronRight, GitCompareArrows, Merge } from 'lucide-react';
 import { Fragment } from 'react';
 
 import { Field, LinkButton, Metric, MetricGrid, Pager, ScoreCell, Tag } from '@/components/ui';
@@ -72,7 +72,8 @@ export function ReviewView({
   onCompare,
   expanded,
   onToggleExpanded,
-}: ViewProps & { expanded: Record<string, boolean>; onToggleExpanded: (key: string) => void }) {
+  onConsolidate,
+}: ViewProps & { expanded: Record<string, boolean>; onToggleExpanded: (key: string) => void; onConsolidate?: (a: string, b: string) => void }) {
   const selection = results.reviewSelection(state);
   const groups = results.buildGroups(state);
   const total = selection.rows.length;
@@ -246,15 +247,28 @@ export function ReviewView({
                         <SecurityTag results={results} pair={pair} />
                       </td>
                       <td className="px-300 py-200 text-right align-top">
-                        <button
-                          type="button"
-                          onClick={() => onCompare(pair.idA, pair.idB, results.relevantSection(pair))}
-                          title="Compare models"
-                          aria-label={`Compare ${results.pairModelLabel(pair.idA, pair.idB)} and ${results.pairModelLabel(pair.idB, pair.idA)}`}
-                          className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-md border border-input bg-card hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          <GitCompareArrows aria-hidden="true" className="icon-size-200" />
-                        </button>
+                        <span className="inline-flex gap-100">
+                          <button
+                            type="button"
+                            onClick={() => onCompare(pair.idA, pair.idB, results.relevantSection(pair))}
+                            title="Compare models"
+                            aria-label={`Compare ${results.pairModelLabel(pair.idA, pair.idB)} and ${results.pairModelLabel(pair.idB, pair.idA)}`}
+                            className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-md border border-input bg-card hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            <GitCompareArrows aria-hidden="true" className="icon-size-200" />
+                          </button>
+                          {onConsolidate ? (
+                            <button
+                              type="button"
+                              onClick={() => onConsolidate(pair.idA, pair.idB)}
+                              title="Consolidate"
+                              aria-label={`Consolidate ${results.pairModelLabel(pair.idA, pair.idB)} and ${results.pairModelLabel(pair.idB, pair.idA)}`}
+                              className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-md border border-input bg-card hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <Merge aria-hidden="true" className="icon-size-200" />
+                            </button>
+                          ) : null}
+                        </span>
                       </td>
                     </tr>
                     <tr id={`pair-indicators-${encodeURIComponent(key)}`} hidden={!expanded[key]} className="border-b border-border bg-secondary/40">

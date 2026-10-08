@@ -2,9 +2,9 @@ import { HelpCircle, Moon, RefreshCw, SlidersHorizontal, Sun } from 'lucide-reac
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { CompareView, type CompareSelection } from '@/components/compare-view';
-import { GroupsView, type GroupSelections } from '@/components/groups-view';
+import { ConsolidationView } from '@/components/consolidation-view';
 import { MapView } from '@/components/map-view';
-import { ActionsView, GroupActions } from '@/components/next-actions';
+import { ActionsView } from '@/components/next-actions';
 import { HelpDialog, SettingsPanel } from '@/components/results-chrome';
 import { ReviewView } from '@/components/review-view';
 import { RunPanel, RunStatusBadge } from '@/components/run-panel';
@@ -13,17 +13,18 @@ import { ThemeContext } from '@/hooks/theme.context';
 import { useActions } from '@/hooks/use-actions';
 import { useSimilarityData } from '@/hooks/use-similarity-data';
 import { useSimilarityRuns } from '@/hooks/use-similarity-runs';
+import { defaultTargetForPair, trustedModelIds } from '@/lib/actions';
 import { Results, defaultThresholds, initialViewState, validScore, type Thresholds, type ViewState } from '@/lib/results/logic';
 import type { ResultsPayload } from '@/lib/results/payload';
 import { buttonClass } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 
-type Tab = 'review' | 'groups' | 'map' | 'compare' | 'run' | 'actions';
+type Tab = 'review' | 'consolidate' | 'map' | 'compare' | 'run' | 'actions';
 
 /** Same order and labels as notebook 002, plus the app-only Run analysis tab. */
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'review', label: 'Review' },
-  { id: 'groups', label: 'Groups' },
+  { id: 'consolidate', label: 'Consolidation' },
   { id: 'map', label: 'Similarity map' },
   { id: 'compare', label: 'Compare' },
   { id: 'run', label: 'Run analysis' },
@@ -79,8 +80,7 @@ function App() {
   const [compare, setCompare] = useState<CompareSelection | null>(null);
   const [returnTab, setReturnTab] = useState<Tab | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [selectedGroup, setSelectedGroup] = useState('');
-  const [groupSelections, setGroupSelections] = useState<GroupSelections>({});
+  const [consolidationTarget, setConsolidationTarget] = useState<string | null>(null);
 
   // On every new payload (first load or a finished run) take the run's thresholds unless the user
   // saved their own, like 002; other filters survive reloads.
@@ -130,6 +130,11 @@ function App() {
     setTab(returnTab);
     pendingFocus.current = 'back';
   };
+  const openConsolidation = (modelId: string) => {
+    setConsolidationTarget(modelId);
+    setTab('consolidate');
+    window.scrollTo({ top: 0 });
+  };
   const applyThresholds = (next: Thresholds) => {
     if (!(['duplicate', 'similar', 'containment'] as const).every((key) => validScore(next[key]))) return;
     update({ thresholds: next, page: 1 });
@@ -144,7 +149,7 @@ function App() {
   const generatedAt = loaded?.run?.generatedAt ?? payload?.generatedAt;
 
   const content = () => {
-    if (tab === 'actions') return <ActionsView actions={actions} />;
+    if (tab === 'actions') return <ActionsView actions={actions} onOpenTarget={openConsolidation} />;
     if (tab === 'run') {
       return (
         <RunPanel
@@ -169,19 +174,17 @@ function App() {
     }
     const props = { results, state: view, update, onHelp: openHelp, onCompare: openCompare };
     if (tab === 'review') {
-      return <ReviewView {...props} expanded={expanded} onToggleExpanded={(key) => setExpanded((current) => ({ ...current, [key]: !current[key] }))} />;
-    }
-    if (tab === 'groups') {
       return (
-        <GroupsView
+        <ReviewView
           {...props}
-          selectedGroup={selectedGroup}
-          onSelectGroup={setSelectedGroup}
-          selections={groupSelections}
-          onSelectionChange={(key, chosen) => setGroupSelections((current) => ({ ...current, [key]: chosen }))}
-          actions={(group) => <GroupActions key={results.groupKey(group)} results={results} state={view} group={group} actions={actions} />}
+          expanded={expanded}
+          onToggleExpanded={(key) => setExpanded((current) => ({ ...current, [key]: !current[key] }))}
+          onConsolidate={(a, b) => openConsolidation(defaultTargetForPair(results, view, a, b, trustedModelIds(actions.decisions, actions.approvers)))}
         />
       );
+    }
+    if (tab === 'consolidate') {
+      return <ConsolidationView results={results} state={view} onHelp={openHelp} onCompare={openCompare} actions={actions} targetId={consolidationTarget} onTargetChange={setConsolidationTarget} />;
     }
     if (tab === 'map') return <MapView {...props} />;
     return (
@@ -194,6 +197,15 @@ function App() {
         onSelectionChange={setCompare}
         backLabel={returnTab ? (TABS.find((item) => item.id === returnTab)?.label ?? null) : null}
         onBack={goBack}
+        actions={() => (
+          <div className="flex flex-wrap gap-200">
+            {[compare.a, compare.b].map((id, index) => (
+              <button key={index} type="button" className={buttonClass()} onClick={() => openConsolidation(id)} title={`Open ${results.model(id).name} in Consolidation`}>
+                Consolidate into {index === 0 ? 'A' : 'B'}
+              </button>
+            ))}
+          </div>
+        )}
       />
     );
   };
