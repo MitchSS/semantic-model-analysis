@@ -7,6 +7,15 @@ export type DataState =
   | { status: 'ready'; data: LoadedDataset; error: null }
   | { status: 'error'; data: LoadedDataset | null; error: string };
 
+/** Short, non-sensitive reference (error type, SDK code, HTTP status) for support. */
+export function errorReference(error: unknown): string {
+  if (!(error instanceof Error)) return 'Unknown error';
+  const { code, status } = error as Error & { code?: unknown; status?: unknown };
+  return [error.name, typeof code === 'string' ? code : null, typeof status === 'number' ? `HTTP ${status}` : null]
+    .filter(Boolean)
+    .join(' · ');
+}
+
 export function describeLoadError(error: unknown): string {
   const message = error instanceof Error ? error.message : '';
   if (/40[13]|forbidden|unauthori[sz]ed|permission/i.test(message)) {
@@ -15,7 +24,7 @@ export function describeLoadError(error: unknown): string {
   if (/invalid object name|not found/i.test(message)) {
     return 'The similarity tables were not found. Run the analysis once to create them.';
   }
-  return 'The similarity results could not be loaded. Try again shortly.';
+  return `The similarity results could not be loaded. Try again shortly. (${errorReference(error)})`;
 }
 
 /** Loads the lakehouse result tables; keeps the previous dataset visible while refreshing. */
@@ -31,7 +40,8 @@ export function useSimilarityData(load: () => Promise<LoadedDataset> = loadSimil
       if (id === request.current) setState({ status: 'ready', data, error: null });
     } catch (error) {
       if (id === request.current) {
-        console.error('Failed to load similarity results', error instanceof Error ? error.name : 'unknown');
+        // SDK errors carry no credentials; the full error helps diagnose host-specific failures in DevTools.
+        console.error('Failed to load similarity results', error);
         setState((previous) => ({ status: 'error', data: previous.data, error: describeLoadError(error) }));
       }
     }
