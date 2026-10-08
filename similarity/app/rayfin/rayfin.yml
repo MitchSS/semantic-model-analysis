@@ -17,6 +17,8 @@ services:
       enabled: false
     allowedRedirectUris:
       - http://localhost:5173
+      - http://127.0.0.1:5173
+      - https://dense-wilds-1f4d84f1d1-francecentral.webapp.fabricapps.net
   data:
     enabled: false
     path: packages/data
@@ -30,6 +32,8 @@ services:
     assetAccess: protected
     embedded:
       only: false
+  storage:
+    enabled: false
 connectors:
   - name: similaritylakehouse
     type: fabric-sqlanalytics

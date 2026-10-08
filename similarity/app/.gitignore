@@ -26,6 +26,7 @@ rayfin/.env
 rayfin/.env.secrets
 rayfin/.deployments.json
 packages/functions/deploymentdata.json
+packages/functions/deploymetadata.json
 
 # Added by Rayfin CLI
 yarn-debug.log*

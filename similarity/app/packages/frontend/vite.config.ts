@@ -51,7 +51,13 @@ const localNetworkAccessPlugin: PluginOption = {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    // Connector entities use TC39 decorators; lower them like vitest.config.ts so browsers can parse the bundle.
+    react({
+      useAtYourOwnRisk_mutateSwcOptions(options) {
+        options.jsc!.parser!.decorators = true;
+        options.jsc!.transform!.decoratorVersion = '2022-03';
+      },
+    }),
     tailwindcss(),
     rayfinLocalDev({ autoLogin: true }),
     localNetworkAccessPlugin,

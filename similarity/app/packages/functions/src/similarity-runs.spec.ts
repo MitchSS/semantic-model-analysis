@@ -81,6 +81,7 @@ describe('SimilarityRunClient.start', () => {
           DUPLICATE_THRESHOLD: { value: 0.95, type: 'float' },
           SIMILAR_THRESHOLD: { value: 0.7, type: 'float' },
           CONTAINMENT_THRESHOLD: { value: 0.95, type: 'float' },
+          _inlineInstallationEnabled: { value: true, type: 'bool' },
         },
       },
     });

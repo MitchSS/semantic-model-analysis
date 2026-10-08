@@ -55,9 +55,12 @@ You can't turn on temporary workspace access or change the score weights from th
 
 | Resource | Value |
 | --- | --- |
-| Workspace | `semantic-model-similarity-20260805` (`a5a00e8c-d269-4422-9cfc-a6626a4f2ff3`) |
+| Fabric App item (hosting) | Workspace `Rayfin France` (`c2a25257-248f-46bb-b07a-48392a297ef4`), capacity `fabfrancerayfin` (France Central) |
+| Notebook workspace | `semantic-model-similarity-20260805` (`a5a00e8c-d269-4422-9cfc-a6626a4f2ff3`) |
 | Notebook | `001_semantic_model_similarity` (`5bd4d491-889e-4b07-af84-daddfbc3c95c`) |
 | Lakehouse | `LH_SemanticModels` (`f997d7ec-692b-49b1-bba5-3be168fe89fd`) |
+
+The app is hosted in a different workspace from the notebook and lakehouse. Fabric Apps isn't turned on for the West US 3 capacity that `semantic-model-similarity-20260805` uses: creating an app item there fails with `403 The feature is not available`. As a result, notebook runs and lakehouse reads go across workspaces and regions (France Central to West US 3). Check that this is acceptable under your data residency requirements. The `fabfrancerayfin` capacity must be running for the app to work.
 
 The notebook and workspace IDs are set in `packages/functions/src/similarity-runs.ts`. Run requests from the browser can't change them. The connector target is in `rayfin/rayfin.yml`. The deployed notebook must be the parameterised version of notebook 001 from this repository, attached to `LH_SemanticModels`.
 
@@ -82,7 +85,7 @@ After the lakehouse schema changes, run `npx rayfin connector remove` and then `
 
 ```sh
 npx rayfin login
-npx rayfin up --workspace semantic-model-similarity-20260805
+npx rayfin up --workspace "Rayfin France"
 npx rayfin up status
 ```
 

@@ -10,7 +10,7 @@ import {
   type SimilarityRunStatus,
 } from '@rayfin-app/shared';
 
-/** Workspace `semantic-model-similarity-20260805`. */
+/** Workspace `semantic-model-similarity-20260805` (the app itself is hosted in `Rayfin France`). */
 export const SIMILARITY_WORKSPACE_ID = 'a5a00e8c-d269-4422-9cfc-a6626a4f2ff3';
 /** Notebook `001_semantic_model_similarity`. */
 export const SIMILARITY_NOTEBOOK_ID = '5bd4d491-889e-4b07-af84-daddfbc3c95c';
@@ -137,7 +137,13 @@ export class SimilarityRunClient {
     const response = await this.request('/jobs/instances?jobType=RunNotebook', {
       method: 'POST',
       body: JSON.stringify({
-        executionData: { parameters: toNotebookParameters(validation.parameters) },
+        executionData: {
+          parameters: {
+            ...toNotebookParameters(validation.parameters),
+            // Notebook 001 starts with `%pip install`, which Fabric disables in job runs unless this flag is set.
+            _inlineInstallationEnabled: { value: true, type: 'bool' },
+          },
+        },
       }),
     });
     if (response.status !== 202 && !response.ok) {
