@@ -37,4 +37,16 @@ export type AppFunctionsSchema = {
     input: Record<string, never>;
     output: { refreshed: boolean; error: null | { code: 'invalid_parameters' | 'invalid_run_id' | 'run_in_progress' | 'permission_denied' | 'not_found' | 'rate_limited' | 'fabric_error'; message: string; fields: { field: 'workspaceName' | 'modelName' | 'reportWorkspaceName' | 'enableBlocking' | 'duplicateThreshold' | 'similarThreshold' | 'containmentThreshold'; message: string }[] } };
   };
+  listApprovers: {
+    input: Record<string, never>;
+    output: { approvers: string[] };
+  };
+  executeRebind: {
+    input: { planId: string };
+    output: { status: 'rebound' | 'already_bound' | 'failed'; previousModelId: null | string; error: null | { code: 'permission_denied' | 'not_found' | 'rate_limited' | 'fabric_error' | 'invalid_plan' | 'not_approved' | 'wrong_binding' | 'unsupported_report'; message: string } };
+  };
+  undoRebind: {
+    input: { planId: string };
+    output: { status: 'rebound' | 'already_bound' | 'failed'; previousModelId: null | string; error: null | { code: 'permission_denied' | 'not_found' | 'rate_limited' | 'fabric_error' | 'invalid_plan' | 'not_approved' | 'wrong_binding' | 'unsupported_report'; message: string } };
+  };
 };

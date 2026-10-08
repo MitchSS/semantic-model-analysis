@@ -104,6 +104,68 @@
       "contextAudiences": [
         "Fabric"
       ]
+    },
+    {
+      "functionName": "listApprovers",
+      "delegateParameters": [
+        {
+          "name": "ctx",
+          "type": "RayfinContext<UniversalAppSchema>",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": []
+    },
+    {
+      "functionName": "executeRebind",
+      "delegateParameters": [
+        {
+          "name": "planId",
+          "type": "string",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        },
+        {
+          "name": "ctx",
+          "type": "RayfinContext<UniversalAppSchema, AudienceType.Fabric>",
+          "optional": false,
+          "hasDefault": false,
+          "position": 1,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": [
+        "Fabric"
+      ]
+    },
+    {
+      "functionName": "undoRebind",
+      "delegateParameters": [
+        {
+          "name": "planId",
+          "type": "string",
+          "optional": false,
+          "hasDefault": false,
+          "position": 0,
+          "isFabricParameter": false
+        },
+        {
+          "name": "ctx",
+          "type": "RayfinContext<UniversalAppSchema, AudienceType.Fabric>",
+          "optional": false,
+          "hasDefault": false,
+          "position": 1,
+          "isFabricParameter": false
+        }
+      ],
+      "contextAudiences": [
+        "Fabric"
+      ]
     }
   ]
 }

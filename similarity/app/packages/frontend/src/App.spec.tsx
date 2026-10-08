@@ -9,6 +9,10 @@ const start = vi.fn();
 vi.mock('@/hooks/use-similarity-data', () => ({
   useSimilarityData: () => ({ status: 'ready', data: loaded, error: null, reload }),
 }));
+vi.mock('@/hooks/use-actions', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/hooks/use-actions')>()),
+  useActions: () => ({ email: null, approvers: new Set(), isApprover: false, decisions: [], log: [], loading: false, busy: false, error: null, refresh: vi.fn(), decide: vi.fn(), planRebind: vi.fn(), perform: vi.fn() }),
+}));
 vi.mock('@/hooks/use-similarity-runs', () => ({
   useSimilarityRuns: () => ({
     runs: [{ id: 'r1', status: 'Completed', invokeType: 'Manual', startTimeUtc: '2026-10-01T08:00:00Z', endTimeUtc: '2026-10-01T08:12:30Z', failureMessage: null }],

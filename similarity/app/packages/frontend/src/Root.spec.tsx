@@ -10,6 +10,10 @@ import type { AuthConfig, IAuthService } from './services/rayfin-auth.service';
 vi.mock('./hooks/use-similarity-data', () => ({
   useSimilarityData: () => ({ status: 'loading', data: null, error: null, reload: vi.fn() }),
 }));
+vi.mock('./hooks/use-actions', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./hooks/use-actions')>()),
+  useActions: () => ({ email: null, approvers: new Set(), isApprover: false, decisions: [], log: [], loading: false, busy: false, error: null, refresh: vi.fn(), decide: vi.fn(), planRebind: vi.fn(), perform: vi.fn() }),
+}));
 vi.mock('./hooks/use-similarity-runs', () => ({
   useSimilarityRuns: () => ({
     runs: [],

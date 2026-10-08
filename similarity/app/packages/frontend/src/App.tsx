@@ -4,11 +4,13 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'r
 import { CompareView, type CompareSelection } from '@/components/compare-view';
 import { GroupsView, type GroupSelections } from '@/components/groups-view';
 import { MapView } from '@/components/map-view';
+import { ActionsView, GroupActions } from '@/components/next-actions';
 import { HelpDialog, SettingsPanel } from '@/components/results-chrome';
 import { ReviewView } from '@/components/review-view';
 import { RunPanel, RunStatusBadge } from '@/components/run-panel';
 import { Notice, Skeleton } from '@/components/ui';
 import { ThemeContext } from '@/hooks/theme.context';
+import { useActions } from '@/hooks/use-actions';
 import { useSimilarityData } from '@/hooks/use-similarity-data';
 import { useSimilarityRuns } from '@/hooks/use-similarity-runs';
 import { Results, defaultThresholds, initialViewState, validScore, type Thresholds, type ViewState } from '@/lib/results/logic';
@@ -16,7 +18,7 @@ import type { ResultsPayload } from '@/lib/results/payload';
 import { buttonClass } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 
-type Tab = 'review' | 'groups' | 'map' | 'compare' | 'run';
+type Tab = 'review' | 'groups' | 'map' | 'compare' | 'run' | 'actions';
 
 /** Same order and labels as notebook 002, plus the app-only Run analysis tab. */
 const TABS: Array<{ id: Tab; label: string }> = [
@@ -25,6 +27,7 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'map', label: 'Similarity map' },
   { id: 'compare', label: 'Compare' },
   { id: 'run', label: 'Run analysis' },
+  { id: 'actions', label: 'Actions' },
 ];
 
 /** Lakehouse SQL endpoint metadata can lag Delta writes; re-read once after a short delay. */
@@ -63,6 +66,7 @@ function App() {
   }, [reload]);
   useEffect(() => () => clearTimeout(lagTimer.current), []);
   const runs = useSimilarityRuns(onRunCompleted);
+  const actions = useActions();
 
   const loaded = data.data;
   const payload = loaded?.payload ?? null;
@@ -140,6 +144,7 @@ function App() {
   const generatedAt = loaded?.run?.generatedAt ?? payload?.generatedAt;
 
   const content = () => {
+    if (tab === 'actions') return <ActionsView actions={actions} />;
     if (tab === 'run') {
       return (
         <RunPanel
@@ -174,6 +179,7 @@ function App() {
           onSelectGroup={setSelectedGroup}
           selections={groupSelections}
           onSelectionChange={(key, chosen) => setGroupSelections((current) => ({ ...current, [key]: chosen }))}
+          actions={(group) => <GroupActions key={results.groupKey(group)} results={results} state={view} group={group} actions={actions} />}
         />
       );
     }

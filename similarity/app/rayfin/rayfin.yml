@@ -20,9 +20,10 @@ services:
       - http://127.0.0.1:5173
       - https://dense-wilds-1f4d84f1d1-francecentral.webapp.fabricapps.net
   data:
-    enabled: false
+    enabled: true
     path: packages/data
     buildCommand: npm run build
+    dialect: "mssql"
   staticHosting:
     enabled: true
     path: packages/frontend
@@ -44,3 +45,6 @@ connectors:
       type: application
     operations:
       - name: read
+secrets:
+  - name: APPROVER_EMAILS
+    description: Comma-separated emails allowed to approve trusted models and run report rebinds

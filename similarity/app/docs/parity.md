@@ -42,7 +42,7 @@ When you change a feature in one renderer, make the matching change in the other
 | Compare | Security definitions: role-by-role rule differences | ✓ | Status and role counts only (see exceptions) |
 | Map | Search, workspace filter, 40-model slices, legend, outside-scope cells, cell opens Compare | ✓ | ✓ |
 | App only | Run analysis (start, follow, cancel notebook 001) | — | ✓ |
-| App only | Next actions (trusted model, report rebind, promote/certify guidance) | — | Planned |
+| App only | Next actions (trusted model, report rebind, promote/certify guidance) | — | ✓ |
 
 ## Exceptions
 

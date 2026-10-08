@@ -28,8 +28,10 @@ from its presence here.
   with parameters and shows Review, Groups, Compare and Similarity map views
   over the lakehouse results. Its results views mirror notebook 002 feature for
   feature, including the Power Query evidence, and shared parity tests keep the
-  two in step (see `similarity/app/docs/parity.md`). The app is not included in
-  the release package.
+  two in step (see `similarity/app/docs/parity.md`). Next actions let approvers
+  choose a trusted model per duplicate group, follow promote/certify guidance,
+  and rebind reports to it with undo; approvals are recorded in the app's
+  database. The app is not included in the release package.
 
 ## [0.2.0]
 

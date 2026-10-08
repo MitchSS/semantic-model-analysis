@@ -7,6 +7,7 @@ A [Fabric App](https://learn.microsoft.com/fabric/apps/) (built with Rayfin) for
 - **Groups.** Browse connected possible-duplicate groups and compare any two members.
 - **Compare.** Compare any two catalog models: all three scores, coverage in both directions, differences in tables, columns, measures, Power Query (M), relationships and sources, dependent reports, and a score breakdown.
 - **Similarity map.** Use a matrix of Overall scores, shown 40 models at a time. Select a cell to open Compare.
+- **Next actions.** For a duplicate group, choose a trusted model, get guidance to promote or certify it, and rebind the other models' reports to it. The **Actions** tab shows the full history.
 
 The results views offer the same analysis, labels and thresholds as the results notebook (002), backed by shared parity tests. See [App and notebook 002 parity](docs/parity.md) for the feature checklist and the deliberate differences, and the [technical reference](../docs/reference.md) for how scores are calculated.
 
@@ -21,6 +22,8 @@ React app ──► Rayfin Functions (app identity) ──► Fabric Job Schedul
 | Piece | Location |
 | --- | --- |
 | Run functions: `startSimilarityRun`, `getSimilarityRun`, `listSimilarityRuns`, `cancelSimilarityRun`, `refreshSimilarityResults` | `packages/functions/src/` |
+| Next-action functions: `listApprovers`, `executeRebind`, `undoRebind` | `packages/functions/src/rebind.ts`, `caller.ts` |
+| App data (next-action history): `TrustedModelDecision`, `RebindAction` | `packages/data/src/`, contracts in `packages/shared/src/actions.ts` |
 | Run parameter contract: defaults, validation, and notebook mapping | `packages/shared/src/similarity-run.ts` |
 | Lakehouse entities (read-only, keyless) | `rayfin/connectors/similaritylakehouse/` |
 | Data loading, and the port of notebook 002's payload and view logic | `packages/frontend/src/lib/results/` |
@@ -50,6 +53,21 @@ You can't turn on temporary workspace access or change the score weights from th
 - **Anyone the app is shared with can start a run.** Share the app only with people who should be able to rescan the catalog.
 - **Lakehouse reads.** The connector uses the authentication mode set in `rayfin/rayfin.yml`, which is `application` by default. Check this setting before you share results more widely.
 - The app never reads the stored security-definition JSON. Review and Compare show only security status, role counts, and scores. Use notebook 002 to inspect rule-level security differences.
+
+### Next actions and approvals
+
+Open a group in **Groups** to see its next actions:
+
+1. **Trusted model.** Approvers approve a group member as the trusted model; anyone else can propose one.
+2. **Promote or certify.** Power BI has no public API to endorse a model, so the app links to the model's settings and explains the steps.
+3. **Rebind reports.** For each report on another member, the app shows how much of that report's model the trusted model covers. A plan below the coverage threshold needs an explicit override, which is recorded. Approvers approve a plan, then either select **Rebind now** or copy a PowerShell script (**Run it yourself**) that makes the same change under their own account. **Undo rebind** moves an executed report back.
+
+How approval is enforced:
+
+- **Approvers** are listed in the `APPROVER_EMAILS` secret (comma-separated). Change it with `npx rayfin secret set APPROVER_EMAILS --stdin`.
+- **Rayfin Functions can't identify the person calling them.** The token a function receives is a platform app token without user claims. So approval is proven in the app's database instead: `TrustedModelDecision` and `RebindAction` rows are append-only (no update or delete), and a server-side create policy only accepts a row whose `authorEmail` equals the signed-in user's `email` claim. A row written by an address in `APPROVER_EMAILS` counts as an approval.
+- **`executeRebind` and `undoRebind`** read the plan from the database, refuse it unless an approver wrote it, check that the report is a Power BI report still bound to the planned model, then call the Power BI Rebind API **as the app owner**. The app owner therefore needs write access to the report and Build permission on the trusted model. Any app user can trigger an approved plan, but nobody can run a plan an approver didn't write.
+- The outcome (`executed`, `failed`, `undone`) is recorded as the user who selected the button. Report dependencies in Review and Compare change only after the next analysis run.
 
 ### Target resources
 

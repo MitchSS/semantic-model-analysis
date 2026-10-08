@@ -1,9 +1,13 @@
 /**
  * Entity map shared by the data registration package and typed browser client.
- *
- * It remains empty while the data service is disabled. Data capabilities add
- * entity keys here so every runtime consumes the same schema contract.
+ * Keep it in step with `schema` in `packages/data/src/index.ts`.
  */
-export type UniversalAppSchema = Record<string, never>;
+import type { RebindActionRecord, TrustedModelDecisionRecord } from './actions.js';
 
+export type UniversalAppSchema = {
+  TrustedModelDecision: TrustedModelDecisionRecord;
+  RebindAction: RebindActionRecord;
+};
+
+export * from './actions.js';
 export * from './similarity-run.js';
