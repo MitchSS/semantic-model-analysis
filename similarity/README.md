@@ -43,7 +43,7 @@ Select a Review row to expand its table, column, measure, text, relationship, an
 
 | Score | Meaning |
 | --- | --- |
-| **Schema similarity** | Structural and text overlap across model definitions. |
+| **Schema similarity** | Structural and text overlap across model definitions, including DAX measures and Power Query (M). |
 | **Security similarity** | Similarity of security rules, not user access or security strength. |
 | **Combined similarity** | Overall score: normally 95% schema plus 5% security. |
 | **Schema coverage** | How much of one model's schema is represented in another. Directional and separate from security. |

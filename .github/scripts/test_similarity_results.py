@@ -56,13 +56,23 @@ class ResultsTests(unittest.TestCase):
     def test_report_and_security_validation_are_unchanged(self):
         expected = {
             "build_report_dependency_payload": "8f5d3dd68cd235699e31d11eb29fa08d33e7493e435d66d2998bb18c444a025b",
-            "build_security_results": "9072279c308134d5f80f7837210aa9259f53c55105d9b9090de1991161e9e5bb",
+            # Score version 3: refreshed deliberately with the Power Query signal.
+            "build_security_results": "3a93466343814ce960a7d69d063b360a425fe43888f34436e39b2f1476495fed",
         }
         functions = {node.name: node for node in notebook_nodes() if isinstance(node, ast.FunctionDef)}
         for name, digest in expected.items():
             with self.subTest(function=name):
                 actual = hashlib.sha256(ast.dump(functions[name], include_attributes=False).encode()).hexdigest()
                 self.assertEqual(actual, digest)
+
+    def test_power_query_normalization_matches_notebook_001(self):
+        from test_similarity_notebooks import notebook_nodes as scoring_nodes
+
+        def dump(nodes):
+            return next(ast.dump(node, include_attributes=False) for node in nodes
+                        if isinstance(node, ast.FunctionDef) and node.name == "norm_m")
+
+        self.assertEqual(dump(notebook_nodes()), dump(scoring_nodes()))
 
     @unittest.skipUnless(shutil.which("node"), "Node.js is required for the isolated renderer checks")
     def test_real_renderer_behavior(self):

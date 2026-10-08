@@ -31,13 +31,19 @@ SCORING_FINGERPRINTS = {
     "classify_containment": "d6f95cde3c55688a24b5b6205cce0cd30ba345cc5d718ba1d20c121db7646a06",
     "find": "1e8934b9a635e4c2fb2bba4c0d96d02ab8a863ed398fed9a7d04cd2001c897d7",
     "union": "791a37f661e20d7afb15dcbdef5c5b82f1fbc4834e2f873866f9ec9b2b2763a0",
+    "norm_m": "02018e62fb9d393d95df8dd3e001c7f4a999ce5da01aaaa908011b4325970d80",
+    "m_parameter_value": "520e63a87dc358d970062c9a0474e46fd987c2520345de6ba435a90307716dd2",
+    "extract_m_sources": "80b6902ed03298d4f2853c4e0b743e74a0d0c235420bc953b2830ec57b8e1033",
+    "weighted_schema_score": "bd9d54221e6709111231018d76c70e1b58b2235b3b51da05330c97b56dd1973f",
+    "power_query_similarity": "ea66cd7dfc07fc91573b98aa61ffabd4455876d06e8d7366167c8b569a93629d",
 }
+# Score version 3 (Power Query signal). Refresh deliberately when scoring changes.
 SCORING_STAGES = {
-    "signatures = {}": "e5629e2a85390c316e310b43d96c18b8a307939b6b0ab074e5ef9a288debf1fc",
-    "def jaccard(": "d435e50214c9398accffdc09089c0c0099decc204b89a6a2d457f61e1f888969",
-    "TfidfVectorizer": "797b79b15ea8ee1543279c7ffe5e04f15de619ca4c38498fae07c57c6a7601a4",
-    "analysis_run_id =": "8a8edf88863da2c2143310d82ff4c4d936836bd5c35131546215cb7fbe3fe266",
-    "similarity_outputs =": "29b0e910dd4e40c68210c7b1221a337acd39629a448f5a62f466e7e3460196a2",
+    "signatures = {}": "c70a2629ca34cefd59e852e5d00927dbd5afde1abc1e81550639f0360ef7ab2b",
+    "def jaccard(": "e1d9db63d61bdeffd0bd10b9aad7e0c9fbd6c251eec4e05458c22f919f51add8",
+    "TfidfVectorizer": "93db538069006980e903c2b7e6d4ff149036ff08bc2adba1e2bbbcadd2260421",
+    "analysis_run_id =": "328ccc2c175c485868659d5c726f2e938ca29e7dd6c3d4b7cb52463df9b0356d",
+    "similarity_outputs =": "98c166aec4cf8165b7e84c218464884748974ba849b1cb061a5acf6ad1fa7b79",
 }
 
 
@@ -510,6 +516,45 @@ class CollectionTests(unittest.TestCase):
         self.assertEqual(result["rows"]["security"][0]["scan_status"], "complete")
         self.assertEqual(access.events[-1], "finish")
 
+    def test_power_query_partitions_and_shared_expressions_are_cataloged(self):
+        class MPartitionSource(SimpleNamespace):
+            pass
+
+        class EntityPartitionSource(SimpleNamespace):
+            pass
+
+        self.fabric.list_datasets.side_effect = lambda workspace: Frame(
+            [{"Dataset ID": "model-b", "Dataset Name": "Sales"}] if workspace == WORKSPACE_B else []
+        )
+        self.fabric.PowerBIRestClient.return_value.get.side_effect = lambda url: response([])
+        model = SimpleNamespace(
+            Roles=[], Relationships=[], DataSources=[],
+            Expressions=[SimpleNamespace(Name="Server", Kind="M", Expression='"srv" meta [IsParameterQuery=true]')],
+            Tables=[
+                SimpleNamespace(Name="Sales", Columns=[], Measures=[], Partitions=[
+                    SimpleNamespace(Name="Sales-1", Source=MPartitionSource(Expression="let S = Sql.Database(Server, \"db\") in S")),
+                ]),
+                SimpleNamespace(Name="Dates", Columns=[], Measures=[], Partitions=[
+                    SimpleNamespace(Name="Dates", Source=EntityPartitionSource()),
+                ]),
+            ],
+        )
+
+        @contextmanager
+        def connect(**kwargs):
+            yield SimpleNamespace(model=model)
+
+        queries = self.helpers["collect_catalog"](self.fabric, self.admin, connect, access=FakeAccess())["rows"]["queries"]
+        by_name = {row["partition_name"]: row for row in queries}
+        self.assertEqual(by_name["Server"]["query_kind"], "shared_expression")
+        self.assertEqual(by_name["Sales-1"], {
+            "workspace_id": WORKSPACE_B, "workspace_name": "Models", "model_id": "model-b", "model_name": "Sales",
+            "table_name": "Sales", "partition_name": "Sales-1", "query_kind": "partition",
+            "source_type": "MPartitionSource", "expression": 'let S = Sql.Database(Server, "db") in S',
+        })
+        self.assertEqual(by_name["Dates"]["source_type"], "EntityPartitionSource")
+        self.assertIsNone(by_name["Dates"]["expression"])
+
     def test_model_enumeration_error_does_not_skip_reports(self):
         access = FakeAccess()
         self.fabric.list_datasets.side_effect = HttpError()
@@ -566,16 +611,16 @@ class NotebookContractTests(unittest.TestCase):
                 digest = hashlib.sha256(ast.dump(ast.parse(sources[0]), include_attributes=False).encode()).hexdigest()
                 self.assertEqual(digest, expected)
 
-    def test_all_fourteen_table_schemas_are_unchanged(self):
+    def test_all_fifteen_table_schemas_are_unchanged(self):
         names = {"identity_schema", "catalog_schemas", "similarity_schemas", "run_schema"}
         nodes = [node for node in notebook_nodes() if isinstance(node, ast.Assign)
                  and isinstance(node.targets[0], ast.Name) and node.targets[0].id in names]
         namespace = {}
         exec(compile(ast.Module(body=nodes, type_ignores=[]), "<output-schemas>", "exec"), namespace)
         schemas = {name: namespace[name] for name in names}
-        self.assertEqual(len(schemas["catalog_schemas"]) + len(schemas["similarity_schemas"]) + 1, 14)
+        self.assertEqual(len(schemas["catalog_schemas"]) + len(schemas["similarity_schemas"]) + 1, 15)
         digest = hashlib.sha256(json.dumps(schemas, sort_keys=True).encode()).hexdigest()
-        self.assertEqual(digest, "9f8de77e3696f90ab16958d3b8a531a979a6dda4e68db00ac445130ca5046b7a")
+        self.assertEqual(digest, "cd38d69d7dfa0eea355016e768252352cb72f8872fee598f9f38a8887d41603c")
 
     def test_scoring_configuration_precedes_collection(self):
         nodes = notebook_nodes()
@@ -592,6 +637,64 @@ class NotebookContractTests(unittest.TestCase):
 def code_cell_sources(path=NOTEBOOK):
     cells = json.loads(path.read_text(encoding="utf-8"))["cells"]
     return [(cell, "".join(cell["source"])) for cell in cells if cell["cell_type"] == "code"]
+
+
+class PowerQueryTests(unittest.TestCase):
+    def setUp(self):
+        self.ns = load_helpers()
+
+    def test_norm_m_drops_comments_and_folds_case_outside_literals(self):
+        source = 'let\n  // load\n  Source = Sql.Database("Srv01", "Sales DB"), /* note */\n  Rows = Source{[Schema="dbo"]}[Data]\nin Rows'
+        self.assertEqual(
+            self.ns["norm_m"](source),
+            'let source = sql.database("Srv01", "Sales DB"), rows = source{[schema="dbo"]}[data] in rows',
+        )
+
+    def test_norm_m_keeps_comment_markers_inside_literals(self):
+        self.assertEqual(self.ns["norm_m"]('Web.Contents("https://x/y") // c'), 'web.contents("https://x/y")')
+
+    def test_norm_m_handles_empty_and_unterminated_values(self):
+        self.assertEqual(self.ns["norm_m"](None), "")
+        self.assertEqual(self.ns["norm_m"](float("nan")), "")
+        self.assertEqual(self.ns["norm_m"]('A "b'), 'a "b')
+
+    def test_parameter_values_and_source_extraction(self):
+        self.assertEqual(self.ns["m_parameter_value"]('"srv.database.windows.net" meta [IsParameterQuery=true]'), "srv.database.windows.net")
+        self.assertIsNone(self.ns["m_parameter_value"]("let x = 1 in x"))
+        sources = self.ns["extract_m_sources"](
+            'let S = Sql.Database(Server, #"Db Name"), F = Csv.Document(File.Contents("C:\\\\data\\\\a.csv")),'
+            ' T = Table.SelectRows(S, each true), U = Sql.Database(Unknown, Other) in T',
+            {"Server": "SRV01", "Db Name": "Sales"},
+        )
+        self.assertEqual(sources, {"sql.database(srv01, sales)", 'file.contents(c:\\\\data\\\\a.csv)'})
+
+    def test_weighted_schema_score_skips_not_applicable_signals(self):
+        score = self.ns["weighted_schema_score"]({"tables": 1.0, "power_query": None}, {"tables": 0.5, "power_query": 0.5})
+        self.assertEqual(score, 1.0)
+        self.assertEqual(self.ns["weighted_schema_score"]({"tables": None}, {"tables": 1.0}), 0.0)
+
+    def test_power_query_similarity_states(self):
+        similarity = self.ns["power_query_similarity"]
+        self.assertEqual(similarity("", ""), (None, "not_applicable"))
+        self.assertEqual(similarity("let a = 1 in a", ""), (0.0, "one_sided"))
+        self.assertEqual(similarity("x", "x"), (1.0, "compared"))
+        self.assertEqual(similarity("x", "y", [0.6, 0.8], [0.6, 0.8]), (1.0, "compared"))
+        self.assertEqual(similarity("x", "y", [1.0, 0.0], [0.0, 1.0]), (0.0, "compared"))
+
+    def test_partition_queries_are_cataloged(self):
+        rows = self.ns["new_catalog_rows"]()
+        self.assertIn("queries", rows)
+
+    def test_default_weights_include_power_query(self):
+        sources = code_cell_sources()
+        namespace = {}
+        exec(next(source for cell, source in sources if "parameters" in cell["metadata"].get("tags", [])), namespace)
+        exec(next(source for _, source in sources if "SCORE_VERSION =" in source), namespace)
+        self.assertEqual(namespace["SCORE_VERSION"], 3)
+        self.assertAlmostEqual(sum(namespace["SIMILARITY_WEIGHTS"].values()), 1.0)
+        self.assertAlmostEqual(sum(namespace["CONTAINMENT_WEIGHTS"].values()), 1.0)
+        self.assertEqual(namespace["SIMILARITY_WEIGHTS"]["power_query"], 0.15)
+        self.assertEqual(namespace["CONTAINMENT_WEIGHTS"]["power_queries"], 0.15)
 
 
 class NotebookParameterTests(unittest.TestCase):

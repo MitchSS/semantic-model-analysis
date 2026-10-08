@@ -66,7 +66,8 @@ const expandedPairKey=[fixture.allPairs[0].idA,fixture.allPairs[0].idB].sort().j
 ui.state.expandedPairs[expandedPairKey]=true;
 let expandedQueue=ui.reviewQueueHTML();
 equal((expandedQueue.match(/class="pair-indicators"/g)||[]).length,1,'Only the expanded pair renders indicators');
-equal((expandedQueue.match(/role="meter"/g)||[]).length,6,'Expanded row shows all six saved schema signals');
+equal((expandedQueue.match(/role="meter"/g)||[]).length,7,'Expanded row shows all seven saved schema signals');
+check(expandedQueue.includes('Power Query similarity'),'Expanded row includes the Power Query signal');
 check(expandedQueue.includes('aria-expanded="true"'),'Disclosure exposes expanded state');
 check(expandedQueue.includes('Relationship-link overlap'),'Expanded indicators include relationships');
 equal((expandedQueue.match(/data-pair-key=/g)||[]).length,8,'Indicator rows do not alter candidate counts');
@@ -298,6 +299,27 @@ const bridgeUI=crossScope(bridge);
 equal(bridgeUI.buildGroups().map(group=>group.members.length),[2,2],'Removing a same-workspace bridge splits the duplicate graph');
 bridgeUI.setComparisonScope(false);
 equal(bridgeUI.buildGroups().map(group=>group.members.length),[4],'All-workspace scope retains the full connected component');
+
+const pq=allScope();
+pq.state.powerQuery='differs';
+equal(pq.reviewSelection().rows.map(item=>[item.pair.idA,item.pair.idB].sort().join('|')).sort(),
+  JSON.parse(JSON.stringify(pq.candidates().filter(item=>item.pair.powerQueryStatus==='one_sided'||(item.pair.powerQueryStatus==='compared'&&item.pair.powerQuery<1)).map(item=>[item.pair.idA,item.pair.idB].sort().join('|')).sort())),
+  'Power Query "differs" keeps one-sided and changed M');
+pq.state.powerQuery='matches';
+equal(pq.reviewSelection().rows.map(item=>item.pair.idB),['demo-sales-east'],'Power Query "matches" keeps identical M');
+pq.state.powerQuery='not_applicable';
+check(pq.reviewSelection().rows.every(item=>item.pair.powerQueryStatus==='not_applicable'),'No-M filter keeps only pairs without M');
+pq.state.powerQuery='all';
+pq.state.cmpA='demo-sales';pq.state.cmpB='demo-sales-forecast';pq.state.cmpDiffOnly=true;
+const pqCompare=pq.compareHTML();
+check(pqCompare.includes('data-section="queries"'),'Compare includes a Power Query section');
+check(/Power Query<\/span><span class="muted">1 matching \/ 1 different/.test(pqCompare),'Power Query section counts matching and changed queries');
+check(pqCompare.includes('Table.SelectRows')&&pqCompare.includes('M query'),'Changed M is shown side by side');
+pq.state.cmpB='demo-sales-core';
+check(/Power Query<\/span><span class="muted">0 matching \/ 2 different/.test(pq.compareHTML()),'Queries only in one model are differences');
+const naPair=fixture.allPairs.find(pair=>pair.powerQueryStatus==='not_applicable');
+pq.state.expandedPairs={};pq.state.expandedPairs[[naPair.idA,naPair.idB].sort().join('|')]=true;
+check(pq.helpHTML().includes('Power Query (M)'),'Definitions explain the Power Query signal');
 stressUI.setComparisonScope(true);
 equal(stressUI.candidates().length,stress.allPairs.filter(pair=>stress.models[pair.idA].workspaceId!==stress.models[pair.idB].workspaceId).length,'Large-catalog scope counts only eligible saved pairs');
 console.log(JSON.stringify({status:'PASS',assertions,stress:{models:250,pairs:20000,elapsedMs:stressMs}}));

@@ -14,6 +14,7 @@ For requirements and a quick start, see the [project README](../README.md).
 The collection stage of notebook 001 uses Semantic Link Labs and TOM to read semantic model metadata through the notebook user's Fabric identity. Run it interactively in Fabric. It discovers workspaces and semantic models, optionally grants a dedicated group temporary workspace access, opens read-only TOM sessions, and extracts:
 
 - semantic model properties, data sources, tables, and columns
+- Power Query (M) for every partition and shared expression, with Direct Lake/calculated partitions recorded as non-M sources
 - measures and DAX expressions
 - relationships
 - role permissions, RLS filters, table OLS, column OLS (CLS), and relationship security settings
@@ -30,10 +31,15 @@ The notebook writes these Delta tables to the attached Lakehouse:
 - `semantic_model_columns`
 - `semantic_model_relationships`
 - `semantic_model_measures`
+- `semantic_model_queries`
 - `semantic_model_catalog_errors`
 - `semantic_model_report_dependencies`
 - `semantic_model_report_scan`
 - `semantic_model_security`
+
+### Power Query
+
+`semantic_model_queries` has one row per table partition and shared expression: `table_name` (null for shared expressions), `partition_name` (the expression name for shared expressions), `query_kind` (`partition` or `shared_expression`), `source_type` (for example `MPartitionSource`, `EntityPartitionSource`, `CalculatedPartitionSource` or `M`), the M `expression` (null for non-M partitions), and `expression_hash`, the SHA-256 of the normalized M. Normalization removes `//` and `/* */` comments, collapses whitespace and folds case outside string literals; literals such as server, database and path names are kept as written. `semantic_model_datasources` is unchanged for compatibility and still lists M text alongside legacy data sources.
 
 ### Security metadata
 
@@ -62,22 +68,23 @@ These two report tables are **current snapshots**, always overwritten, including
 After collection and access cleanup, the scoring stage in the same notebook 001 reloads the persisted catalog tables and builds a normalized signature for each semantic model. It then:
 
 - builds candidate pairs
-- computes structural Jaccard overlap for tables, columns, measures, relationships, and data sources
+- computes structural Jaccard overlap for tables, columns, measures, relationships, and data sources; data sources are legacy connection definitions plus the upstream sources referenced by M connector calls such as `Sql.Database("server", "db")` (parameter names resolve through literal M parameters)
 - measures DAX/name similarity with a local TF-IDF vectorizer
-- preserves the six-signal blend as the symmetric **schema similarity score**
+- measures **Power Query** similarity with a separate TF-IDF vectorizer over each model's normalized M; when neither model has M (for example two Direct Lake models) the signal is not applicable and its weight is excluded for that pair, and when only one model has M it scores 0
+- preserves the seven-signal blend as the symmetric **schema similarity score**
 - compares security definitions independently of role names to calculate **security similarity**
 - calculates **combined similarity**, normally 95% schema plus 5% security
-- computes directional **schema containment** from table, column, measure-definition, relationship, and data-source coverage, excluding security
+- computes directional **schema containment** from table, column, measure-definition, relationship, data-source, and Power Query (`table :: normalized M`) coverage, excluding security
 - classifies pairs by combined score as `duplicate`, `similar`, or `distinct`; unavailable combined scores are `unassessed`
 - labels schema containment as `equivalent`, `model_a_contains_model_b`, `model_b_contains_model_a`, or `partial_overlap`
 - groups duplicate-tier pairs into connected clusters and writes results to the Lakehouse
 
 The output tables are:
 
-- `semantic_model_signatures` (schema counts, security scan status, canonical definitions, SHA-256 fingerprints, and provenance)
-- `semantic_model_similarity_pairs` (`schema_score`, `security_score`, `combined_score`, `score_mode`, `security_comparison_status`, role alignment and component evidence in `security_evidence_json`, plus schema containment fields)
+- `semantic_model_signatures` (schema counts including `query_count`, security scan status, canonical definitions, SHA-256 fingerprints, and provenance)
+- `semantic_model_similarity_pairs` (`schema_score`, `security_score`, `combined_score`, `score_mode`, `security_comparison_status`, role alignment and component evidence in `security_evidence_json`, schema containment fields, and `power_query_similarity`, `power_query_status` (`compared`, `one_sided` or `not_applicable`) and `shared_query_count`)
 - `semantic_model_duplicate_clusters`
-- `semantic_model_similarity_run` (thresholds, blocking flag, configured weight dictionaries, timestamp, counts, `analysis_run_id`, and `score_version=2`)
+- `semantic_model_similarity_run` (thresholds, blocking flag, configured weight dictionaries, timestamp, counts, `analysis_run_id`, and `score_version=3`)
 
 All scored outputs carry an analysis run ID. Pairs and signatures also record their source catalog IDs. `composite_score` retains its previous meaning as the rounded schema-only score for existing consumers; it is **not** an alias for the combined score. Classifications and clusters use `combined_score`.
 
@@ -133,7 +140,7 @@ The standalone **Reports** tab remains omitted from navigation. Report collectio
 
 **Combined similarity** is the overall score, incorporating security when applicable. **Schema similarity** is the structural/text comparison, including measures and source definitions, not an exhaustive schema-equivalence check. **Coverage score: A within B** asks how much of A's cataloged schema definitions is represented in B. Extra content in B can lower schema similarity without lowering coverage of A.
 
-The score breakdown separates the combined calculation, six schema-similarity signals, and applicable security components. Coverage appears separately in the comparison summary as **A within B** and **B within A**, with full model names available in accessible labels. Table-name, column-name, measure-name, relationship-link, and source-definition overlap compare shared unique entries with all unique entries across both models. DAX text similarity is TF-IDF text resemblance, not a count of matching formulas. Models without measures use structural or model names as a text fallback, labeled **Model text similarity**. Coverage instead includes normalized measure-name/formula-text matches and excludes signal categories absent from the source before rescaling the remaining weights. Per-signal coverage contributions are not saved, so cataloged difference counts cannot explain an exact weighted score gap.
+The score breakdown separates the combined calculation, seven schema-similarity signals, and applicable security components. Coverage appears separately in the comparison summary as **A within B** and **B within A**, with full model names available in accessible labels. Table-name, column-name, measure-name, relationship-link, and source-definition overlap compare shared unique entries with all unique entries across both models. DAX text similarity is TF-IDF text resemblance, not a count of matching formulas. Models without measures use structural or model names as a text fallback, labeled **Model text similarity**. Coverage instead includes normalized measure-name/formula-text matches and excludes signal categories absent from the source before rescaling the remaining weights. Per-signal coverage contributions are not saved, so cataloged difference counts cannot explain an exact weighted score gap.
 
 Review uses aligned percentages and in-cell bars; Compare uses one three-score strip with percentage bars on a common 0%-100% scale. Bars represent displayed values, not weights. Unavailable and not-applicable values remain explicit labels, never zero bars. The three summary scores stay side by side on narrow screens, while wide analytical tables scroll within their labeled region. Coverage remains separate and is not a contributor to combined similarity.
 
@@ -202,13 +209,15 @@ Catalog and scoring writes replace their existing Delta tables and use explicit 
 The **Scoring Parameters** cell holds the signal weights:
 
 ```python
+# Power Query compares normalized M text; it is skipped for a pair when neither model has M.
 SIMILARITY_WEIGHTS = {
     "tables": 0.15,
     "columns": 0.20,
-    "measure_names": 0.15,
-    "measure_dax_embedding": 0.25,
-    "relationships": 0.15,
+    "measure_names": 0.10,
+    "measure_dax_embedding": 0.20,
+    "relationships": 0.10,
     "datasources": 0.10,
+    "power_query": 0.15,
 }
 
 COMBINED_WEIGHTS = {"schema": 0.95, "security": 0.05}
@@ -225,16 +234,17 @@ SECURITY_ROLE_WEIGHTS = {
 CONTAINMENT_WEIGHTS = {
     "tables": 0.15,
     "columns": 0.20,
-    "measure_names": 0.15,
-    "measure_definitions": 0.25,
-    "relationships": 0.15,
+    "measure_names": 0.10,
+    "measure_definitions": 0.20,
+    "relationships": 0.10,
     "datasources": 0.10,
+    "power_queries": 0.15,
 }
 ```
 
 `ENABLE_BLOCKING` keeps comparisons focused on model pairs that share at least one normalized table or measure name; disabling it performs a full pairwise comparison across every model in the catalog and is more expensive for large catalogs.
 
-After upgrading the notebooks or changing model security, rerun **001 -> 002** against the same Lakehouse. Older or inconsistent outputs may still show schema scores but cannot provide security-inclusive combined scores. Use notebooks from the same release; public release versions are independent of persisted score/security schema versions.
+After upgrading the notebooks or changing model security, rerun **001 -> 002** against the same Lakehouse. Score version 3 adds the Power Query signal and rebalances default weights, so Overall scores and tiers from version 2 runs are not comparable; notebook 002 asks for a rerun when it finds older results. Older or inconsistent outputs may still show schema scores but cannot provide security-inclusive combined scores. Use notebooks from the same release; public release versions are independent of persisted score/security schema versions.
 
 ## Temporary workspace access
 

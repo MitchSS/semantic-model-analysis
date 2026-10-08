@@ -8,6 +8,13 @@ from its presence here.
 
 ### Changed
 
+- **Score version 3:** schema similarity and coverage include a Power Query (M)
+  signal. Notebook 001 catalogs M for every partition and shared expression in
+  the new `semantic_model_queries` table and compares normalized M text. The
+  signal is skipped for a pair when neither model has M. Data-source overlap now
+  uses the upstream sources M connector calls reference instead of whole M
+  text. Default weights are rebalanced; rerun **001 -> 002**, because version 2
+  scores are not comparable.
 - Tag notebook 001's **Configuration** cell as the Fabric parameters cell and
   move `ENABLE_BLOCKING`, `DUPLICATE_THRESHOLD`, `SIMILAR_THRESHOLD` and
   `CONTAINMENT_THRESHOLD` into it, so pipeline and job API runs can override

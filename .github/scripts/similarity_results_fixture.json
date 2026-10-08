@@ -58,7 +58,10 @@
         "relationships": 1.0,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 1.0,
+      "powerQueryStatus": "compared",
+      "sharedQueries": 2
     },
     {
       "idA": "demo-sales",
@@ -101,7 +104,10 @@
         "relationships": 1.0,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.82,
+      "powerQueryStatus": "compared",
+      "sharedQueries": 1
     },
     {
       "idA": "demo-sales-east",
@@ -152,7 +158,10 @@
         "relationships": 1.0,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.82,
+      "powerQueryStatus": "compared",
+      "sharedQueries": 1
     },
     {
       "idA": "demo-sales",
@@ -195,7 +204,10 @@
         "relationships": 0.3333,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.0,
+      "powerQueryStatus": "one_sided",
+      "sharedQueries": 0
     },
     {
       "idA": "demo-sales-east",
@@ -246,7 +258,10 @@
         "relationships": 0.3333,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.0,
+      "powerQueryStatus": "one_sided",
+      "sharedQueries": 0
     },
     {
       "idA": "demo-sales-core",
@@ -289,7 +304,10 @@
         "relationships": 0.3333,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.0,
+      "powerQueryStatus": "one_sided",
+      "sharedQueries": 0
     },
     {
       "idA": "demo-sales",
@@ -322,7 +340,10 @@
         "relationships": 1.0,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.0,
+      "powerQueryStatus": "one_sided",
+      "sharedQueries": 0
     },
     {
       "idA": "demo-sales-east",
@@ -355,7 +376,10 @@
         "relationships": 1.0,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.0,
+      "powerQueryStatus": "one_sided",
+      "sharedQueries": 0
     },
     {
       "idA": "demo-sales-forecast",
@@ -388,7 +412,10 @@
         "relationships": 1.0,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": 0.0,
+      "powerQueryStatus": "one_sided",
+      "sharedQueries": 0
     },
     {
       "idA": "demo-sales-core",
@@ -421,7 +448,10 @@
         "relationships": 0.3333,
         "datasources": 1.0
       },
-      "daxCosine": 1.0
+      "daxCosine": 1.0,
+      "powerQuery": null,
+      "powerQueryStatus": "not_applicable",
+      "sharedQueries": 0
     }
   ],
   "models": {
@@ -564,7 +594,21 @@
         "roles": [],
         "propagation": [],
         "roleCount": 0
-      }
+      },
+      "queries": [
+        {
+          "key": "table:sales",
+          "name": "Sales",
+          "mId": 0,
+          "mHash": "a1b2c3d4e5f6"
+        },
+        {
+          "key": "expression:server",
+          "name": "Expression: Server",
+          "mId": 2,
+          "mHash": "0f9e8d7c6b5a"
+        }
+      ]
     },
     "demo-sales-east": {
       "name": "Sales Restricted",
@@ -764,7 +808,21 @@
           ]
         ],
         "roleCount": 1
-      }
+      },
+      "queries": [
+        {
+          "key": "table:sales",
+          "name": "Sales",
+          "mId": 0,
+          "mHash": "a1b2c3d4e5f6"
+        },
+        {
+          "key": "expression:server",
+          "name": "Expression: Server",
+          "mId": 2,
+          "mHash": "0f9e8d7c6b5a"
+        }
+      ]
     },
     "demo-sales-core": {
       "name": "Sales Core",
@@ -857,7 +915,8 @@
         "roles": [],
         "propagation": [],
         "roleCount": 0
-      }
+      },
+      "queries": []
     },
     "demo-sales-forecast": {
       "name": "Sales Forecast",
@@ -998,7 +1057,21 @@
         "roles": [],
         "propagation": [],
         "roleCount": 0
-      }
+      },
+      "queries": [
+        {
+          "key": "table:sales",
+          "name": "Sales",
+          "mId": 1,
+          "mHash": "112233445566"
+        },
+        {
+          "key": "expression:server",
+          "name": "Expression: Server",
+          "mId": 2,
+          "mHash": "0f9e8d7c6b5a"
+        }
+      ]
     },
     "demo-sales-draft": {
       "name": "Sales Draft",
@@ -1139,7 +1212,8 @@
         "roles": [],
         "propagation": [],
         "roleCount": null
-      }
+      },
+      "queries": []
     },
     "demo-inventory": {
       "name": "Inventory",
@@ -1208,7 +1282,8 @@
         "roles": [],
         "propagation": [],
         "roleCount": 0
-      }
+      },
+      "queries": []
     }
   },
   "modelList": [
@@ -1370,5 +1445,10 @@
     "security": 0.05
   },
   "securityNotice": "Security could not be fully assessed for some models. Their schema scores remain available; security and combined scores are unavailable.",
-  "scoreVersion": 2
+  "scoreVersion": 3,
+  "mPool": [
+    "let\n  Source = Sql.Database(Server, \"RetailDb\"),\n  Sales = Source{[Schema=\"dbo\",Item=\"Sales\"]}[Data]\nin\n  Sales",
+    "let\n  Source = Sql.Database(Server, \"RetailDb\"),\n  Sales = Source{[Schema=\"dbo\",Item=\"Sales\"]}[Data],\n  Future = Table.SelectRows(Sales, each [IsForecast])\nin\n  Future",
+    "\"retail-sql.database.windows.net\" meta [IsParameterQuery=true, Type=\"Text\"]"
+  ]
 }
