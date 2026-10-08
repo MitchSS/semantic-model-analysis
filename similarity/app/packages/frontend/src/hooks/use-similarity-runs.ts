@@ -1,5 +1,6 @@
 import {
   isActiveRun,
+  type SimilarityRefreshResult,
   type SimilarityRun,
   type SimilarityRunError,
   type SimilarityRunParameters,
@@ -17,6 +18,8 @@ export interface RunApi {
   get(runId: string): Promise<SimilarityRunResult>;
   start(parameters: SimilarityRunParameters): Promise<SimilarityRunResult>;
   cancel(runId: string): Promise<SimilarityRunResult>;
+  /** Sync the lakehouse SQL endpoint so a finished run's tables are readable immediately. */
+  refreshResults(): Promise<SimilarityRefreshResult>;
 }
 
 export const functionsRunApi: RunApi = {
@@ -31,6 +34,9 @@ export const functionsRunApi: RunApi = {
   },
   async cancel(runId) {
     return (await getRayfinClient()).functions.cancelSimilarityRun.invoke({ runId });
+  },
+  async refreshResults() {
+    return (await getRayfinClient()).functions.refreshSimilarityResults.invoke();
   },
 };
 
@@ -108,7 +114,12 @@ export function useSimilarityRuns(onCompleted: () => void, api: RunApi = functio
           failures = 0;
           upsert(result.run);
           if (!isActiveRun(result.run)) {
-            if (result.run.status === 'Completed') completed.current();
+            if (result.run.status === 'Completed') {
+              // A failed metadata refresh only delays visibility; the delayed reload still picks the results up.
+              // Not gated on `cancelled`: upserting the finished run ends this effect before the refresh resolves.
+              await api.refreshResults().catch(() => null);
+              completed.current();
+            }
             return;
           }
         } else if (++failures >= MAX_POLL_FAILURES) {

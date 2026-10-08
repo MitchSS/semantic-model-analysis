@@ -1,141 +1,154 @@
-import { VegaVisual, useCssTheme, type VisualizationSpec } from '@microsoft/fabric-visuals';
-import type { DataTable, InteractionEvent } from '@microsoft/fabric-visuals-core';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
-import { EmptyState, SectionHeading } from '@/components/ui';
-import { buttonClass } from '@/lib/styles';
-import {
-  buildMapCells,
-  modelLabel,
-  selectMapModels,
-  type PairView,
-  type SimilarityDataset,
-} from '@/lib/similarity-model';
+import { StatusStrip, type ViewProps } from '@/components/review-view';
+import { Field, Pager } from '@/components/ui';
+import type { MapCell } from '@/lib/results/logic';
+import { inputClass } from '@/lib/styles';
+import { cn } from '@/lib/utils';
 
-const MAP_SLICE = 40;
+const CELL_STYLE: Record<MapCell['style'], string> = {
+  duplicate: 'bg-primary text-primary-foreground font-semibold',
+  high: 'bg-primary/35 text-foreground',
+  low: 'bg-muted text-muted-foreground',
+  unscored: 'border border-dashed border-border text-muted-foreground',
+  unavailable: 'border border-dashed border-destructive/50 text-destructive',
+  outside: 'bg-secondary text-muted-foreground cursor-not-allowed',
+  diagonal: 'text-muted-foreground',
+};
 
-const STATE_LABELS = { scored: 'Scored', unscored: 'Not scored', unavailable: 'Unavailable', self: 'Same model' } as const;
-
-function buildMapSpec(order: string[]): VisualizationSpec {
-  return {
-    encoding: {
-      x: { field: 'column', type: 'nominal', sort: order, title: null, axis: { labelAngle: -50, labelLimit: 140 } },
-      y: { field: 'row', type: 'nominal', sort: order, title: null, axis: { labelLimit: 180 } },
-      tooltip: [
-        { field: 'row', type: 'nominal', title: 'Model' },
-        { field: 'column', type: 'nominal', title: 'Compared with' },
-        { field: 'stateLabel', type: 'nominal', title: 'State' },
-        { field: 'overall', type: 'quantitative', format: '.0%', title: 'Overall' },
-      ],
-    },
-    layer: [
-      {
-        mark: { type: 'rect', stroke: 'transparent', strokeWidth: 1 },
-        encoding: {
-          color: {
-            condition: { test: "datum.state !== 'scored'", value: 'transparent' },
-            field: 'overall',
-            type: 'quantitative',
-            scale: { domain: [0, 1], scheme: 'tealblues' },
-            legend: { title: 'Overall', format: '.0%' },
-          },
-        },
-      },
-      {
-        mark: { type: 'text', fontSize: 9 },
-        encoding: {
-          text: { field: 'cellText', type: 'nominal' },
-          color: { condition: { test: 'datum.overall >= 0.6', value: '#ffffff' }, value: '#5a6360' },
-        },
-      },
-    ],
-  };
+function LegendKey({ style }: { style: MapCell['style'] }) {
+  return <span aria-hidden="true" className={cn('inline-block h-[12px] w-[12px] rounded-sm', CELL_STYLE[style])} />;
 }
 
-export function MapView({
-  dataset,
-  pairs,
-  onCompare,
-}: {
-  dataset: SimilarityDataset;
-  pairs: PairView[];
-  onCompare: (pair: PairView | null, aId: string, bId: string) => void;
-}) {
-  const theme = useCssTheme();
-  const [offset, setOffset] = useState(0);
-  const models = useMemo(() => selectMapModels({ models: dataset.models, pairs }, MAP_SLICE, offset), [dataset.models, pairs, offset]);
+export function MapView({ results, state, update, onHelp, onCompare }: ViewProps) {
+  const selection = results.mapSelection(state);
+  const [detail, setDetail] = useState<string | null>(null);
+  const { visible } = selection;
 
-  const { data, order, byKey } = useMemo(() => {
-    const labels = new Map<string, string>();
-    for (const model of models) {
-      let label = modelLabel(model);
-      while ([...labels.values()].includes(label)) label = `${label} ′`;
-      labels.set(model.id, label);
-    }
-    const cells = buildMapCells(models, pairs);
-    const lookup = new Map<string, { pair: PairView | null; a: string; b: string }>();
-    const rows = cells.map((cell) => {
-      const key = `${cell.row.id}|${cell.column.id}`;
-      lookup.set(key, { pair: cell.pair, a: cell.row.id, b: cell.column.id });
-      const cellText =
-        cell.state === 'scored' ? `${Math.round((cell.value ?? 0) * 100)}` : cell.state === 'unscored' ? '·' : cell.state === 'unavailable' ? '?' : '';
-      return [labels.get(cell.row.id), labels.get(cell.column.id), cell.value, cell.state, STATE_LABELS[cell.state], cellText, key];
-    });
-    const table: DataTable = {
-      columns: [
-        { name: 'row', displayName: 'Model' },
-        { name: 'column', displayName: 'Compared with' },
-        { name: 'overall', displayName: 'Overall', format: '0%' },
-        { name: 'state', displayName: 'State code' },
-        { name: 'stateLabel', displayName: 'State' },
-        { name: 'cellText', displayName: 'Label' },
-        { name: 'cellKey', displayName: 'Cell' },
-      ],
-      rows,
-    };
-    return { data: table, order: models.map((m) => labels.get(m.id) ?? ''), byKey: lookup };
-  }, [models, pairs]);
-
-  const spec = useMemo(() => buildMapSpec(order), [order]);
-
-  const handleInteraction = (events: InteractionEvent[]) => {
-    for (const event of events) {
-      if (event.action !== 'select') continue;
-      const predicate = event.selections[0]?.predicates.find((p) => p.name === 'cellKey' && p.type === 'set');
-      const key = predicate && predicate.type === 'set' ? String(predicate.values[0]) : null;
-      const target = key ? byKey.get(key) : undefined;
-      if (target && target.a !== target.b) onCompare(target.pair, target.a, target.b);
-    }
-  };
-
-  if (!dataset.models.length) {
-    return <EmptyState title="No catalog models yet">Run the analysis to populate the map.</EmptyState>;
-  }
-
-  const total = dataset.models.length;
   return (
     <section aria-labelledby="map-heading" className="flex flex-col gap-400">
-      <SectionHeading
-        id="map-heading"
-        title="Similarity map"
-        detail={`Overall score for models ${offset + 1}–${Math.min(total, offset + MAP_SLICE)} of ${total}, strongest matches first. · = not scored (often excluded by blocking), ? = unavailable. Select a cell to compare.`}
-      >
-        {total > MAP_SLICE ? (
-          <span className="flex gap-200">
-            <button type="button" className={buttonClass()} disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - MAP_SLICE))}>
-              Previous models
-            </button>
-            <button type="button" className={buttonClass()} disabled={offset + MAP_SLICE >= total} onClick={() => setOffset(offset + MAP_SLICE)}>
-              Next models
-            </button>
-          </span>
-        ) : null}
-      </SectionHeading>
-      <div className="overflow-auto rounded-md border border-border bg-card p-300">
-        <div style={{ height: `calc(${Math.max(models.length, 6)} * var(--spacing-600) + 12rem)`, minWidth: `calc(${Math.max(models.length, 6)} * var(--spacing-600) + 14rem)` }}>
-          <VegaVisual spec={spec} data={data} theme={theme} style={{ height: '100%' }} onInteraction={handleInteraction} />
-        </div>
+      <h2 id="map-heading" className="font-heading text-500 font-semibold tracking-tight">
+        Overall similarity map
+      </h2>
+      <StatusStrip results={results} state={state} onHelp={onHelp} />
+      <div className="flex flex-wrap items-end gap-300">
+        <Field label="Search">
+          <input
+            type="text"
+            value={state.mapSearch}
+            onChange={(event) => update({ mapSearch: event.target.value, mapPage: 1 })}
+            aria-label="Search map models"
+            placeholder="Models or workspaces"
+            className={cn(inputClass, 'min-w-[220px]')}
+          />
+        </Field>
+        <Field label="Workspace">
+          <select value={state.mapWorkspace} onChange={(event) => update({ mapWorkspace: event.target.value, mapPage: 1 })} aria-label="Map workspace" className={inputClass}>
+            <option value="all">All workspaces</option>
+            {results.workspaceOptions().map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </Field>
       </div>
+
+      {!visible.length ? (
+        <div className="rounded-md border border-dashed border-border px-600 py-800 text-center text-300 text-muted-foreground">
+          {results.modelList.length ? 'No models match these filters.' : 'No cataloged models.'}
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-300 text-300 text-muted-foreground">
+            <span role="status">
+              Showing {selection.start + 1}-{selection.start + visible.length} of {selection.models.length} filtered models / {results.modelList.length} catalog models
+            </span>
+            <Pager
+              page={selection.page}
+              pages={selection.pages}
+              onPage={(page) => update({ mapPage: page })}
+              previousLabel="Previous model slice"
+              nextLabel="Next model slice"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-400 text-200 text-muted-foreground" aria-label="Similarity map legend">
+            <span className="flex items-center gap-100"><LegendKey style="duplicate" /> Possible duplicates</span>
+            <span className="flex items-center gap-100"><LegendKey style="high" /> Shared structure</span>
+            <span className="flex items-center gap-100"><LegendKey style="low" /> Below cutoff (including 0%)</span>
+            <span className="flex items-center gap-100"><LegendKey style="unscored" /> Not scored (·)</span>
+            <span className="flex items-center gap-100"><LegendKey style="unavailable" /> Unavailable (?)</span>
+            <span>— Same model</span>
+            {state.crossOnly ? <span>× Outside scope</span> : null}
+          </div>
+          <div className="overflow-auto rounded-md border border-border bg-card" tabIndex={0} role="region" aria-label="Overall similarity matrix">
+            <table className="border-collapse text-200" aria-label="Semantic model overall similarity map">
+              <thead>
+                <tr>
+                  <th scope="col" className="sticky left-0 z-10 bg-card px-300 py-200 text-left font-medium">
+                    Model
+                  </th>
+                  {visible.map((entry) => {
+                    const label = `${entry.name} / ${entry.workspace}`;
+                    return (
+                      <th key={entry.id} scope="col" title={label} className="h-[128px] w-[46px] max-w-[46px] px-100 align-bottom font-normal">
+                        <span className="block max-h-[120px] overflow-hidden text-ellipsis whitespace-nowrap [writing-mode:vertical-rl] rotate-180">{label}</span>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((row) => (
+                  <tr key={row.id}>
+                    <th scope="row" title={`${row.name} / ${row.workspace}`} className="sticky left-0 z-10 max-w-[240px] bg-card px-300 py-100 text-left font-medium">
+                      <div className="truncate">{row.name}</div>
+                      <div className="truncate text-200 font-normal text-muted-foreground">{row.workspace}</div>
+                    </th>
+                    {visible.map((column) => {
+                      const cell = results.mapCell(state, row.id, column.id);
+                      const base = cn('flex h-[36px] w-[44px] items-center justify-center rounded-sm font-numeric tabular-nums', CELL_STYLE[cell.style]);
+                      if (cell.kind === 'diagonal') {
+                        return (
+                          <td key={column.id} className="p-[1px]">
+                            <span className={base} title={cell.detail} aria-label={cell.detail}>
+                              —
+                            </span>
+                          </td>
+                        );
+                      }
+                      const show = () => setDetail(cell.detail);
+                      return (
+                        <td key={column.id} className="p-[1px]">
+                          <button
+                            type="button"
+                            className={cn(base, 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring', cell.kind !== 'outside' && 'hover:ring-1 hover:ring-primary')}
+                            title={cell.detail}
+                            aria-label={cell.kind === 'outside' ? cell.detail : `Compare ${cell.detail}`}
+                            aria-disabled={cell.kind === 'outside' ? true : undefined}
+                            onFocus={show}
+                            onPointerEnter={show}
+                            onClick={() => {
+                              if (cell.kind !== 'outside' && results.inComparisonScope(state, row.id, column.id)) {
+                                onCompare(row.id, column.id, results.relevantSection(results.pair(row.id, column.id)));
+                              }
+                            }}
+                          >
+                            <span aria-hidden={cell.kind === 'unscored' ? true : undefined}>{cell.text}</span>
+                          </button>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div aria-live="polite" className="min-h-[20px] text-300 text-muted-foreground">
+            {detail ?? `${visible.length} selected models`}
+          </div>
+        </>
+      )}
     </section>
   );
 }

@@ -52,22 +52,22 @@ const similaritylakehouseConfig = {
       'workspaceId', 'workspaceName', 'modelId', 'modelName', 'errorType', 'errorMessage',
     ]),
     SemanticModelColumns: columnsOf<typeof SemanticModelColumns>()([
-      'modelId', 'tableName', 'columnName',
+      'workspaceId', 'modelId', 'tableName', 'columnName',
     ]),
     SemanticModelDatasources: columnsOf<typeof SemanticModelDatasources>()([
-      'modelId', 'datasourceName', 'datasourceType', 'connectionString', 'connectionDetails',
+      'workspaceId', 'modelId', 'datasourceName', 'datasourceType', 'connectionString', 'connectionDetails',
     ]),
     SemanticModelDuplicateClusters: columnsOf<typeof SemanticModelDuplicateClusters>()([
       'clusterId', 'clusterSize', 'modelId', 'model', 'workspaceName', 'modelName', 'analysisRunId', 'scoreVersion',
     ]),
     SemanticModelMeasures: columnsOf<typeof SemanticModelMeasures>()([
-      'modelId', 'measureName', 'expression',
+      'workspaceId', 'modelId', 'measureName', 'expression',
     ]),
     SemanticModelQueries: columnsOf<typeof SemanticModelQueries>()([
-      'modelId', 'tableName', 'partitionName', 'queryKind', 'sourceType', 'expression', 'expressionHash',
+      'workspaceId', 'modelId', 'tableName', 'partitionName', 'queryKind', 'sourceType', 'expression', 'expressionHash',
     ]),
     SemanticModelRelationships: columnsOf<typeof SemanticModelRelationships>()([
-      'modelId', 'fromTable', 'fromColumn', 'toTable', 'toColumn',
+      'workspaceId', 'modelId', 'fromTable', 'fromColumn', 'toTable', 'toColumn',
     ]),
     SemanticModelReportDependencies: columnsOf<typeof SemanticModelReportDependencies>()([
       'scanId', 'scannedAt', 'reportWorkspaceId', 'reportWorkspaceName', 'reportId', 'reportName', 'reportType', 'reportUrl', 'modelId', 'modelWorkspaceId', 'modelWorkspaceName', 'modelName', 'bindingStatus', 'isCrossWorkspace',
@@ -88,7 +88,7 @@ const similaritylakehouseConfig = {
       'generatedAt', 'analysisRunId', 'catalogScanId', 'scoreVersion', 'duplicateThreshold', 'similarThreshold', 'containmentThreshold', 'enableBlocking', 'combinedWeightsJson', 'modelCount', 'pairCount', 'duplicateCount', 'similarCount', 'unassessedCount', 'containmentCount', 'clusterCount',
     ]),
     SemanticModelTables: columnsOf<typeof SemanticModelTables>()([
-      'modelId', 'tableName',
+      'workspaceId', 'modelId', 'tableName',
     ]),
   },
 } as const satisfies ConnectorConfig;

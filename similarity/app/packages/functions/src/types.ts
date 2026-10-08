@@ -33,4 +33,8 @@ export type AppFunctionsSchema = {
     input: { runId: string };
     output: { run: null | { id: string; status: 'NotStarted' | 'InProgress' | 'Completed' | 'Failed' | 'Cancelled' | 'Deduped' | 'Unknown'; invokeType: null | string; startTimeUtc: null | string; endTimeUtc: null | string; failureMessage: null | string }; error: null | { code: 'invalid_parameters' | 'invalid_run_id' | 'run_in_progress' | 'permission_denied' | 'not_found' | 'rate_limited' | 'fabric_error'; message: string; fields: { field: 'workspaceName' | 'modelName' | 'reportWorkspaceName' | 'enableBlocking' | 'duplicateThreshold' | 'similarThreshold' | 'containmentThreshold'; message: string }[] } };
   };
+  refreshSimilarityResults: {
+    input: Record<string, never>;
+    output: { refreshed: boolean; error: null | { code: 'invalid_parameters' | 'invalid_run_id' | 'run_in_progress' | 'permission_denied' | 'not_found' | 'rate_limited' | 'fabric_error'; message: string; fields: { field: 'workspaceName' | 'modelName' | 'reportWorkspaceName' | 'enableBlocking' | 'duplicateThreshold' | 'similarThreshold' | 'containmentThreshold'; message: string }[] } };
+  };
 };

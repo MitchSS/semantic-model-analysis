@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/lib/similarity-data', () => ({ loadSimilarityDataset: vi.fn() }));
+vi.mock('@/lib/results/load', () => ({ loadResults: vi.fn() }));
 
 import { describeLoadError, errorReference } from './use-similarity-data';
 
@@ -24,5 +24,9 @@ describe('load error messages', () => {
 
   it('handles non-errors', () => {
     expect(errorReference('nope')).toBe('Unknown error');
+  });
+
+  it('explains an empty catalog', () => {
+    expect(describeLoadError(new Error('No rows in semantic_models in the attached lakehouse.'))).toMatch(/No analysis results yet/);
   });
 });

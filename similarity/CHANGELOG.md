@@ -26,7 +26,10 @@ from its presence here.
 
 - Optional Rayfin Fabric App in `similarity/app` that starts notebook 001 runs
   with parameters and shows Review, Groups, Compare and Similarity map views
-  over the lakehouse results. The app is not included in the release package.
+  over the lakehouse results. Its results views mirror notebook 002 feature for
+  feature, including the Power Query evidence, and shared parity tests keep the
+  two in step (see `similarity/app/docs/parity.md`). The app is not included in
+  the release package.
 
 ## [0.2.0]
 

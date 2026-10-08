@@ -4,6 +4,7 @@ import { Source } from '@microsoft/rayfin-connectors';
 @role('authenticated', ['read'])
 @entity()
 export class SemanticModelQueries extends Source({ schema: 'dbo', table: 'semantic_model_queries', primaryKey: [] }) {
+  @text({ optional: true, column: 'workspace_id', max: 8000 }) workspaceId?: string;
   @text({ optional: true, column: 'model_id', max: 8000 }) modelId?: string;
   @text({ optional: true, column: 'table_name', max: 8000 }) tableName?: string;
   @text({ optional: true, column: 'partition_name', max: 8000 }) partitionName?: string;

@@ -2,6 +2,7 @@ import {
   isActiveRun,
   toNotebookParameters,
   validateRunParameters,
+  type SimilarityRefreshResult,
   type SimilarityRun,
   type SimilarityRunError,
   type SimilarityRunErrorCode,
@@ -14,6 +15,8 @@ import {
 export const SIMILARITY_WORKSPACE_ID = 'a5a00e8c-d269-4422-9cfc-a6626a4f2ff3';
 /** Notebook `001_semantic_model_similarity`. */
 export const SIMILARITY_NOTEBOOK_ID = '5bd4d491-889e-4b07-af84-daddfbc3c95c';
+/** SQL analytics endpoint of lakehouse `LH_SemanticModels`, which the app's connector reads. */
+export const SIMILARITY_SQL_ENDPOINT_ID = '845fae5b-bb66-41c3-9918-1e2ff3df0de3';
 
 const FABRIC_API = 'https://api.fabric.microsoft.com/v1';
 const REQUEST_TIMEOUT_MS = 30_000;
@@ -169,6 +172,30 @@ export class SimilarityRunClient {
     }
     return this.get(runId);
   }
+}
+
+/**
+ * Asks the lakehouse SQL analytics endpoint to sync Delta metadata now, so a finished run's
+ * tables are readable immediately instead of after the background sync (often minutes).
+ */
+export async function refreshResultsMetadata(
+  token: string,
+  fetchImpl: FetchLike = fetch,
+  workspaceId = SIMILARITY_WORKSPACE_ID,
+  sqlEndpointId = SIMILARITY_SQL_ENDPOINT_ID
+): Promise<SimilarityRefreshResult> {
+  const response = await fetchImpl(`${FABRIC_API}/workspaces/${workspaceId}/sqlEndpoints/${sqlEndpointId}/refreshMetadata`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: '{}',
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
+  // 202 means the sync continues as a long-running operation; the caller reloads afterwards either way.
+  if (response.status === 202 || response.ok) return { refreshed: true, error: null };
+  if (response.status === 401 || response.status === 403) {
+    return { refreshed: false, error: failure('permission_denied', 'The app identity is not allowed to refresh the results SQL endpoint.') };
+  }
+  return { refreshed: false, error: errorForStatus(response.status) };
 }
 
 /** Convert unexpected failures into a safe result without leaking provider details. */

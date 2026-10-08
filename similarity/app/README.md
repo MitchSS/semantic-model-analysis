@@ -3,12 +3,12 @@
 A [Fabric App](https://learn.microsoft.com/fabric/apps/) (built with Rayfin) for the semantic model similarity workflow. From one place you can:
 
 - **Run analysis.** Start notebook 001 with parameters, follow its status, cancel it, and see recent runs.
-- **Review.** Rank possible duplicates, schema coverage, and shared-structure pairs. Overall, schema, security, and coverage scores appear side by side.
-- **Groups.** Browse connected possible-duplicate groups.
-- **Compare.** Compare any two catalog models with all three scores, coverage in both directions, a breakdown of the schema signals, catalog counts, and dependent reports.
-- **Similarity map.** Use a heatmap of Overall scores, shown 40 models at a time. Select a cell to open Compare.
+- **Review.** Rank possible duplicates, schema coverage, and shared-structure pairs, and filter them by finding, workspace, security, and Power Query state. Expand a row to see its seven schema signals.
+- **Groups.** Browse connected possible-duplicate groups and compare any two members.
+- **Compare.** Compare any two catalog models: all three scores, coverage in both directions, differences in tables, columns, measures, Power Query (M), relationships and sources, dependent reports, and a score breakdown.
+- **Similarity map.** Use a matrix of Overall scores, shown 40 models at a time. Select a cell to open Compare.
 
-The views use the same score meanings as the results notebook (002). See the [technical reference](../docs/reference.md) for how scores are calculated.
+The results views offer the same analysis, labels and thresholds as the results notebook (002), backed by shared parity tests. See [App and notebook 002 parity](docs/parity.md) for the feature checklist and the deliberate differences, and the [technical reference](../docs/reference.md) for how scores are calculated.
 
 ## How it works
 
@@ -20,10 +20,10 @@ React app ──► Rayfin Functions (app identity) ──► Fabric Job Schedul
 
 | Piece | Location |
 | --- | --- |
-| Run functions: `startSimilarityRun`, `getSimilarityRun`, `listSimilarityRuns`, `cancelSimilarityRun` | `packages/functions/src/` |
+| Run functions: `startSimilarityRun`, `getSimilarityRun`, `listSimilarityRuns`, `cancelSimilarityRun`, `refreshSimilarityResults` | `packages/functions/src/` |
 | Run parameter contract: defaults, validation, and notebook mapping | `packages/shared/src/similarity-run.ts` |
 | Lakehouse entities (read-only, keyless) | `rayfin/connectors/similaritylakehouse/` |
-| Data loading and view models | `packages/frontend/src/lib/` |
+| Data loading, and the port of notebook 002's payload and view logic | `packages/frontend/src/lib/results/` |
 | Views | `packages/frontend/src/components/` |
 
 ### Run parameters
@@ -49,7 +49,7 @@ You can't turn on temporary workspace access or change the score weights from th
 - **Notebook runs use the Fabric app owner's identity.** Rayfin Functions call Fabric as the owner of the Fabric App item. Each run sees only the workspaces and models the owner can read, whoever selects **Start run**. The owner needs permission to run notebook 001 (Contributor or higher on its workspace).
 - **Anyone the app is shared with can start a run.** Share the app only with people who should be able to rescan the catalog.
 - **Lakehouse reads.** The connector uses the authentication mode set in `rayfin/rayfin.yml`, which is `application` by default. Check this setting before you share results more widely.
-- The app never reads the stored security-definition JSON. Review and Compare show only security status and scores.
+- The app never reads the stored security-definition JSON. Review and Compare show only security status, role counts, and scores. Use notebook 002 to inspect rule-level security differences.
 
 ### Target resources
 
@@ -83,7 +83,7 @@ npm run dev         # Rayfin local services + Vite; needs `npx rayfin login`
 
 The browser connector config in `packages/frontend/src/lib/connectors.ts` lists each entity's columns as strings. It never imports the decorated entity classes, because bundlers can't compile those for the browser. A compile-time check fails if a list doesn't match its entity in `rayfin/connectors/similaritylakehouse/`.
 
-After the lakehouse schema changes, run `npx rayfin connector remove` and then `npx rayfin connector add` to refresh `metadata.json`. Then update the entity files. Only the columns the app uses are mapped.
+After the lakehouse schema changes, run `npx rayfin connector remove` and then `npx rayfin connector add` to refresh `metadata.json`. Then update the entity files. Only the columns the app uses are mapped, but each entity must keep its table's **first** column: the tables are keyless, and the SQL endpoint treats the first column as the key, so leaving it out makes `rayfin up` fail with `DataSourceMetadataKeyFieldInFieldMappings`. Because that key isn't unique, the app reads each table in one request (up to 100,000 rows) instead of paging with cursors, which would skip rows that share a key.
 
 ## Deploy
 
@@ -93,9 +93,9 @@ npx rayfin up --workspace "Rayfin France"
 npx rayfin up status
 ```
 
-`rayfin up` builds the app, then deploys the static app, the functions, and the connector configuration. After deploying:
+`rayfin up` builds the app, then deploys the static app, the functions, and the connector configuration. Check that the JSON output (`--json`) reports `"status": "success"` for the `similaritylakehouse` entry under `generate`; a connector error there doesn't fail the command. After deploying:
 
 1. Open the app in Fabric and confirm that Review loads data.
 2. Start a narrow run, for example by setting **Workspace**. Watch it finish, then confirm the results timestamp changes.
 
-The lakehouse SQL endpoint can take a short time to show newly written Delta data. The app reloads straight after a run finishes and again 45 seconds later.
+The lakehouse SQL endpoint can take minutes to show newly written Delta data. When a run finishes, the app asks the endpoint to sync its metadata (`refreshSimilarityResults`), reloads, and reloads again 45 seconds later.

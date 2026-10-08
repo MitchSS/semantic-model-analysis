@@ -4,13 +4,14 @@ import {
   type RayfinContext,
 } from '@microsoft/fabric-user-data-functions';
 import type {
+  SimilarityRefreshResult,
   SimilarityRunListResult,
   SimilarityRunParameters,
   SimilarityRunResult,
 } from '@rayfin-app/shared';
 
 import type { Inline } from './inline.js';
-import { SimilarityRunClient, safely } from './similarity-runs.js';
+import { SimilarityRunClient, refreshResultsMetadata, safely } from './similarity-runs.js';
 
 const udf = new UserDataFunctions();
 
@@ -39,5 +40,12 @@ udf.func(
   'cancelSimilarityRun',
   async (runId: string, ctx: RayfinContext<Record<string, never>, AudienceType.Fabric>): Promise<Inline<SimilarityRunResult>> =>
     safely(() => new SimilarityRunClient(ctx.Tokens.Fabric).cancel(runId), { run: null }),
+  []
+);
+
+udf.func(
+  'refreshSimilarityResults',
+  async (ctx: RayfinContext<Record<string, never>, AudienceType.Fabric>): Promise<Inline<SimilarityRefreshResult>> =>
+    safely(() => refreshResultsMetadata(ctx.Tokens.Fabric), { refreshed: false }),
   []
 );

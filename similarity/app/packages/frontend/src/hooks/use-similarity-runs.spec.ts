@@ -21,6 +21,7 @@ function api(overrides: Partial<RunApi> = {}): RunApi {
     get: vi.fn(async () => ({ run: run('Completed'), error: null })),
     start: vi.fn(async () => ({ run: run('NotStarted'), error: null })),
     cancel: vi.fn(async () => ({ run: run('Cancelled'), error: null })),
+    refreshResults: vi.fn(async () => ({ refreshed: true, error: null })),
     ...overrides,
   };
 }
@@ -32,6 +33,19 @@ describe('useSimilarityRuns', () => {
   });
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('still notifies completion when the metadata refresh fails', async () => {
+    const onCompleted = vi.fn();
+    const runsApi = api({
+      list: vi.fn(async () => ({ runs: [run('InProgress')], error: null })),
+      refreshResults: vi.fn(async () => Promise.reject(new Error('offline'))),
+    });
+    renderHook(() => useSimilarityRuns(onCompleted, runsApi));
+    await act(async () => {});
+    await act(async () => vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS));
+    expect(runsApi.refreshResults).toHaveBeenCalledTimes(1);
+    expect(onCompleted).toHaveBeenCalledTimes(1);
   });
 
   it('polls an active run until it completes and then notifies once', async () => {
@@ -50,6 +64,7 @@ describe('useSimilarityRuns', () => {
     expect(get).toHaveBeenCalledTimes(2);
     expect(result.current.active).toBeNull();
     expect(result.current.runs[0].status).toBe('Completed');
+    expect(runsApi.refreshResults).toHaveBeenCalledTimes(1);
     expect(onCompleted).toHaveBeenCalledTimes(1);
 
     await act(async () => vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 4));

@@ -1,238 +1,368 @@
-import { VegaVisual, useCssTheme, type VisualizationSpec } from '@microsoft/fabric-visuals';
-import type { DataTable } from '@microsoft/fabric-visuals-core';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { useMemo } from 'react';
+import { ArrowLeft, ArrowLeftRight } from 'lucide-react';
+import type { ReactNode } from 'react';
 
-import { EmptyState, FindingBadge, ScoreBar, SecurityBadge, SectionHeading } from '@/components/ui';
-import { buttonClass, inputClass } from '@/lib/styles';
-import {
-  formatPercent,
-  modelLabel,
-  pairKey,
-  type ModelRef,
-  type ModelStats,
-  type PairView,
-  type SimilarityDataset,
-} from '@/lib/similarity-model';
+import { SchemaSignals, SecurityTag, type ViewProps } from '@/components/review-view';
+import { Field, LinkButton, Metric, MetricGrid, Section, Tag } from '@/components/ui';
+import { safeReportUrl } from '@/lib/results/links';
+import { score, type DiffRow, type Results, type SectionId } from '@/lib/results/logic';
+import type { PayloadPair, ReportEntry } from '@/lib/results/payload';
+import { inputClass } from '@/lib/styles';
+import { cn } from '@/lib/utils';
 
-const SIGNAL_LABELS: Array<[keyof PairView['signals'], string]> = [
-  ['tables', 'Table names'],
-  ['columns', 'Column names'],
-  ['measureNames', 'Measure names'],
-  ['daxText', 'DAX text similarity'],
-  ['relationships', 'Relationships'],
-  ['datasources', 'Data sources'],
-];
+export interface CompareSelection {
+  a: string;
+  b: string;
+  openSections: Record<string, boolean>;
+}
 
-const signalSpec: VisualizationSpec = {
-  mark: { type: 'bar', cornerRadiusEnd: 2 },
-  encoding: {
-    y: { field: 'signal', type: 'nominal', sort: null, title: null },
-    x: {
-      field: 'overlap',
-      type: 'quantitative',
-      scale: { domain: [0, 1] },
-      axis: { format: '.0%' },
-      title: 'Overlap',
-    },
-    tooltip: [
-      { field: 'signal', type: 'nominal', title: 'Signal' },
-      { field: 'overlap', type: 'quantitative', format: '.0%', title: 'Overlap' },
-    ],
-  },
-};
-
-function StatsTable({ a, b, statsA, statsB }: { a: ModelRef; b: ModelRef; statsA?: ModelStats; statsB?: ModelStats }) {
-  const rows: Array<[string, keyof ModelStats]> = [
-    ['Tables', 'tables'],
-    ['Columns', 'columns'],
-    ['Measures', 'measures'],
-    ['Relationships', 'relationships'],
-    ['Data sources', 'datasources'],
-    ['Roles', 'roles'],
-  ];
-  const show = (value: ModelStats[keyof ModelStats] | undefined) => (value === null || value === undefined ? '—' : String(value));
+export function ReportList({ reports }: { reports: ReportEntry[] }) {
+  if (!reports.length) return null;
   return (
-    <table className="w-full border-collapse text-left text-300">
-      <caption className="sr-only">Catalog counts</caption>
-      <thead className="text-200 uppercase tracking-wide text-muted-foreground">
-        <tr>
-          <th scope="col" className="py-100 pr-300 font-medium">Counts</th>
-          <th scope="col" className="py-100 pr-300 font-medium">{a.name}</th>
-          <th scope="col" className="py-100 font-medium">{b.name}</th>
-        </tr>
-      </thead>
-      <tbody className="font-numeric tabular-nums">
-        {rows.map(([label, key]) => (
-          <tr key={key} className="border-t border-border">
-            <th scope="row" className="py-100 pr-300 font-base font-normal text-muted-foreground">{label}</th>
-            <td className="py-100 pr-300">{show(statsA?.[key])}</td>
-            <td className="py-100">{show(statsB?.[key])}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul className="flex flex-col gap-100 text-300">
+      {reports.map((report) => {
+        const href = safeReportUrl(report.url);
+        return (
+          <li key={`${report.workspaceId}|${report.id}`} className="flex flex-wrap gap-x-300 gap-y-100">
+            <span className="font-medium">
+              {href ? (
+                <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline-offset-2 hover:underline">
+                  {report.name}
+                </a>
+              ) : (
+                report.name
+              )}
+            </span>
+            <span className="text-muted-foreground">Workspace: {report.workspace}</span>
+            <span className="text-muted-foreground">{report.reason || (report.crossWorkspace ? 'Cross-workspace' : 'Same workspace')}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Formula({ children }: { children: ReactNode }) {
+  return <pre className="max-h-[320px] overflow-auto whitespace-pre-wrap rounded-md bg-secondary px-300 py-200 font-mono text-200">{children}</pre>;
+}
+
+function DiffRows({
+  rows,
+  results,
+  firstName,
+  secondName,
+  detailLabel,
+  empty,
+}: {
+  rows: DiffRow[];
+  results: Results;
+  firstName: string;
+  secondName: string;
+  detailLabel: string;
+  empty: string;
+}) {
+  if (!rows.length) return <div className="text-300 text-muted-foreground">{empty}</div>;
+  return (
+    <>
+      {rows.map((row) => (
+        <div key={row.key} className="flex flex-col gap-100">
+          <div
+            className={cn(
+              'flex flex-wrap gap-300 rounded-sm px-200 py-100 text-300',
+              row.status === 'shared' && 'text-muted-foreground',
+              row.status === 'changed' && 'bg-accent',
+              (row.status === 'onlyA' || row.status === 'onlyB') && 'bg-secondary'
+            )}
+          >
+            <span className="min-w-[180px] text-200 font-medium">{results.statusLabel(row.status, firstName, secondName)}</span>
+            <span>{row.text}</span>
+          </div>
+          {row.detail ? (
+            <details className="ml-200 text-300">
+              <summary className="cursor-pointer text-200 text-muted-foreground">{detailLabel}</summary>
+              {'single' in row.detail ? (
+                <Formula>{row.detail.single}</Formula>
+              ) : (
+                <Formula>
+                  <strong>{firstName}</strong>
+                  {'\n'}
+                  {row.detail.a}
+                  {'\n\n'}
+                  <strong>{secondName}</strong>
+                  {'\n'}
+                  {row.detail.b}
+                </Formula>
+              )}
+            </details>
+          ) : null}
+        </div>
+      ))}
+    </>
+  );
+}
+
+function SecurityNotice({ pair }: { pair: PayloadPair | undefined }) {
+  if (!pair) return <p className="text-300 text-muted-foreground">Security comparison not scored.</p>;
+  if (pair.securityStatus === 'different' || pair.securityStatus === 'unknown') {
+    const different = pair.securityStatus === 'different';
+    return (
+      <div role="status" className="rounded-md border border-destructive/40 bg-destructive/5 px-400 py-300 text-300">
+        <strong className="text-destructive">{different ? 'Security definitions differ' : 'Security not assessed'}</strong>
+        <div className="text-muted-foreground">
+          {different
+            ? 'Duplicate labels use the overall score. Review the permission differences before considering replacement.'
+            : 'Missing, incomplete, or inconsistent security evidence. Run catalog and scoring again; schema scores remain separate.'}
+        </div>
+      </div>
+    );
+  }
+  return (
+    <p className="text-300 text-muted-foreground">
+      {pair.securityStatus === 'not_applicable'
+        ? 'No model-level security definitions found in either model. Overall equals schema.'
+        : 'Matching security definitions. Role assignments and effective user access are not compared.'}
+    </p>
   );
 }
 
 export function CompareView({
-  dataset,
-  modelA,
-  modelB,
-  onChange,
+  results,
+  state,
+  update,
+  onHelp,
+  selection,
+  onSelectionChange,
+  backLabel,
   onBack,
-}: {
-  dataset: SimilarityDataset;
-  modelA: string | null;
-  modelB: string | null;
-  onChange: (a: string | null, b: string | null) => void;
-  onBack: (() => void) | null;
+  actions,
+}: Pick<ViewProps, 'results' | 'state' | 'update' | 'onHelp'> & {
+  selection: CompareSelection;
+  onSelectionChange: (selection: CompareSelection) => void;
+  backLabel: string | null;
+  onBack: () => void;
+  /** Optional app-only slot (next actions) rendered after the score summary. */
+  actions?: (pair: PayloadPair | undefined) => ReactNode;
 }) {
-  const theme = useCssTheme();
-  const a = dataset.models.find((m) => m.id === modelA) ?? null;
-  const b = dataset.models.find((m) => m.id === modelB) ?? null;
-  const pair = useMemo(
-    () => (a && b ? dataset.pairs.find((p) => p.key === pairKey(a.id, b.id)) ?? null : null),
-    [a, b, dataset.pairs]
+  const { a, b } = selection;
+  const title = (
+    <div className="flex items-center gap-300">
+      {backLabel ? (
+        <button
+          type="button"
+          onClick={onBack}
+          title={`Back to ${backLabel}`}
+          aria-label={`Back to ${backLabel}`}
+          className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-md border border-input bg-card hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ArrowLeft aria-hidden="true" className="icon-size-200" />
+        </button>
+      ) : null}
+      <h2 className="font-heading text-500 font-semibold tracking-tight">Compare models</h2>
+    </div>
   );
-  // Pair rows are stored A→B; flip coverage when the user's order differs.
-  const flipped = !!pair && !!a && pair.a.id !== a.id;
-  const aInB = pair ? (flipped ? pair.bInA : pair.aInB) : null;
-  const bInA = pair ? (flipped ? pair.aInB : pair.bInA) : null;
-
-  const signalData = useMemo<DataTable | null>(() => {
-    if (!pair) return null;
-    const rows = SIGNAL_LABELS.filter(([key]) => pair.signals[key] !== null).map(([key, label]) => [label, pair.signals[key]]);
-    return rows.length
-      ? { columns: [{ name: 'signal', displayName: 'Signal' }, { name: 'overlap', displayName: 'Overlap', format: '0%' }], rows }
-      : null;
-  }, [pair]);
-
-  const reportsFor = (model: ModelRef | null) => (model ? dataset.reports.filter((r) => r.modelId === model.id) : []);
-
-  const selector = (label: string, value: string | null, onSelect: (id: string | null) => void) => {
-    const id = `compare-${label.replace(/\s+/g, '-').toLowerCase()}`;
+  if (results.modelList.length < 2) {
     return (
-      <div className="flex min-w-[240px] flex-1 flex-col gap-100 text-200">
-        <label htmlFor={id} className="text-muted-foreground">{label}</label>
-        <select id={id} value={value ?? ''} onChange={(event) => onSelect(event.target.value || null)} className={inputClass}>
-          <option value="">Select a model</option>
-          {dataset.models.map((model) => (
-            <option key={model.id} value={model.id}>
-              {modelLabel(model)}
-            </option>
-          ))}
+      <section className="flex flex-col gap-400">
+        {title}
+        <div className="rounded-md border border-dashed border-border px-600 py-800 text-center text-300 text-muted-foreground">Two cataloged models are required.</div>
+      </section>
+    );
+  }
+
+  const options = results.modelList.map((entry) => (
+    <option key={entry.id} value={entry.id}>
+      {results.selectionLabel(entry.id)}
+    </option>
+  ));
+  const controls = (
+    <div className="flex flex-wrap items-end gap-300">
+      <Field label="Model A">
+        <select id="compare-model-a" value={a} title={results.pairModelLabel(a, b)} onChange={(event) => onSelectionChange({ ...selection, a: event.target.value })} className={inputClass}>
+          {options}
         </select>
-      </div>
+      </Field>
+      <button
+        type="button"
+        onClick={() => onSelectionChange({ ...selection, a: b, b: a })}
+        title="Swap models"
+        aria-label="Swap selected models"
+        className="inline-flex h-[36px] w-[36px] items-center justify-center rounded-md border border-input bg-card hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <ArrowLeftRight aria-hidden="true" className="icon-size-200" />
+      </button>
+      <Field label="Model B">
+        <select value={b} title={results.pairModelLabel(b, a)} onChange={(event) => onSelectionChange({ ...selection, b: event.target.value })} className={inputClass}>
+          {options}
+        </select>
+      </Field>
+    </div>
+  );
+  if (a === b) {
+    return (
+      <section className="flex flex-col gap-400">
+        {title}
+        {controls}
+        <div className="rounded-md border border-dashed border-border px-600 py-800 text-center text-300 text-muted-foreground">Choose two different models.</div>
+      </section>
+    );
+  }
+
+  const pair = results.pair(a, b);
+  const firstName = results.pairModelLabel(a, b);
+  const secondName = results.pairModelLabel(b, a);
+  const diff = results.compareData(state, results.model(a), results.model(b));
+  const toggle = (id: string) => onSelectionChange({ ...selection, openSections: { ...selection.openSections, [id]: !selection.openSections[id] } });
+  const section = (id: SectionId, sectionTitle: string, detailLabel = 'Formula text') => {
+    const entry = diff.sections[id] ?? { rows: [], shared: 0, diff: 0 };
+    return (
+      <Section id={id} title={sectionTitle} summary={`${entry.shared} matching / ${entry.diff} different`} open={Boolean(selection.openSections[id])} onToggle={() => toggle(id)}>
+        <DiffRows
+          rows={entry.rows}
+          results={results}
+          firstName={firstName}
+          secondName={secondName}
+          detailLabel={detailLabel}
+          empty={state.cmpDiffOnly ? 'No differences.' : 'No cataloged entries.'}
+        />
+      </Section>
     );
   };
 
-  return (
-    <section aria-labelledby="compare-heading" className="flex flex-col gap-400">
-      <SectionHeading id="compare-heading" title="Compare models">
-        {onBack ? (
-          <button type="button" className={buttonClass('ghost')} onClick={onBack}>
-            <ArrowLeft aria-hidden="true" className="icon-size-200" /> Back
-          </button>
-        ) : null}
-      </SectionHeading>
+  const reversed = pair ? pair.idA !== a : false;
+  const directions = pair
+    ? [
+        { source: a, target: b, label: 'A within B', value: reversed ? pair.bInA : pair.aInB },
+        { source: b, target: a, label: 'B within A', value: reversed ? pair.aInB : pair.bInA },
+      ]
+    : [];
+  const reports = results.reports;
+  const reportSummary = reports.status === 'complete' ? 'Observed direct links' : reports.status === 'partial' ? 'Scan incomplete' : 'Dependencies unknown';
+  const evidence = pair?.securityEvidence ?? {};
+  const components = evidence.components ?? {};
+  const weights = evidence.effective_weights ?? {};
 
-      <div className="flex flex-wrap gap-300">
-        {selector('Model A', modelA, (id) => onChange(id, modelB))}
-        {selector('Model B', modelB, (id) => onChange(modelA, id))}
+  return (
+    <section className="flex flex-col gap-400">
+      {title}
+      {controls}
+      <div className="flex flex-col gap-300 rounded-md border border-border bg-card px-400 py-300">
+        <div className="flex flex-wrap items-center gap-300">
+          <span className="font-medium">{results.relationshipSummary(state, pair)}</span>
+          <SecurityTag results={results} pair={pair} />
+          {!results.inComparisonScope(state, a, b) ? <Tag warning>Outside scope: {results.scopeExclusion(a, b)}</Tag> : null}
+          <label className="flex items-center gap-200 text-300 text-muted-foreground">
+            <input type="checkbox" checked={state.cmpDiffOnly} onChange={(event) => update({ cmpDiffOnly: event.target.checked })} className="accent-[var(--color-primary)]" />
+            Differences only
+          </label>
+        </div>
+        <dl className="grid grid-cols-1 gap-200 sm:grid-cols-3">
+          <Metric label="Schema" value={pair?.schema} unavailable={pair ? 'Unavailable' : 'Not scored'} />
+          <Metric label="Security" value={pair?.security} unavailable={pair ? results.securityScoreText(pair) : 'Not scored'} />
+          <Metric label="Overall" value={pair?.combined} unavailable={pair ? 'Unavailable' : 'Not scored'} />
+        </dl>
+        <div className="flex flex-wrap items-start justify-between gap-400">
+          {pair ? (
+            <dl aria-label="Directional schema coverage" className="flex flex-wrap gap-400 text-300">
+              {directions.map((direction) => {
+                const full = `${results.pairModelLabel(direction.source, direction.target)} within ${results.pairModelLabel(direction.target, direction.source)}`;
+                return (
+                  <div key={direction.label}>
+                    <dt title={full} className="text-200 text-muted-foreground">
+                      Schema coverage: {direction.label}
+                    </dt>
+                    <dd aria-label={`${full}: ${score(direction.value)}`} className="font-numeric font-semibold tabular-nums">
+                      {score(direction.value)}
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          ) : (
+            <span className="text-300 text-muted-foreground">Coverage: Not scored</span>
+          )}
+          <div className="text-300 text-muted-foreground">
+            Schema entries
+            <br />
+            <strong className="text-foreground">
+              {diff.shared} matching / {diff.differences} different
+            </strong>
+          </div>
+        </div>
+        <SecurityNotice pair={pair} />
+        {actions ? actions(pair) : null}
       </div>
 
-      {!a || !b ? (
-        <EmptyState title="Choose two models">Pick any two catalog models, or open a comparison from Review, Groups or the map.</EmptyState>
-      ) : a.id === b.id ? (
-        <EmptyState title="Choose two different models" />
-      ) : (
-        <>
-          {pair ? (
-            <div className="flex flex-wrap items-center gap-300">
-              <FindingBadge finding={pair.finding} />
-              <SecurityBadge state={pair.securityState} />
-              {pair.crossWorkspace ? <span className="text-200 text-muted-foreground">Cross-workspace</span> : null}
+      <Section
+        id="security"
+        title="Security definitions"
+        summary={results.securityLabel(pair)}
+        open={Boolean(selection.openSections.security)}
+        onToggle={() => toggle('security')}
+      >
+        <p className="text-300 text-muted-foreground">
+          The app shows the saved security comparison. Open notebook 002 to inspect role-by-role rule differences.
+        </p>
+        <ul className="flex flex-col gap-100 text-300">
+          {[a, b].map((id) => (
+            <li key={id}>
+              <span className="font-medium">{results.pairModelLabel(id, id === a ? b : a)}</span>: {results.modelSecurityText(id)}
+            </li>
+          ))}
+        </ul>
+      </Section>
+      {section('tables', 'Tables')}
+      {section('columns', 'Columns')}
+      {section('measures', 'Measures')}
+      {section('queries', 'Power Query', 'M query')}
+      {section('relationships', 'Relationships')}
+      {section('datasources', 'Sources')}
+      <Section id="reports" title="Dependent reports" summary={reportSummary} open={Boolean(selection.openSections.reports)} onToggle={() => toggle('reports')}>
+        <div className="flex flex-wrap items-center gap-300 text-200">
+          <span className={reports.status === 'complete' ? 'text-muted-foreground' : 'text-destructive'}>Report scan: {results.shortReportStatus()}</span>
+          <span className="text-muted-foreground">{results.reportScopeText()}</span>
+          <LinkButton onClick={onHelp}>Scan details</LinkButton>
+        </div>
+        <div className="grid grid-cols-1 gap-400 md:grid-cols-2">
+          {[a, b].map((id) => (
+            <div key={id} className="flex flex-col gap-100">
+              <h3 className="font-heading text-400 font-semibold">{results.model(id).name}</h3>
+              <div className="text-200 text-muted-foreground">{results.model(id).workspace || 'Unavailable'}</div>
+              <div className="text-300">{results.compareReportCount(id)}</div>
+              <ReportList reports={results.reportsFor(id)} />
             </div>
-          ) : (
-            <p role="status" className="rounded-md border border-dashed border-input px-400 py-300 text-300 text-muted-foreground">
-              <strong className="text-foreground">Not scored.</strong> This pair is absent from the saved results — candidate blocking
-              commonly excludes models that share no table or measure names. It is not a 0% match.
-            </p>
-          )}
-
-          <div className="grid gap-300 sm:grid-cols-3">
-            {[
-              ['Overall', pair?.combined ?? null, 'Combined schema and security similarity'],
-              ['Schema', pair?.schema ?? null, 'Structural and text overlap'],
-              ['Security', pair?.security ?? null, pair?.securityState === 'not_applicable' ? 'Not applicable — no roles' : 'Similarity of role definitions'],
-            ].map(([label, value, hint]) => (
-              <div key={label as string} className="rounded-md border border-border bg-card px-400 py-300">
-                <p className="text-200 uppercase tracking-wide text-muted-foreground">{label}</p>
-                <p className="font-numeric text-hero-800 font-semibold leading-hero-800 tabular-nums text-foreground">
-                  {formatPercent(value as number | null)}
+          ))}
+        </div>
+      </Section>
+      <Section id="scores" title="Score breakdown" summary="Schema / security signals" open={Boolean(selection.openSections.scores)} onToggle={() => toggle('scores')}>
+        {pair ? (
+          <>
+            <h4 className="font-heading text-300 font-semibold">Overall {score(pair.combined)}</h4>
+            <p className="text-300 text-muted-foreground">{results.blendText(pair)}</p>
+            <h4 className="font-heading text-300 font-semibold">Schema signals</h4>
+            <SchemaSignals results={results} pair={pair} />
+            <h4 className="font-heading text-300 font-semibold">Security signals</h4>
+            {pair.securityStatus === 'match' || pair.securityStatus === 'different' ? (
+              <>
+                <MetricGrid>
+                  <Metric label="Role definitions" value={components.role_definitions} />
+                  <Metric label="RLS propagation" value={components.rls_propagation} unavailable="Not applicable" />
+                </MetricGrid>
+                <p className="text-300 text-muted-foreground">
+                  Effective security weights:{' '}
+                  {Object.keys(weights)
+                    .map((key) => `${key === 'role_definitions' ? 'Role definitions' : 'RLS propagation'} ${score(weights[key])}`)
+                    .join(' · ')}
+                  .
                 </p>
-                <ScoreBar value={value as number | null} label={label as string} emphasis={label === 'Overall'} />
-                <p className="mt-100 text-200 text-muted-foreground">{hint}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid gap-400 lg:grid-cols-2">
-            <div className="flex flex-col gap-300 rounded-md border border-border bg-card p-400">
-              <h3 className="font-heading text-400 font-semibold">Schema coverage</h3>
-              <p className="text-200 text-muted-foreground">Directional: how much of one model's schema is represented in the other. Separate from Overall.</p>
-              <div className="flex flex-col gap-200 text-300">
-                <span>{a.name} within {b.name}</span>
-                <ScoreBar value={aInB} label={`${a.name} within ${b.name}`} />
-                <span>{b.name} within {a.name}</span>
-                <ScoreBar value={bInA} label={`${b.name} within ${a.name}`} />
-              </div>
-              <StatsTable a={a} b={b} statsA={dataset.stats[a.id]} statsB={dataset.stats[b.id]} />
+              </>
+            ) : null}
+            <div>
+              <LinkButton onClick={onHelp}>Calculation definitions</LinkButton>
             </div>
-
-            <div className="flex flex-col gap-300 rounded-md border border-border bg-card p-400">
-              <h3 className="font-heading text-400 font-semibold">Schema signals</h3>
-              {signalData ? (
-                <div className="h-[240px]">
-                  <VegaVisual spec={signalSpec} data={signalData} theme={theme} style={{ height: '100%' }} />
-                </div>
-              ) : (
-                <p className="text-300 text-muted-foreground">No signal evidence saved for this pair.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid gap-400 lg:grid-cols-2">
-            {[a, b].map((model) => {
-              const reports = reportsFor(model);
-              return (
-                <div key={model.id} className="rounded-md border border-border bg-card p-400">
-                  <h3 className="font-heading text-400 font-semibold">Dependent reports · {model.name}</h3>
-                  {reports.length ? (
-                    <ul className="mt-200 flex flex-col gap-100 text-300">
-                      {reports.map((report, index) => (
-                        <li key={`${report.name}-${index}`} className="flex items-center justify-between gap-300">
-                          <span className="min-w-0 truncate">
-                            {report.name} <span className="text-muted-foreground">· {report.workspace}</span>
-                          </span>
-                          {report.url ? (
-                            <a href={report.url} target="_blank" rel="noreferrer noopener" className={buttonClass('ghost')} aria-label={`Open ${report.name}`}>
-                              <ExternalLink aria-hidden="true" className="icon-size-200" />
-                            </a>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="mt-200 text-300 text-muted-foreground">No reports found in the scanned scope. This does not prove the model is unused.</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+          </>
+        ) : (
+          <p className="text-300 text-muted-foreground">No saved pair score.</p>
+        )}
+      </Section>
     </section>
   );
 }

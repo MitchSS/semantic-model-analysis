@@ -162,5 +162,11 @@ export interface SimilarityRunListResult {
   error: SimilarityRunError | null;
 }
 
+/** Result of asking the lakehouse SQL endpoint to sync table metadata after a run. */
+export interface SimilarityRefreshResult {
+  refreshed: boolean;
+  error: SimilarityRunError | null;
+}
+
 export const isActiveRun = (run: Pick<SimilarityRun, 'status'> | null | undefined): boolean =>
   !!run && ACTIVE_RUN_STATUSES.includes(run.status);

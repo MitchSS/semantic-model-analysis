@@ -1,30 +1,13 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fixtureDataset, MODEL_IDS } from '@/test/fixtures';
+import { fixtureResults } from '@/test/fixtures';
 
-vi.mock('@microsoft/fabric-visuals', () => ({
-  useCssTheme: () => ({}),
-  VegaVisual: ({ onInteraction }: { onInteraction?: (events: unknown[]) => void }) => (
-    <button
-      type="button"
-      data-testid="vega"
-      onClick={() =>
-        onInteraction?.([
-          {
-            action: 'select',
-            selections: [{ predicates: [{ type: 'set', name: 'cellKey', values: [`${MODEL_IDS.finance}|${MODEL_IDS.hr}`] }] }],
-          },
-        ])
-      }
-    />
-  ),
-}));
-
+const loaded = fixtureResults();
 const reload = vi.fn();
 const start = vi.fn();
 vi.mock('@/hooks/use-similarity-data', () => ({
-  useSimilarityData: () => ({ status: 'ready', data: fixtureDataset(), error: null, reload }),
+  useSimilarityData: () => ({ status: 'ready', data: loaded, error: null, reload }),
 }));
 vi.mock('@/hooks/use-similarity-runs', () => ({
   useSimilarityRuns: () => ({
@@ -41,61 +24,143 @@ vi.mock('@/hooks/use-similarity-runs', () => ({
 
 import App from '@/App';
 
+const queueRows = () => within(screen.getByRole('region', { name: 'Candidate pair scores' })).getAllByRole('row').slice(1);
+const tab = (name: string) => fireEvent.click(within(screen.getByRole('navigation', { name: 'Views' })).getByRole('button', { name }));
+
 describe('App', () => {
   beforeEach(() => {
     start.mockReset();
+    localStorage.clear();
   });
 
-  it('ranks review candidates by overall score with security warnings', () => {
+  it('ranks review candidates like notebook 002', () => {
     render(<App />);
-    const table = screen.getByRole('region', { name: 'Ranked comparisons' });
-    const rows = within(table).getAllByRole('row').slice(1);
-    expect(rows).toHaveLength(3);
-    expect(rows[0]).toHaveTextContent('Possible duplicate');
-    expect(rows[0]).toHaveTextContent('97%');
+    expect(screen.getByText('8 of 8 candidates')).toBeVisible();
+    const rows = queueRows();
+    expect(rows).toHaveLength(8);
+    expect(rows[0]).toHaveTextContent('Sales');
+    expect(rows[0]).toHaveTextContent('Sales Restricted');
+    expect(rows[0]).toHaveTextContent('95.0%');
+    expect(rows[0]).toHaveTextContent('Possible duplicates');
     expect(rows[0]).toHaveTextContent('Security differs');
-    expect(rows[1]).toHaveTextContent('Shared structure');
-    expect(rows[2]).toHaveTextContent('Schema coverage');
+    expect(rows[7]).toHaveTextContent('Shared structure');
+    const finding = screen.getByLabelText('Finding');
+    expect(within(finding).getAllByRole('option').map((option) => option.textContent)).toEqual([
+      'All findings (8)',
+      'Possible duplicates (1)',
+      'Schema coverage (5)',
+      'Shared structure (2)',
+    ]);
   });
 
-  it('applies the cross-workspace scope across views', () => {
+  it('filters by Power Query state and clears filters', () => {
+    render(<App />);
+    fireEvent.change(screen.getByLabelText('Power Query state'), { target: { value: 'not_applicable' } });
+    expect(screen.getByText('1 of 8 candidates')).toBeVisible();
+    expect(queueRows()[0]).toHaveTextContent('Sales Core');
+    expect(queueRows()[0]).toHaveTextContent('Sales Draft');
+    fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(screen.getByText('8 of 8 candidates')).toBeVisible();
+  });
+
+  it('expands a row into the seven schema signals', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Score indicators for Sales and Sales Restricted' }));
+    const region = screen.getByRole('region', { name: 'Schema similarity indicators for Sales and Sales Restricted' });
+    expect(within(region).getAllByRole('meter')).toHaveLength(7);
+    expect(within(region).getByRole('meter', { name: 'Power Query similarity' })).toHaveAttribute('aria-valuenow', '100');
+  });
+
+  it('applies the cross-workspace scope', () => {
     render(<App />);
     fireEvent.click(screen.getByLabelText('Cross-workspace only'));
-    const rows = within(screen.getByRole('region', { name: 'Ranked comparisons' })).getAllByRole('row').slice(1);
-    expect(rows).toHaveLength(2);
+    expect(screen.getByText('Cross-workspace pairs')).toBeVisible();
+    expect(screen.getByText('No cross-workspace candidates meet the current thresholds.')).toBeVisible();
   });
 
-  it('opens a comparison from review and returns with Back', () => {
+  it('reclassifies with applied thresholds', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Compare Sales and Sales Copy' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Review thresholds' }));
+    fireEvent.change(screen.getByLabelText('Possible duplicates minimum score percent value'), { target: { value: '99' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply thresholds' }));
+    expect(within(screen.getByLabelText('Finding')).getByRole('option', { name: 'Possible duplicates (0)' })).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('sms-thresholds-v2') ?? '{}')).toMatchObject({ duplicate: 0.99 });
+    fireEvent.change(screen.getByLabelText('Possible duplicates minimum score percent value'), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply thresholds' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter percentages from 0 to 100.');
+  });
+
+  it('opens a comparison at the relevant section and returns with Back', () => {
+    render(<App />);
+    const trigger = screen.getByRole('button', { name: 'Compare Sales and Sales Restricted' });
+    trigger.focus();
+    fireEvent.click(trigger);
     expect(screen.getByRole('heading', { name: 'Compare models' })).toBeVisible();
-    expect(screen.getByText('Dependent reports · Sales')).toBeVisible();
-    expect(screen.getByRole('link', { name: 'Open Pipeline' })).toHaveAttribute('href', 'https://app.powerbi.com/groups/x/reports/y');
-    expect(screen.queryByRole('link', { name: 'Open Bad link' })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: /Back/ }));
-    expect(screen.getByRole('heading', { name: 'Review queue' })).toBeVisible();
+    expect(screen.getByLabelText('Model A')).toHaveFocus();
+    expect(screen.getByRole('button', { name: /Security definitions/ })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('Duplicate labels use the overall score. Review the permission differences before considering replacement.')).toBeVisible();
+    expect(screen.getByText('Schema coverage: A within B')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: /Dependent reports/ }));
+    expect(screen.getByRole('link', { name: 'Margin Analysis' })).toHaveAttribute('href', 'https://app.powerbi.com/groups/demo-retail/reports/demo-sales-report-3');
+    expect(screen.getByText('East Orders')).toBeVisible();
+    expect(screen.queryByRole('link', { name: 'East Orders' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to Review' }));
+    expect(screen.getByText('8 of 8 candidates')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Compare Sales and Sales Restricted' })).toHaveFocus();
+  });
+
+  it('resets unapplied threshold edits to the defaults', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Review thresholds' }));
+    const input = screen.getByLabelText('Possible duplicates minimum score percent value');
+    fireEvent.change(input, { target: { value: '50' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Reset defaults' }));
+    expect(screen.getByLabelText('Possible duplicates minimum score percent value')).toHaveValue(95);
+  });
+
+  it('shows Power Query differences with M text', () => {
+    render(<App />);
+    tab('Compare');
+    fireEvent.change(screen.getByLabelText('Model B'), { target: { value: 'demo-sales-core' } });
+    fireEvent.click(screen.getByRole('button', { name: /Power Query/ }));
+    const section = document.getElementById('section-queries')!;
+    expect(within(section).getAllByText('Only in Sales').length).toBeGreaterThan(0);
+    expect(within(section).getAllByText('M query').length).toBeGreaterThan(0);
   });
 
   it('labels unscored comparisons rather than showing zero', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Compare' }));
-    fireEvent.change(screen.getByLabelText('Model A'), { target: { value: MODEL_IDS.salesB } });
-    fireEvent.change(screen.getByLabelText('Model B'), { target: { value: MODEL_IDS.hr } });
-    expect(screen.getByText(/Not scored\./)).toBeVisible();
+    tab('Compare');
+    fireEvent.change(screen.getByLabelText('Model A'), { target: { value: 'demo-inventory' } });
+    expect(screen.getByText('Coverage: Not scored')).toBeVisible();
+    expect(screen.getAllByText('Not scored').length).toBeGreaterThanOrEqual(3);
   });
 
-  it('shows duplicate groups', () => {
+  it('shows duplicate groups and compares members', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Groups' }));
-    expect(screen.getByRole('button', { name: /Sales, Sales Copy/ })).toHaveTextContent('97%');
+    tab('Groups');
+    expect(screen.getByText('1 of 1 groups')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Group 1 / 2 models' })).toBeVisible();
+    fireEvent.click(within(document.getElementById('group-detail')!).getByRole('button', { name: 'Compare' }));
+    expect(screen.getByRole('heading', { name: 'Compare models' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Back to Groups' })).toBeVisible();
   });
 
   it('opens a comparison from a similarity map cell', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Similarity map' }));
-    fireEvent.click(screen.getByTestId('vega'));
-    expect(screen.getByLabelText('Model A')).toHaveValue(MODEL_IDS.finance);
-    expect(screen.getByLabelText('Model B')).toHaveValue(MODEL_IDS.hr);
+    tab('Similarity map');
+    expect(screen.getByText('Showing 1-6 of 6 filtered models / 6 catalog models')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: /^Compare Sales Forecast \(Workspace: Demo Retail\) and Sales Draft/ }));
+    expect(screen.getByLabelText('Model A')).toHaveValue('demo-sales-forecast');
+    expect(screen.getByLabelText('Model B')).toHaveValue('demo-sales-draft');
+  });
+
+  it('opens the definitions dialog', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Definitions and scan details' }));
+    expect(screen.getByRole('heading', { name: 'Definitions & scan details' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Close definitions' }));
+    expect(screen.queryByRole('heading', { name: 'Definitions & scan details' })).toBeNull();
   });
 
   it('surfaces catalog errors', () => {
@@ -105,7 +170,7 @@ describe('App', () => {
 
   it('validates run parameters before starting a run', async () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Run analysis' }));
+    tab('Run analysis');
     fireEvent.change(screen.getByLabelText('Similar threshold'), { target: { value: '0.99' } });
     await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Start run' })));
     expect(start).not.toHaveBeenCalled();

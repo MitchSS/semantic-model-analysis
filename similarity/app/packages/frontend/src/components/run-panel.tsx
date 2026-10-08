@@ -12,7 +12,7 @@ import { useState, type FormEvent } from 'react';
 
 import { Notice, SectionHeading } from '@/components/ui';
 import { buttonClass, inputClass } from '@/lib/styles';
-import type { RunSummary } from '@/lib/similarity-model';
+import type { RunSummary } from '@/lib/results/load';
 import { cn } from '@/lib/utils';
 
 const STATUS_LABELS: Record<SimilarityRun['status'], string> = {

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_RUN_PARAMETERS } from '@rayfin-app/shared';
 
-import { SimilarityRunClient, safely, toSimilarityRun, type FetchLike } from './similarity-runs.js';
+import { SimilarityRunClient, refreshResultsMetadata, safely, toSimilarityRun, type FetchLike } from './similarity-runs.js';
 
 const RUN_ID = '0b5f8a10-1111-4222-8333-944455556666';
 const OTHER_RUN_ID = '1c6f8a10-1111-4222-8333-944455556666';
@@ -142,5 +142,23 @@ describe('safely', () => {
     }, { run: null });
     expect(result).toEqual({ run: null, error: expect.objectContaining({ code: 'fabric_error' }) });
     expect(result.error?.message).not.toContain('token');
+  });
+});
+
+describe('refreshResultsMetadata', () => {
+  it('posts to the SQL endpoint refreshMetadata API', async () => {
+    const fetchMock = vi.fn<FetchLike>().mockResolvedValueOnce(new Response(null, { status: 202 }));
+    await expect(refreshResultsMetadata('token', fetchMock, 'ws', 'sql')).resolves.toEqual({ refreshed: true, error: null });
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('https://api.fabric.microsoft.com/v1/workspaces/ws/sqlEndpoints/sql/refreshMetadata');
+    expect(init.method).toBe('POST');
+  });
+
+  it('reports permission failures without provider details', async () => {
+    const fetchMock = vi.fn<FetchLike>().mockResolvedValueOnce(json({ message: 'secret' }, 403));
+    const result = await refreshResultsMetadata('token', fetchMock, 'ws', 'sql');
+    expect(result.refreshed).toBe(false);
+    expect(result.error).toMatchObject({ code: 'permission_denied' });
+    expect(result.error?.message).not.toContain('secret');
   });
 });

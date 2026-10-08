@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { loadSimilarityDataset, type LoadedDataset } from '@/lib/similarity-data';
+import { loadResults, type LoadedResults } from '@/lib/results/load';
 
 export type DataState =
-  | { status: 'loading'; data: LoadedDataset | null; error: null }
-  | { status: 'ready'; data: LoadedDataset; error: null }
-  | { status: 'error'; data: LoadedDataset | null; error: string };
+  | { status: 'loading'; data: LoadedResults | null; error: null }
+  | { status: 'ready'; data: LoadedResults; error: null }
+  | { status: 'error'; data: LoadedResults | null; error: string };
 
 /** Short, non-sensitive reference (error type, SDK code, HTTP status) for support. */
 export function errorReference(error: unknown): string {
@@ -21,6 +21,9 @@ export function describeLoadError(error: unknown): string {
   if (/40[13]|forbidden|unauthori[sz]ed|permission/i.test(message)) {
     return 'You do not have access to the similarity lakehouse. Ask the workspace owner for read access.';
   }
+  if (/no rows in semantic_models/i.test(message)) {
+    return 'No analysis results yet. Open Run analysis to start the first run.';
+  }
   if (/invalid object name|not found/i.test(message)) {
     return 'The similarity tables were not found. Run the analysis once to create them.';
   }
@@ -28,7 +31,7 @@ export function describeLoadError(error: unknown): string {
 }
 
 /** Loads the lakehouse result tables; keeps the previous dataset visible while refreshing. */
-export function useSimilarityData(load: () => Promise<LoadedDataset> = loadSimilarityDataset) {
+export function useSimilarityData(load: () => Promise<LoadedResults> = loadResults) {
   const [state, setState] = useState<DataState>({ status: 'loading', data: null, error: null });
   const request = useRef(0);
 
